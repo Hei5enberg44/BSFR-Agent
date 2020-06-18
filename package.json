@@ -1,0 +1,20 @@
+{
+  "name": "the-cooler-bot",
+  "version": "1.0.0",
+  "description": "The cooler bot is an discord administration bot.",
+  "main": "index.js",
+  "scripts": {
+    "run": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://gitlab.bsaber.fr:30181/adminbsfr/the-cooler-bot.git"
+  },
+  "author": "BSFR",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.19.2",
+    "cron": "^1.8.2",
+    "discord.js": "^12.0.1"
+  }
+}
