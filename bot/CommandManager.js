@@ -44,8 +44,8 @@ class CommandManager {
 
         this.clients.discord.getClient().on("message", message => {
             // La commande a-t'elle été éxecutée dans le channel de la configuration?
-            if(message.channel.id !== this.config.discord.channel)
-               return;
+            // if(message.channel.id !== this.config.discord.channel)
+            //    return;
 
             // Le prefixe est-il bien présent?
             if(message.content.charAt(0) !== this.config.discord.prefix)

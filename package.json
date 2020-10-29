@@ -1,5 +1,6 @@
 {
   "name": "the-cooler-bot",
+  "displayName": "The Cooler Bot",
   "version": "1.0.0",
   "description": "The cooler bot is an discord administration bot.",
   "main": "index.js",
@@ -15,6 +16,7 @@
   "dependencies": {
     "axios": "^0.19.2",
     "cron": "^1.8.2",
-    "discord.js": "^12.0.1"
+    "discord.js": "^12.0.1",
+    "ioredis": "^4.19.0"
   }
 }

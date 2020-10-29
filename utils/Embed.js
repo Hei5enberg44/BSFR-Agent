@@ -10,9 +10,10 @@ class Embed {
      * @returns {module:"discord.js".MessageEmbed}
      */
     embed() {
+        let info = require("../package.json");
         return new Discord.MessageEmbed()
             .setColor('#000000')
-            .setFooter('Cube Stalker ' + require("../package.json").version, 'https://cdn.discordapp.com/avatars/555566518167928863/8cd462d8e941fdfa335ba03052cd95df.webp?size=128');
+            .setFooter(info.displayName + ' ' + info.version, 'https://cdn.discordapp.com/app-icons/694109037746323517/aa6a888ce83a57b45105fa4506068cde.png?size=128');
     }
 }
 
