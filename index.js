@@ -25,12 +25,6 @@ class TheCoolerBot {
             // }
         };
 
-        // Instanciation des reactions
-
-        this.reactions = {
-            Roles: new (require("./reactions/Roles.js")),
-        }
-
         // Déclaration des utils
 
         this.utils = {
@@ -38,6 +32,12 @@ class TheCoolerBot {
             Embed: new (require("./utils/Embed.js")),
             DiscordServer: new (require("./utils/DiscordServer.js"))({clients: this.clients})
         };
+
+        // Instanciation des reactions
+
+        this.reactions = {
+            Roles: new (require("./reactions/Roles.js"))({logger: this.utils.Logger}),
+        }
 
         // Instanciation et initialisation des Managers
 
@@ -66,9 +66,9 @@ class TheCoolerBot {
                 type: "LISTENING"
             });
 
-            await this.clients.discord.getClient().channels.cache.get("613064529676468267").messages.fetch();
+            await this.clients.discord.getClient().channels.cache.get(this.config.ids.channels.roles).messages.fetch();
 
-            await this.clients.discord.getClient().guilds.cache.get("613063832994185232").members.fetch();
+            await this.clients.discord.getClient().guilds.cache.get(this.config.ids.guild).members.fetch();
 
             // On démarre le CommandManager.
             this.managers.commands.init();
@@ -85,11 +85,14 @@ class TheCoolerBot {
                 switch(data.message_id) {
                     case this.config.ids.message.country:
                         this.reactions.Roles.country(action, guild, member, this.config.ids.roles, data.emoji.name);
+                        break;
+                    case this.config.ids.message.grip:
+                        this.reactions.Roles.grip(action, guild, member, this.config.ids.roles, data.emoji.name);
+                        break;
                 }
             }
         })
     }
-
 }
 
 let Index = new TheCoolerBot();
