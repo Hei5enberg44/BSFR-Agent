@@ -36,9 +36,11 @@ class HelpCommand {
         // On liste les commandes dans cet array de façon humaine.
         let showC = [];
         for(let c in this.commands) {
-            if(this.commands[c].ShowInHelp)
+            if(this.commands[c].ShowInHelp && this.commands[c].Aliases === [])
                 showC.push({name: this.config.discord.prefix + this.commands[c].Command + " " + this.commands[c].Usage, value: this.commands[c].Description + "\nAlias: ``" + this.commands[c].Aliases.join("``, ``") + "``", inline: false});
-        }
+            else
+                showC.push({name: this.config.discord.prefix + this.commands[c].Command + " " + this.commands[c].Usage, value: this.commands[c].Description, inline: false});
+}
 
         // On prépare l'embed et on ajoute les fields.
         let embed = this.utils.Embed.embed();

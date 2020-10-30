@@ -83,9 +83,6 @@ class TheCoolerBot {
                 let member = guild.members.cache.get(data.user_id)
 
                 switch(data.message_id) {
-                    case this.config.ids.message.country:
-                        this.reactions.Roles.country(action, guild, member, this.config.ids.roles, data.emoji.name);
-                        break;
                     case this.config.ids.message.grip:
                         this.reactions.Roles.grip(action, guild, member, this.config.ids.roles, data.emoji.name);
                         break;

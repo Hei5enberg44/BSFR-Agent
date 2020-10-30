@@ -56,7 +56,7 @@ class CommandManager {
                 return;
 
             // On établi la liste des arguments.
-            let args = message.content.split(" ");
+            let args = message.content.match(/\w+|`[^`]+`/g);
 
             // On retire le préfixe de la liste des arguments.
             args[0] = args[0].replace(this.config.discord.prefix, "");
