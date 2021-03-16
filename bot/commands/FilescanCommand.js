@@ -100,15 +100,22 @@ class RraddCommand {
             }
 
             let warn = await this.clients.sql.query("SELECT id, author_id, DATE_FORMAT(date, '%d/%m/%Y') as date, filename, scan_result FROM file_infected_history WHERE id = '" + args[1] + "'")
-            let member = message.guild.members.resolve(warn[0].author_id);
 
-            channel.send(this.utils.Embed.embed().setTitle("Rapport Warn")
-                .setColor('#FF0000')
-                .setThumbnail("https://cdn.discordapp.com/avatars/" + member.user.id + "/" + member.user.avatar + ".png")
-                .addField("Date", warn[0].date)
-                .addField("Le méchant", "<@!" + warn[0].author_id + ">")
-                .addField("Nom du fichier", warn[0].filename)
-                .addField("Résultat du scan", warn[0].scan_result))
+            if(warn.length !== 0) {
+                let member = message.guild.members.resolve(warn[0].author_id);
+
+                channel.send(this.utils.Embed.embed().setTitle("Rapport Warn")
+                    .setColor('#FF0000')
+                    .setThumbnail("https://cdn.discordapp.com/avatars/" + member.user.id + "/" + member.user.avatar + ".png")
+                    .addField("Date", warn[0].date)
+                    .addField("Le méchant", "<@!" + warn[0].author_id + ">")
+                    .addField("Nom du fichier", warn[0].filename)
+                    .addField("Résultat du scan", warn[0].scan_result))
+            } else {
+                channel.send("> :x: Ce warn n'existe pas.")
+            }
+
+
         }
     }
 }
