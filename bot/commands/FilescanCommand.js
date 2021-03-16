@@ -32,11 +32,6 @@ class RraddCommand {
      * @param message
      */
     async exec(args, message) {
-        if(args.length < 2) {
-            await message.channel.send("> :x: Merci d'indique l'option de commande ainsi que l'id du user")
-            return;
-        }
-
         // On vérifie si l'utilisateur est un admin
         let isAdmin = message.guild.members.resolve(message.author.id).roles.cache.some(r=>["admin", "Admin", "modérateur", "Modérateur"].includes(r.name));
         if(!isAdmin) {
@@ -50,13 +45,18 @@ class RraddCommand {
             return;
         }
 
-        if(args[0] === "seewarns") {
+        if(args[0] === "seeuserwarns") {
+            if(args.length < 2) {
+                await message.channel.send("> :x: Merci d'indiquer l'id de l'utilisateur (`filescan seeuserwarns userid`)")
+                return;
+            }
+
             // On récupère l'objet membre.
             let member = message.guild.members.resolve(args[1]);
 
             let warns = await this.clients.sql.query("SELECT id, DATE_FORMAT(date, '%d/%m/%Y') as date, filename FROM file_infected_history WHERE author_id = '" + args[1] + "'")
 
-            let embed = this.utils.Embed.embed().setTitle("Historique Warn")
+            let embed = this.utils.Embed.embed().setTitle("Historique Warn de " + member.user.username)
                 .setColor('#FF0000')
                 .setThumbnail("https://cdn.discordapp.com/avatars/" + member.user.id + "/" + member.user.avatar + ".png")
 
@@ -69,7 +69,36 @@ class RraddCommand {
             channel.send(embed)
         }
 
+        if(args[0] === "seelastwarns") {
+            // On récupère l'objet membre.
+            let member = message.guild.members.resolve(args[1]);
+
+            let limit = 10
+
+            if (args.length > 1) {
+                limit = args[1]
+            }
+
+            let warns = await this.clients.sql.query("SELECT id, DATE_FORMAT(date, '%d/%m/%Y') as date, author_id FROM file_infected_history LIMIT " + limit)
+
+            let embed = this.utils.Embed.embed().setTitle("Historique Warn")
+                .setColor('#FF0000')
+
+            for(const warn of warns) {
+                embed.addField("id", warn.id, true)
+                embed.addField("Date", warn.date, true)
+                embed.addField("User", "<@!" + warn.author_id + ">", true)
+            }
+
+            channel.send(embed)
+        }
+
         if(args[0] === "seewarn") {
+            if(args.length < 2) {
+                await message.channel.send("> :x: Merci d'indiquer l'id du warn (`filescan seewarn warnid`)")
+                return;
+            }
+
             let warn = await this.clients.sql.query("SELECT id, author_id, DATE_FORMAT(date, '%d/%m/%Y') as date, filename, scan_result FROM file_infected_history WHERE id = '" + args[1] + "'")
             let member = message.guild.members.resolve(warn[0].author_id);
 

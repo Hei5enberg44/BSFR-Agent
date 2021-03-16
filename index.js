@@ -136,6 +136,7 @@ class TheCoolerBot {
                         }).then(function () {
                             ssh.execCommand('wget -P /home/adminbsfr/scan ' + data.attachments[0].url).then(async function(result) {
                                 // await channel.messages.fetch(data.id).then(message => {message.delete()})
+                                console.log("Analyse d'un fichier en cours")
                                 message.edit("🔄 Analyse du fichier en cours 🔄")
 
                                 ssh.execCommand('clamscan /home/adminbsfr/scan/' + data.attachments[0].filename + " --max-filesize=100M --max-scansize=100M").then(async function(result) {
