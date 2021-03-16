@@ -1,4 +1,4 @@
-class HelpCommand {
+class RraddCommand {
 
     /**
      * Constructeur de la commande
@@ -49,7 +49,7 @@ class HelpCommand {
             Usage: "<#channel> <`message`> <@role1> <@role2> ...",
             Description: "Crée un message d'attribution de rôles par réactions.",
             Run: (args, message) => this.exec(args, message),
-            ShowInHelp: true
+            ShowInHelp: false
         }
     }
 
@@ -67,9 +67,9 @@ class HelpCommand {
 
         let channel = await guild.channels.cache.get(args[0]);
 
-        // if(!channel) {
-        //     await message.channel.send("> :x: Le channel ne semble pas existé")
-        // }
+        if(!channel) {
+            await message.channel.send("> :x: Le channel ne semble pas existé")
+        }
 
         let roleNumbers = args.length - 2;
         let msg = args[1].replace(/`/g, '') + "\n";
@@ -83,11 +83,8 @@ class HelpCommand {
         }
 
         channel.send(msg)
-
-
-        // console.log(args, message)
     }
 
 }
 
-module.exports = HelpCommand;
+module.exports = RraddCommand;

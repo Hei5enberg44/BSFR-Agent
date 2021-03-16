@@ -1,22 +1,25 @@
 {
-  "name": "the-cooler-bot",
-  "displayName": "The Cooler Bot",
+  "name": "bsfr-agent",
+  "displayName": "BSFR Agent",
   "version": "1.0.0",
-  "description": "The cooler bot is an discord administration bot.",
+  "description": "Admin agent bot for BSFR",
   "main": "index.js",
   "scripts": {
     "run": "node index.js"
   },
   "repository": {
     "type": "git",
-    "url": "http://gitlab.bsaber.fr:30181/adminbsfr/the-cooler-bot.git"
+    "url": "https://gitlab-mut.omedan.com/adminbsfr/the-cooler-bot"
   },
   "author": "BSFR",
   "license": "ISC",
   "dependencies": {
     "axios": "^0.19.2",
+    "bluebird": "^3.7.2",
     "cron": "^1.8.2",
     "discord.js": "^12.0.1",
-    "ioredis": "^4.19.0"
+    "ioredis": "^4.19.0",
+    "mysql2": "^2.2.5",
+    "node-ssh": "^11.1.1"
   }
 }
