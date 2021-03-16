@@ -47,6 +47,8 @@ class CommandManager {
             // if(message.channel.id !== this.config.discord.channel)
             //    return;
 
+            if(message.channel.type === "dm") return;
+
             // Le prefixe est-il bien présent?
             if(message.content.charAt(0) !== this.config.discord.prefix)
                 return;
