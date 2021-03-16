@@ -81,11 +81,13 @@ class CommandManager {
                     command.Run(args.slice(1), message);
                     this.utils.Logger.log("CommandManager: " + message.author.username + " a run un alias de la commande " + command.Command);
                 } else {
+                    if(args[0] === "me") {
+                        return;
+                    }
                     // On réagis avec un X pour notifier l'utilisateur que la commande n'existe pas.
                     message.react("❌");
                     return;
                 }
-
             }
         });
     }
