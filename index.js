@@ -168,6 +168,8 @@ class TheCoolerBot {
                                             message.delete()
                                         }, 300000)
                                     } else {
+                                        await ssh.execCommand('rm /home/adminbsfr/scan/' + data.attachments[0].filename)
+
                                         message.edit("✅ Fichier OK ✅")
 
                                         // await ssh.getFile('./temp/' + data.attachments[0].filename,'/home/adminbsfr/scan/' + data.attachments[0].filename).then(async function (Contents) {
