@@ -208,7 +208,7 @@ class TheCoolerBot {
         let sql = this.clients.sql
 
         new cron('0 0 * * *', async function () {
-            let users = await sql.query("SELECT * FROM birthday WHERE MONTH(date) = " + ("0" + (today.getUTCMonth() + 1)).slice(-2) + " AND DAY(date) = " + ("0" + (today.getUTCDate())).slice(-2) + "")
+            let users = await sql.query("SELECT * FROM birthday WHERE MONTH(date) = " + ("0" + (today.getUTCMonth() + 1)).slice(-2) + " AND DAY(date) = " + ("0" + (today.getUTCDate() + 1)).slice(-2) + "")
             for (const user of users) {
                 if(guild.members.cache.get(user.discord_id) === undefined) {
                     await sql.query("DELETE FROM birthday WHERE discord_id = '" + user.discord_id + "'")

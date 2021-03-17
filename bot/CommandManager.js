@@ -42,6 +42,16 @@ class CommandManager {
      */
     registerEvent() {
 
+        let cubestalker = [
+            "card", "rankcard", "cmds", "plshelp", "leaderboardaccuracy",
+            "ldacc", "serveracc", "serverleadacc", "leadacc", "topacc",
+            "ld", "server", "serverlead", "lead", "top", "me", "doisuck",
+            "plspp", "amiwashedup", "profile", "profilelink", "link",
+            "profil", "forcerefresh", "serverrefresh", "forceupdate", "world",
+            "worldlead", "unlink", "profileunlink"
+        ]
+
+
         this.clients.discord.getClient().on("message", message => {
             // La commande a-t'elle été éxecutée dans le channel de la configuration?
             // if(message.channel.id !== this.config.discord.channel)
@@ -83,7 +93,7 @@ class CommandManager {
                     command.Run(args.slice(1), message);
                     this.utils.Logger.log("CommandManager: " + message.author.username + " a run un alias de la commande " + command.Command);
                 } else {
-                    if(args[0] === "me") {
+                    if(cubestalker.includes(args[0])) {
                         return;
                     }
                     // On réagis avec un X pour notifier l'utilisateur que la commande n'existe pas.
