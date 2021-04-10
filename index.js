@@ -374,7 +374,7 @@ class TheCoolerBot {
     async autoUnban() {
         let client = this.clients.discord.getClient()
         let guild = await client.guilds.cache.get(this.config.ids.guild)
-        let adminChannel = guild.channels.resolve(this.config.ids.channels.admin)
+        let modsChannel = guild.channels.resolve(this.config.ids.channels.moderation)
         let sql = this.clients.sql
         let config = this.config
 
@@ -389,7 +389,7 @@ class TheCoolerBot {
                 let ask = await client.users.fetch(ban.ask_id)
 
                 await guild.members.unban(ban.vilain_id)
-                await adminChannel.send("<@&" + config.ids.roles.admin +  ">\n\nDéban de " + vilain.username + "#" + vilain.discriminator + ".\n\nPour rappel, il avait été ban par " + ask.username + "#" + ask.discriminator + " pour la raison suivante:\n`" + unescape(ban.reason) + "`\n\nMerci de prendre contact avec " + vilain.username + "#" + vilain.discriminator + "\n\nLien d'invitation discord: " + config.links.invite)
+                await modsChannel.send("<@&" + config.ids.roles.admin +  "> <@&" + config.ids.roles.mods + ">\n\nDéban de " + vilain.username + "#" + vilain.discriminator + ".\n\nPour rappel, il avait été ban par " + ask.username + "#" + ask.discriminator + " pour la raison suivante:\n`" + unescape(ban.reason) + "`\n\nMerci de prendre contact avec " + vilain.username + "#" + vilain.discriminator + "\n\nLien d'invitation discord: " + config.links.invite)
                 await sql.query("DELETE FROM ban WHERE id = " + ban.id)
             }
         }, null, true, 'Europe/Paris')
