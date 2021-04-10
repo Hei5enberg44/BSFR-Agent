@@ -43,6 +43,7 @@ class RraddCommand {
 
         if(args.length < 3) {
             await message.channel.send("> :x: Merci d'indiquer l'ensemble des informations nécessaires")
+            return;
         }
 
         args[1] = args[1].slice(1)
