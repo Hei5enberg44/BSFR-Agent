@@ -75,6 +75,7 @@ class RraddCommand {
                 break;
             case "Y":
                 date.setSeconds(date.getSeconds() + (time * 12 * 4.35 * 7 * 24 * 60 * 60))
+                break;
         }
 
         date = date.getFullYear() + '-' + ("0" + (date.getUTCMonth() + 1)).slice(-2) + "-" + ("0" + date.getDate()).slice(-2) + " " + ("0" + date.getHours()).slice(-2) + ":" + ("0" + date.getMinutes()).slice(-2) + ":" + ("0" + date.getSeconds()).slice(-2)
