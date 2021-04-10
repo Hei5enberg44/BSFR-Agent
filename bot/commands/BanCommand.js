@@ -32,6 +32,15 @@ class RraddCommand {
      * @param message
      */
     async exec(args, message) {
+        // On vérifie si l'utilisateur est un admin
+        let isAdmin = message.guild.members.resolve(message.author.id).roles.cache.some(r=>["admin", "Admin"].includes(r.name));
+        let isModo = message.guild.members.resolve(message.author.id).roles.cache.some(r=>["modérateur", "Modérateur"].includes(r.name));
+
+        if(!isAdmin && !isModo) {
+            await message.react("❌");
+            return;
+        }
+
         if(args.length < 3) {
             await message.channel.send("> :x: Merci d'indiquer l'ensemble des informations nécessaires")
         }
@@ -40,8 +49,6 @@ class RraddCommand {
         args[1] = args[1].slice(0, args[1].length - 1);
 
         // On vérifie si l'utilisateur est un admin
-        let isAdmin = message.guild.members.resolve(message.author.id).roles.cache.some(r=>["admin", "Admin"].includes(r.name));
-        let isModo = message.guild.members.resolve(message.author.id).roles.cache.some(r=>["modérateur", "Modérateur"].includes(r.name));
         let unit = args[2].charAt(args[2].length - 1).toUpperCase()
         let time = args[2].slice(0, -1)
         let date = new Date()
