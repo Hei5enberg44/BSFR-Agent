@@ -47,7 +47,7 @@ class RraddCommand {
             Command: "rradd",
             Aliases: [],
             Usage: "<#channel> <`message`> <@role1> <@role2> ...",
-            Description: "Crée un message d'attribution de rôles par réactions.",
+            Description: "**[ADMIN]** Crée un message d'attribution de rôles par réactions.",
             Run: (args, message) => this.exec(args, message),
             ShowInHelp: false
         }
@@ -59,6 +59,13 @@ class RraddCommand {
      * @param message
      */
     async exec(args, message) {
+        // On vérifie si l'utilisateur est un admin
+        let isAdmin = message.guild.members.resolve(message.author.id).roles.cache.some(r=>["admin", "Admin", "modérateur", "Modérateur"].includes(r.name));
+        if(!isAdmin) {
+            await message.react("❌");
+            return;
+        }
+
         if(args.length < 3) {
             await message.channel.send("> :x: Merci d'indiquer un channel, un message ainsi qu'au moins 1 rôle")
         }

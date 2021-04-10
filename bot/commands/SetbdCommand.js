@@ -37,6 +37,29 @@ class SetbdCommand {
             return 0;
         }
 
+        if(args[2] < 1900 || args[2] > new Date().getFullYear()) {
+            await message.channel.send("> :x: L'année de naissance doit être comprise entre 1900 et " + new Date().getFullYear())
+            return 0;
+        }
+
+        let date = args[0] + '/' + args[1] + '/' + args[2]
+        let regex = new RegExp('^(((0[1-9]|[12]\\d|3[01])\\/(0[13578]|1[02])\\/((19|[2-9]\\d)\\d{2}))|((0[1-9]|[12]\\d|30)\\/(0[13456789]|1[012])\\/((19|[2-9]\\d)\\d{2}))|((0[1-9]|1\\d|2[0-8])\\/02\\/((19|[2-9]\\d)\\d{2}))|(29\\/02\\/((1[6-9]|[2-9]\\d)(0[48]|[2468][048]|[13579][26])|((16|[2468][048]|[3579][26])00))))$')
+
+        if(!regex.test(date)) {
+            await message.channel.send("> :x: Date invalide")
+            return 0;
+        }
+
+        if(args[1] < 1 || args[1] > 12) {
+            await message.channel.send("> :x: Mois invalide")
+            return 0;
+        }
+
+        if(args[1] < 1 || args[1] > 31) {
+            await message.channel.send("> :x: Mois invalide")
+            return 0;
+        }
+
         let validArgs = false;
 
         args.forEach(function (arg) {
