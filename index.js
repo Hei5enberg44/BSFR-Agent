@@ -281,30 +281,11 @@ class TheCoolerBot {
                                 await ssh.execCommand('rm /home/adminbsfr/scan/' + data.attachments[0].filename)
 
                                 message.edit("✅ Fichier OK ✅")
-
-                                // await ssh.getFile('./temp/' + data.attachments[0].filename,'/home/adminbsfr/scan/' + data.attachments[0].filename).then(async function (Contents) {
-                                //     console.log("Fichier Vérifié et retélécharger")
-                                //
-                                //     const { MessageAttachment } = require("discord.js");
-                                //     const attachments = new MessageAttachment("./temp/" + data.attachments[0].filename)
-                                //     message.delete()
-                                //     await channel.send("✅ Fichier OK ✅ \n\n By " + author.username, attachments, "")
-                                //
-                                //     var fs = require('fs');
-                                //     fs.unlinkSync('./temp/' + data.attachments[0].filename);
-                                //
-                                //     ssh.execCommand('rm /home/adminbsfr/scan/' + data.attachments[0].filename).then(async function(result) {
-                                //         console.log("Deleted")
-                                //     })
-                                // })
                             }
-
-
                         })
                     })
                 })
             }
-
         }
     }
 
@@ -378,7 +359,7 @@ class TheCoolerBot {
         let sql = this.clients.sql
         let config = this.config
 
-        new cron('* * * * *', async function () {
+        new cron('0 0,12 * * *', async function () {
             let date = new Date()
             date = date.getFullYear() + '-' + ("0" + (date.getUTCMonth() + 1)).slice(-2) + "-" + ("0" + date.getDate()).slice(-2) + " " + ("0" + date.getHours()).slice(-2) + ":" + ("0" + date.getMinutes()).slice(-2) + ":" + ("0" + date.getSeconds()).slice(-2)
 
