@@ -398,7 +398,7 @@ class TheCoolerBot {
 
                 await vilain.roles.remove(muteRole)
 
-                await vilain.send("\n**[BSFR]**\n\nTu as été démuté ! \n\n Pour rappel, tu avais été muté pour la raison suivante: \n`" + mute.reason + "`")
+                await vilain.send("\n**[BSFR]**\n\nTu as été démuté ! \n\n Pour rappel, tu avais été muté pour la raison suivante: \n`" + unescape(mute.reason) + "`")
 
                 let logsMessage = embed.embed().setTitle("🔇 Unmute de " + vilain.user.username)
                     .setColor('#1b427c')
