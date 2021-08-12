@@ -100,6 +100,8 @@ class MuteCommand {
 
         await this.clients.sql.query("INSERT INTO mute (vilain_id, staff_id, reason, unmute_date) VALUES ('" + args[0] + "', '" + message.author.id + "', '" + escape(args[1]) + "', '" + date + "')")
 
+        await message.react("✅")
+
         return;
     }
 }
