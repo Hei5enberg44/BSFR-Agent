@@ -340,7 +340,7 @@ class TheCoolerBot {
         let sql = this.clients.sql
         let hb = this.hb
 
-        new cron('0 0 * * *', async function () {
+        new cron('1 0 * * *', async function () {
             let users = await sql.query("SELECT * FROM birthday WHERE MONTH(date) = " + ("0" + (new Date().getUTCMonth() + 1)).slice(-2) + " AND DAY(date) = " + ("0" + (new Date().getUTCDate())).slice(-2) + "")
 
             for (const user of users) {
