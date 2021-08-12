@@ -112,6 +112,7 @@ class TheCoolerBot {
 
             this.birthday();
             this.autoUnban();
+            this.autoUnmute();
         });
 
         this.clients.discord.getClient().on('raw', async packet => {
@@ -372,6 +373,43 @@ class TheCoolerBot {
                 await guild.members.unban(ban.vilain_id)
                 await modsChannel.send("<@&" + config.ids.roles.admin +  "> <@&" + config.ids.roles.mods + ">\n\nDéban de " + vilain.username + "#" + vilain.discriminator + ".\n\nPour rappel, il avait été ban par " + ask.username + "#" + ask.discriminator + " pour la raison suivante:\n`" + unescape(ban.reason) + "`\n\nMerci de prendre contact avec " + vilain.username + "#" + vilain.discriminator + "\n\nLien d'invitation discord: " + config.links.invite)
                 await sql.query("DELETE FROM ban WHERE id = " + ban.id)
+            }
+        }, null, true, 'Europe/Paris')
+    }
+
+    async autoUnmute() {
+        let client = this.clients.discord.getClient()
+        let guild = await client.guilds.cache.get(this.config.ids.guild)
+        let logsChannel = guild.channels.resolve(this.config.ids.channels.logs)
+        let muteRole = guild.roles.cache.get(this.config.ids.roles.muted)
+        let sql = this.clients.sql
+        let embed = this.utils.Embed
+        let config = this.config
+
+        new cron('* * * * *', async function () {
+            let date = new Date()
+            date = date.getFullYear() + '-' + ("0" + (date.getUTCMonth() + 1)).slice(-2) + "-" + ("0" + date.getDate()).slice(-2) + " " + ("0" + date.getHours()).slice(-2) + ":" + ("0" + date.getMinutes()).slice(-2) + ":" + ("0" + date.getSeconds()).slice(-2)
+
+            let mutes = await sql.query("SELECT * FROM mute WHERE unmute_date <= '" + date + "'")
+
+            for (const mute of mutes) {
+                let vilain = await guild.members.fetch(mute.vilain_id)
+                let staff = await guild.members.fetch(mute.staff_id)
+
+                await vilain.roles.remove(muteRole)
+
+                await vilain.send("\n**[BSFR]**\n\nTu as été démuté ! \n\n Pour rappel, tu avais été muté pour la raison suivante: \n`" + mute.reason + "`")
+
+                let logsMessage = embed.embed().setTitle("🔇 Unmute de " + vilain.user.username)
+                    .setColor('#1b427c')
+                    .setThumbnail("https://cdn.discordapp.com/avatars/" + vilain.user.id + "/" + vilain.user.avatar + ".png")
+                    .addField("Le vilain", "<@!" + vilain.user.id + ">", true)
+                    .addField("La sanction avait été prononcé par", "<@!" + staff.user.id + ">")
+                    .addField("Raison", unescape(mute.reason), true)
+                    .addField("Date", ("0" + (new Date().getDate())).slice(-2) + "/" + ("0" + (new Date().getUTCMonth() + 1)).slice(-2) + "/" + new Date().getFullYear() + " " + ("0" + (new Date().getHours())).slice(-2) + ":" + ("0" + (new Date().getMinutes())).slice(-2) + ":" + ("0" + (new Date().getSeconds())).slice(-2))
+
+                await logsChannel.send(logsMessage)
+                await sql.query("DELETE FROM mute WHERE id = " + mute.id)
             }
         }, null, true, 'Europe/Paris')
     }

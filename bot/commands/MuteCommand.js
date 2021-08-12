@@ -1,4 +1,4 @@
-class BanCommand {
+class MuteCommand {
 
     /**
      * Constructeur de la commande
@@ -17,10 +17,10 @@ class BanCommand {
      */
     getCommand() {
         return {
-            Command: "ban",
+            Command: "mute",
             Aliases: [],
             Usage: "@mention `raison` temps",
-            Description: "**[ADMIN - MODO]** Ban",
+            Description: "**[ADMIN - MODO]** Mute",
             Run: (args, message) => this.exec(args, message),
             ShowInHelp: false
         }
@@ -49,7 +49,7 @@ class BanCommand {
         args[1] = args[1].slice(1)
         args[1] = args[1].slice(0, args[1].length - 1);
 
-        // On vérifie si l'utilisateur est un admin
+        // On récupère le temps
         let unit = args[2].charAt(args[2].length - 1).toUpperCase()
         let time = parseInt(args[2].slice(0, -1))
         let date = new Date()
@@ -80,59 +80,28 @@ class BanCommand {
 
         date = date.getFullYear() + '-' + ("0" + (date.getUTCMonth() + 1)).slice(-2) + "-" + ("0" + date.getDate()).slice(-2) + " " + ("0" + date.getHours()).slice(-2) + ":" + ("0" + date.getMinutes()).slice(-2) + ":" + ("0" + date.getSeconds()).slice(-2)
 
-        if(isAdmin) {
-            this.ban(message, args[0], args[1], message.author.id, date)
-            return;
-        } else if (isModo) {
-            let member = message.guild.members.resolve(args[0])
-            let adminChannel = message.guild.channels.resolve(this.config.ids.channels.admin)
-            let muteRole = message.guild.roles.cache.get(this.config.ids.roles.muted)
-
-            let moderationMessage = this.utils.Embed.embed().setTitle("🔨 Demande de ban de " + member.user.username)
-                .setColor('#f07848')
-                .setThumbnail("https://cdn.discordapp.com/avatars/" + member.user.id + "/" + member.user.avatar + ".png")
-                .addField("Le vilain", "<@!" + member.user.id + ">", true)
-                .addField("La sanction a été demandée par", "<@!" + message.author.id + ">", true)
-                .addField("Raison", args[1])
-                .addField("Date", ("0" + (new Date().getDate())).slice(-2) + "/" + ("0" + (new Date().getUTCMonth() + 1)).slice(-2) + "/" + new Date().getFullYear() + " " + ("0" + (new Date().getHours())).slice(-2) + ":" + ("0" + (new Date().getMinutes())).slice(-2) + ":" + ("0" + (new Date().getSeconds())).slice(-2))
-
-            await member.roles.add(muteRole)
-            let ping_message = await adminChannel.send("<@&" + this.config.ids.roles.admin +  ">")
-            let pending_message = await adminChannel.send(moderationMessage)
-            await pending_message.react("✅")
-            await pending_message.react("❌")
-
-            await member.send("\n**[BSFR]**\n\nUne demande de bannissement à ton encontre est en attente pour la raison suivante: \n" + args[1] + "\n\nTu as été temporairement muté le temps qu'une décision soit prise.")
-
-            await this.clients.sql.query("INSERT INTO pending_ban (message_id, vilain_id, ask_id, reason, unban_date, ping_id) VALUES ('" + pending_message.id + "', '" + args[0] + "', '" + message.author.id + "', '" + escape(args[1]) + "', '" + date + "', '" + ping_message.id + "')")
-
-            await message.react("🔄")
-
-            return;
-        } else {
-            await message.react("❌");
-            return;
-        }
-    }
-
-    async ban(message, userId, reason, whoBan, date) {
-        let member = message.guild.members.resolve(userId)
+        let mutedMember = message.guild.members.resolve(args[0])
         let logsChannel = message.guild.channels.resolve(this.config.ids.channels.logs)
-        await this.clients.sql.query("INSERT INTO ban (vilain_id, ask_id, reason, unban_date) VALUES ('" + member.user.id + "', '" + whoBan + "', '" + escape(reason) + "', '" + date + "')")
+        let muteRole = message.guild.roles.cache.get(this.config.ids.roles.muted)
 
-        let logsMessage = this.utils.Embed.embed().setTitle("🔨 Ban de " + member.user.username)
-            .setColor('#F04848')
-            .setThumbnail("https://cdn.discordapp.com/avatars/" + member.user.id + "/" + member.user.avatar + ".png")
-            .addField("Le vilain", "<@!" + member.user.id + ">", true)
-            .addField("La sanction a été prononcée par", "<@!" + whoBan + ">", true)
-            .addField("Raison", reason)
+        let logsMessage = this.utils.Embed.embed().setTitle("🔇 Mute de " + mutedMember.user.username)
+            .setColor('#4886f0')
+            .setThumbnail("https://cdn.discordapp.com/avatars/" + mutedMember.user.id + "/" + mutedMember.user.avatar + ".png")
+            .addField("Le vilain", "<@!" + mutedMember.user.id + ">", true)
+            .addField("La sanction a été prononcé par", "<@!" + message.author.id + ">", true)
+            .addField("Raison", args[1])
+            .addField("Date Unmute", date)
             .addField("Date", ("0" + (new Date().getDate())).slice(-2) + "/" + ("0" + (new Date().getUTCMonth() + 1)).slice(-2) + "/" + new Date().getFullYear() + " " + ("0" + (new Date().getHours())).slice(-2) + ":" + ("0" + (new Date().getMinutes())).slice(-2) + ":" + ("0" + (new Date().getSeconds())).slice(-2))
 
+        await mutedMember.roles.add(muteRole)
         await logsChannel.send(logsMessage)
-        await member.send("\n**[BSFR]**\n\nTu as été banni pour la raison suivante: \n" + reason)
 
-        await member.ban({days: 0, reason: reason})
+        await mutedMember.send("\n**[BSFR]**\n\nTu as été muté pour la raison suivante: \n`" + args[1] + "`\n\nTu seras démuté le: " + date)
+
+        await this.clients.sql.query("INSERT INTO mute (vilain_id, staff_id, reason, unmute_date) VALUES ('" + args[0] + "', '" + message.author.id + "', '" + escape(args[1]) + "', '" + date + "')")
+
+        return;
     }
 }
 
-module.exports = BanCommand;
+module.exports = MuteCommand;

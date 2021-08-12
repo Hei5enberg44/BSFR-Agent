@@ -1,7 +1,7 @@
 {
   "name": "bsfr-agent",
   "displayName": "BSFR Agent",
-  "version": "0.2",
+  "version": "0.2.1",
   "description": "Admin agent bot for BSFR",
   "main": "index.js",
   "scripts": {
@@ -17,7 +17,7 @@
     "axios": "^0.19.2",
     "bluebird": "^3.7.2",
     "cron": "^1.8.2",
-    "discord.js": "^12.0.1",
+    "discord.js": "^12.5.3",
     "ioredis": "^4.19.0",
     "mysql2": "^2.2.5",
     "node-ssh": "^11.1.1",

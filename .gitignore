@@ -3,3 +3,4 @@ log.txt
 .idea
 config.json
 temp
+package-lock.json
