@@ -120,6 +120,8 @@ class TheCoolerBot {
             const data = packet.d;
             const guild = this.clients.discord.getClient().guilds.cache.get(this.config.ids.guild)
 
+            console.log(data)
+
             if(action === "MESSAGE_REACTION_ADD" || action === "MESSAGE_REACTION_REMOVE"){
 
                 if(action === "MESSAGE_REACTION_ADD") {
@@ -196,6 +198,18 @@ class TheCoolerBot {
             }
 
             if(action === "MESSAGE_CREATE") {
+                if(data.guild_id === undefined && data.author.id !== this.config.ids.users.agent) {
+                    let agentDmChannel = guild.channels.resolve(this.config.ids.channels.agent_dm)
+                    await agentDmChannel.send("<@!" + data.author.id + ">: " + data.content)
+                }
+
+                if(data.channel_id === this.config.ids.channels.agent_dm && data.referenced_message !== null && data.content.startsWith("!r ")) {
+                    let message = await guild.channels.cache.get(data.channel_id).messages.fetch(data.id)
+                    let membersToDM = await guild.members.cache.get(data.referenced_message.content.split('<@!').pop().split('>:')[0])
+                    await membersToDM.send("<@!" + data.author.id + ">: " + data.content.split('!r ')[1])
+                    await message.react("✅")
+                }
+
                 await this.filescan(packet)
                 await this.checkBannedWord(packet)
             }
