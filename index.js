@@ -120,8 +120,6 @@ class TheCoolerBot {
             const data = packet.d;
             const guild = this.clients.discord.getClient().guilds.cache.get(this.config.ids.guild)
 
-            console.log(data)
-
             if(action === "MESSAGE_REACTION_ADD" || action === "MESSAGE_REACTION_REMOVE"){
 
                 if(action === "MESSAGE_REACTION_ADD") {
