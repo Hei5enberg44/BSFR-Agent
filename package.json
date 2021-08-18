@@ -1,7 +1,7 @@
 {
   "name": "bsfr-agent",
   "displayName": "BSFR Agent",
-  "version": "0.2.2",
+  "version": "dev-1.0.0",
   "description": "Admin agent bot for BSFR",
   "main": "index.js",
   "scripts": {
@@ -14,13 +14,10 @@
   "author": "BSFR",
   "license": "ISC",
   "dependencies": {
-    "axios": "^0.19.2",
-    "bluebird": "^3.7.2",
-    "cron": "^1.8.2",
-    "discord.js": "^12.5.3",
-    "ioredis": "^4.19.0",
-    "mysql2": "^2.2.5",
-    "node-ssh": "^11.1.1",
-    "utf8": "^3.0.0"
+    "@discordjs/builders": "^0.5.0",
+    "@discordjs/rest": "^0.1.0-canary.0",
+    "discord-api-types": "^0.22.0",
+    "discord.js": "^13.1.0",
+    "ioredis": "^4.27.7"
   }
 }

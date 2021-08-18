@@ -1,114 +1,77 @@
-const Filesystem = require("fs");
+const { REST } = require("@discordjs/rest")
+const { SlashCommandBuilder } = require('@discordjs/builders')
+const { Routes } = require('discord-api-types/v9');
+const fs = require("fs");
 
 class CommandManager {
-
-    /**
-     * Constructeur du CommandManager
-     * @param opt
-     */
     constructor(opt) {
         this.config = opt.config;
-        this.clients = opt.clients;
         this.utils = opt.utils;
+        this.clients = opt.clients;
 
-        this.commands = {};
+        this.commands = {}
+        this.slashCommands = []
     }
 
-    /**
-     * Fonction executée à l'initialisation du CommandManager.
-     */
-    init() {
+    async init() {
         // On "scan" le dossier des commandes et on ajoute les commandes.
-        Filesystem.readdirSync("./bot/commands/").forEach(file => {
-            let cmd = new (require("./commands/" + file))(this);
-            this.registerCommand(cmd.getCommand())
-        });
+        fs.readdirSync("./bot/commands/").forEach(file => {
+            let cmd = new (require("./commands/" + file))
 
-        // On start l'event qui écoutera les commandes/messages.
+            this.utils.logger.log("[CommandManager] Find '" + cmd.name + "'")
+
+            this.commands[cmd.name] = cmd
+
+            let slashCommand = new SlashCommandBuilder()
+                .setName(cmd.name)
+                .setDescription(cmd.description)
+
+            if(cmd.options !== undefined) {
+                for (const [name, cmdOption] of Object.entries(cmd.options)) {
+                    switch(cmdOption.type) {
+                        case "string":
+                            slashCommand.addStringOption(option =>
+                                option.setName(name)
+                                    .setDescription(cmdOption.description)
+                                    .setRequired(cmdOption.required));
+                    }
+                }
+            }
+
+            this.slashCommands.push(slashCommand.toJSON())
+        })
+
+        const rest = new REST({ version: '9' }).setToken(this.config.discord.token)
+
+        try {
+            this.utils.logger.log("[CommandManager] Started refreshing application (/) commands.")
+
+            await rest.put(
+                Routes.applicationGuildCommands(this.config.discord.clientId, this.config.discord.guildId),
+                { body: this.slashCommands },
+            );
+
+            this.utils.logger.log("[CommandManager] SUCCESS: Refresh application (/) commands")
+        } catch (error) {
+            this.utils.logger.log("[CommandManager] ERROR: " + error)
+        }
+
         this.registerEvent()
     }
 
-    /**
-     * Fonction d'enregistrement des commandes.
-     * @param command
-     */
-    registerCommand(command) {
-        this.utils.Logger.log("CommandManager: Registered '" + command.Command + "'");
-        this.commands[command.Command] = command
-    }
-
-    /**
-     * Fonction d'enregistrement de l'évènement message de discord.js
-     */
     registerEvent() {
+        this.clients.discord.getClient().on('interactionCreate', async interaction => {
+            if (!interaction.isCommand()) return;
 
-        let cubestalker = [
-            "card", "rankcard", "cmds", "plshelp", "leaderboardaccuracy",
-            "ldacc", "serveracc", "serverleadacc", "leadacc", "topacc",
-            "ld", "server", "serverlead", "lead", "top", "me", "doisuck",
-            "plspp", "amiwashedup", "profile", "profilelink", "link",
-            "profil", "forcerefresh", "serverrefresh", "forceupdate", "world",
-            "worldlead", "unlink", "profileunlink"
-        ]
+            if(this.commands[interaction.commandName] !== undefined) {
+                this.utils.logger.log("[CommandManager] " + interaction.user.username + "#" + interaction.user.discriminator + " a exécuté la commande '" + interaction.commandName + "'")
 
-
-        this.clients.discord.getClient().on("message", message => {
-            // La commande a-t'elle été éxecutée dans le channel de la configuration?
-            // if(message.channel.id !== this.config.discord.channel)
-            //    return;
-
-            if(message.channel.type === "dm") return;
-
-            // Le prefixe est-il bien présent?
-            if(message.content.charAt(0) !== this.config.discord.prefix)
-                return;
-
-            // Aucun bot ne doit pouvoir faire de commandes.
-            if(message.author.bot)
-                return;
-
-            // On établi la liste des arguments.
-            let args = message.content.match(/\w+|`[^`]+`/g);
-
-            if (args === null) {
-                message.react("❌");
-                return;
-            }
-
-            // On retire le préfixe de la liste des arguments.
-            args[0] = args[0].replace(this.config.discord.prefix, "");
-
-            // On vérifie si la commande utilisée existe bien en tant que commande principale et non en "alias".
-            if(this.commands[args[0]]) {
-                // On récupère l'objet de la commande et on l'exécute.
-                let command = this.commands[args[0]];
-                command.Run(args.slice(1), message);
-                this.utils.Logger.log("CommandManager: " + message.author.username + " a run la commande " + command.Command);
+                this.commands[interaction.commandName].run(interaction)
             } else {
-                // On vérifie si la commande est un alias et si oui, on exécute la commande principale.
-                let foundCommand;
-                for(let i in this.commands) {
-                    if(this.commands[i].Aliases.includes(args[0])) {
-                        foundCommand = this.commands[i];
-                    }
-                }
-                if(foundCommand) {
-                    // On exécute la commande.
-                    let command = foundCommand;
-                    command.Run(args.slice(1), message);
-                    this.utils.Logger.log("CommandManager: " + message.author.username + " a run un alias de la commande " + command.Command);
-                } else {
-                    if(cubestalker.includes(args[0])) {
-                        return;
-                    }
-                    // On réagis avec un X pour notifier l'utilisateur que la commande n'existe pas.
-                    message.react("❌");
-                    return;
-                }
+                await interaction.reply({content: "Commande inexistante", ephemeral: true});
             }
         });
     }
-
 }
 
 module.exports = CommandManager;
