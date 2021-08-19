@@ -9,6 +9,8 @@ class CommandManager {
         this.utils = opt.utils;
         this.clients = opt.clients;
 
+        this.opt = opt;
+
         this.commands = {}
         this.slashCommands = []
     }
@@ -16,7 +18,7 @@ class CommandManager {
     async init() {
         // On "scan" le dossier des commandes et on ajoute les commandes.
         fs.readdirSync("./bot/commands/").forEach(file => {
-            let cmd = new (require("./commands/" + file))
+            let cmd = new (require("./commands/" + file))(this.opt)
 
             this.utils.logger.log("[CommandManager] Find '" + cmd.name + "'")
 

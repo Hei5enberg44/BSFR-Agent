@@ -4,3 +4,4 @@ log.txt
 config.json
 temp
 package-lock.json
+/logs/

@@ -27,22 +27,40 @@ class RedisClient {
     }
 
     async get(key) {
-        let toReturn = await this.getInstance().get(key);
-        this.utils.logger.log("[RedisClient] GET " + key)
-        return toReturn;
+        this.utils.logger.log("[RedisClient] Get " + key)
+        return await this.getInstance().get(key);
+    }
+
+    async getJson(key) {
+        this.utils.logger.log("[RedisClient] Get JSON " + key)
+        return JSON.parse(await this.getInstance().get(key))
     }
 
     async set(key, value) {
-        let toReturn = await this.getInstance().set(key, value);
-        this.utils.logger.log("[RedisClient] SET " + key + " VALUE " + value)
-        return toReturn;
+        this.utils.logger.log("[RedisClient] Set " + key + " VALUE " + value)
+        return await this.getInstance().set(key, value);
+    }
+
+    async setJsonEntries(key, jsonEntries) {
+        this.utils.logger.log("[RedisClient] Set " + key + " new JSON entries " + JSON.stringify(jsonEntries))
+        let user = await this.getJson(key)
+
+        if(user !== null) {
+            console.log(user);
+            this.utils.logger.log("[RedisClient] User " + key + " found")
+            Object.keys(jsonEntries).forEach(function(key) {
+                user[key] = jsonEntries[key]
+            })
+        } else {
+            this.utils.logger.log("[RedisClient] User " + key + " not found")
+        }
+
+        return await this.set(key, JSON.stringify(jsonEntries))
     }
 
     async del(key) {
-        let toReturn = await this.getInstance().del(key);
         this.utils.logger.log("[RedisClient] DEL " + key)
-        console.log();
-        return toReturn;
+        return await this.getInstance().del(key);
     }
 }
 
