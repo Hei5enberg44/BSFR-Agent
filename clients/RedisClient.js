@@ -46,7 +46,6 @@ class RedisClient {
         let user = await this.getJson(key)
 
         if(user !== null) {
-            console.log(user);
             this.utils.logger.log("[RedisClient] User " + key + " found")
             Object.keys(jsonEntries).forEach(function(key) {
                 user[key] = jsonEntries[key]
