@@ -29,13 +29,14 @@ class CommandManager {
                 .setDescription(cmd.description)
 
             if(cmd.options !== undefined) {
-                for (const [name, cmdOption] of Object.entries(cmd.options)) {
+                for (const [, cmdOption] of Object.entries(cmd.options)) {
                     switch(cmdOption.type) {
                         case "string":
-                            slashCommand.addStringOption(option =>
-                                option.setName(name)
-                                    .setDescription(cmdOption.description)
-                                    .setRequired(cmdOption.required));
+                            slashCommand.addStringOption(option => this.setOption(option, cmdOption));
+                            break;
+                        case "user":
+                            slashCommand.addUserOption(option => this.setOption(option, cmdOption))
+                            break;
                     }
                 }
             }
@@ -54,6 +55,31 @@ class CommandManager {
             );
 
             this.utils.logger.log("[CommandManager] SUCCESS: Refresh application (/) commands")
+
+            let guild = this.clients.discord.getClient().guilds.cache.get(this.config.discord.guildId)
+            let commands = await guild?.commands.fetch()
+
+            for(const [, command] of commands.entries()) {
+                if(this.commands[command.name].roles) {
+                    let permissions = []
+
+                    for(let i in this.commands[command.name].roles) {
+                        permissions = [...permissions, {
+                            id: guild.roles.cache.find(role => role.name === this.commands[command.name].roles[i]).id,
+                            type: "ROLE",
+                            permission: true
+                        }]
+                    }
+
+                    permissions = [...permissions, {
+                        id: guild.roles.cache.find(role => role.name === "@everyone").id,
+                        type: "ROLE",
+                        permission: false
+                    }]
+
+                    await command.permissions.set({ permissions })
+                }
+            }
         } catch (error) {
             this.utils.logger.log("[CommandManager] ERROR: " + error)
         }
@@ -73,6 +99,12 @@ class CommandManager {
                 await interaction.reply({content: "Commande inexistante", ephemeral: true});
             }
         });
+    }
+
+    setOption(option, cmdOption) {
+        return option.setName(cmdOption.name)
+            .setDescription(cmdOption.description)
+            .setRequired(cmdOption.required)
     }
 }
 

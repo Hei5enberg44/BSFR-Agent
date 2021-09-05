@@ -13,11 +13,11 @@ class TheCoolerBot {
         // Instanciation et initialisation des clients
         let clients     = {
             discord : require("./clients/DiscordClient.js"),
-            redis   : require("./clients/RedisClient.js")
+            mongo   : require("./clients/MongodbClient.js")
         };
         this.clients    = {
             discord : new clients.discord(this),
-            redis   : new clients.redis(this)
+            mongo   : new clients.mongo(this)
         };
 
         // Instanciation et initialisation des managers
@@ -37,6 +37,9 @@ class TheCoolerBot {
         // On fait login le bot à la gateway de Discord.
         this.clients.discord.loginClient();
 
+        // Connection à MongoDB
+        await this.clients.mongo.connect()
+
         // Quand la connexion avec discord est prête
         this.clients.discord.getClient().on("ready", async () => {
             this.utils.logger.log("[DiscordClient] Ready");
@@ -51,8 +54,6 @@ class TheCoolerBot {
 
             this.utils.logger.log("[Main] Bot Started");
         });
-
-
     }
 }
 
