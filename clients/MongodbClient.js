@@ -68,6 +68,19 @@ class MongodbClient {
         return true
     }
 
+    async insert(collection, document) {
+        this.utils.logger.log("[MongoDB] insert - Collection selected: " + collection)
+        try {
+            await this.db.collection(collection).insertMany([document])
+        } catch (e) {
+            this.utils.logger.log("[MongoDB] insertOrUpdate - ERROR: " + e.codeName)
+            return false
+        }
+
+        this.utils.logger.log("[MongoDB] insert - Insert " + JSON.stringify(document))
+        return true
+    }
+
     async remove(collection, finder) {
         this.utils.logger.log("[MongoDB] remove - Collection selected: " + collection)
 
