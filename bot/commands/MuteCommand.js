@@ -1,3 +1,5 @@
+const dateFunction = require("../functions/Date")
+
 class MuteCommand {
     name = "mute"
     description = "Mute un utilisateur sur une période donnée"
@@ -40,35 +42,11 @@ class MuteCommand {
         let duration    = interaction.options._hoistedOptions[2].value
 
         // On récupère le temps
-        let unit = duration.charAt(duration.length - 1).toUpperCase()
-        let time = parseInt(duration.slice(0, -1))
-        let date = new Date()
+        let date = dateFunction.treatDuration(duration)
 
-        switch (unit) {
-            case "S":
-                date.setSeconds(date.getSeconds() + time)
-                break;
-            case "I":
-                date.setSeconds(date.getSeconds() + (time * 60))
-                break;
-            case "H":
-                date.setSeconds(date.getSeconds() + (time * 60 * 60))
-                break;
-            case "D":
-                date.setSeconds(date.getSeconds() + (time * 24 * 60 * 60))
-                break;
-            case "W":
-                date.setSeconds(date.getSeconds() + (time * 7 * 24 * 60 * 60))
-                break;
-            case "M":
-                date.setSeconds(date.getSeconds() + (time * 4.35 * 7 * 24 * 60 * 60))
-                break;
-            case "Y":
-                date.setSeconds(date.getSeconds() + (time * 12 * 4.35 * 7 * 24 * 60 * 60))
-                break;
-            default:
-                this.utils.logger.log("[MuteCommand] Invalid time: " + unit)
-                return interaction.reply({content: "Temps invalide", ephemeral: true})
+        if(!date) {
+            this.utils.logger.log("[MuteCommand] Invalid time: " + duration)
+            return interaction.reply({content: "Temps invalide: " + duration, ephemeral: true});
         }
 
         const mongoUpdated = await this.clients.mongo.insertOrUpdate("users", { discordId: mutedMember.user.id }, {
