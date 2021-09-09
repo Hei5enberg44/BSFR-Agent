@@ -97,7 +97,7 @@ class BanCommand {
 
         if(mongoUpdated) {
             let logsMessage = this.utils.embed.embed().setTitle("🔨 Ban de " + bannedMember.user.username)
-                .setColor('#F04848')
+                .setColor('#f07848')
                 .setThumbnail("https://cdn.discordapp.com/avatars/" + bannedMember.user.id + "/" + bannedMember.user.avatar + ".png")
                 .addField("Le vilain", "<@!" + bannedMember.user.id + ">", true)
                 .addField("La sanction a été prononcée par", "<@!" + bannerId + ">", true)

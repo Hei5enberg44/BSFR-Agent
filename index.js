@@ -11,21 +11,15 @@ class TheCoolerBot {
         };
 
         // Instanciation et initialisation des clients
-        let clients     = {
-            discord : require("./clients/DiscordClient.js"),
-            mongo   : require("./clients/MongodbClient.js")
-        };
         this.clients    = {
-            discord : new clients.discord(this),
-            mongo   : new clients.mongo(this)
+            discord : new (require("./clients/DiscordClient.js"))(this),
+            mongo   : new (require("./clients/MongodbClient.js"))(this)
         };
 
         // Instanciation et initialisation des managers
-        let managers    = {
-            commands: require("./bot/CommandManager.js")
-        };
         this.managers   = {
-            commands: new managers.commands(this)
+            commands    : new (require("./bot/CommandManager.js"))(this),
+            listeners   : new (require("./bot/ListenManager.js"))(this)
         };
 
         // Initialisation du bot
@@ -51,9 +45,14 @@ class TheCoolerBot {
 
             // On démarre le CommandManager.
             await this.managers.commands.init();
+            await this.managers.listeners.init()
 
             this.utils.logger.log("[Main] Bot Started");
         });
+
+        this.clients.discord.getClient().on("raw", async packet => {
+            await this.managers.listeners.listen(packet)
+        })
     }
 }
 
