@@ -122,7 +122,7 @@ class BanCommand {
                 await logsChannel.send({embeds: [logsMessage]})
             }
 
-            await bannedMember.send("\n**[BSFR]**\n\nTu as été banni pour la raison suivante: \n`" + reason + "`")
+            await bannedMember.send("\n**[BSFR]**\n\nTu as été banni pour la raison suivante: \n`" + reason + "`\n\nLorsque ton ban sera levé, tu recevras un message ici ou de la part d'un membre du staff.")
 
             await bannedMember.ban({days: 0, reason: reason})
 
