@@ -16,6 +16,7 @@ class CommandManager {
     }
 
     async init() {
+        this.utils.logger.log("[CommandManager] Initialisation")
         // On "scan" le dossier des commandes et on ajoute les commandes.
         fs.readdirSync("./bot/commands/").forEach(file => {
             let cmd = new (require("./commands/" + file))(this.opt)
@@ -36,6 +37,9 @@ class CommandManager {
                             break;
                         case "user":
                             slashCommand.addUserOption(option => this.setOption(option, cmdOption))
+                            break;
+                        case "channel":
+                            slashCommand.addChannelOption(option => this.setOption(option, cmdOption))
                             break;
                     }
                 }
@@ -92,7 +96,7 @@ class CommandManager {
             if (!interaction.isCommand()) return;
 
             if(this.commands[interaction.commandName] !== undefined) {
-                this.utils.logger.log("[CommandManager] " + interaction.user.username + "#" + interaction.user.discriminator + " a exécuté la commande '" + interaction.commandName + "'")
+                this.utils.logger.log("[CommandManager] " + interaction.user.tag + " a exécuté la commande '" + interaction.commandName + "'")
 
                 this.commands[interaction.commandName].run(interaction)
             } else {
@@ -102,9 +106,17 @@ class CommandManager {
     }
 
     setOption(option, cmdOption) {
-        return option.setName(cmdOption.name)
+        option.setName(cmdOption.name)
             .setDescription(cmdOption.description)
             .setRequired(cmdOption.required)
+
+        if(cmdOption.choices) {
+            for(const [, choice] of cmdOption.choices.entries()) {
+                option.addChoice(choice.displayName, choice.name)
+            }
+        }
+
+        return option
     }
 }
 

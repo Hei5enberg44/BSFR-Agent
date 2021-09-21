@@ -32,15 +32,18 @@ class MongodbClient {
         }
     }
 
-    async find(collection, finder) {
-        this.utils.logger.log("[MongoDB] find - Collection selected: " + collection)
+    async find(collection, finder, wantLog = true) {
+        if(wantLog)
+            this.utils.logger.log("[MongoDB] find - Collection selected: " + collection)
 
         let document = await this.db.collection(collection).find(finder).toArray()
 
-        if(document.length === 0)
-            this.utils.logger.log("[MongoDB] find - Can't find " + JSON.stringify(finder))
-        else
-            this.utils.logger.log("[MongoDB] find - Found " + JSON.stringify(finder))
+        if(wantLog) {
+            if(document.length === 0)
+                this.utils.logger.log("[MongoDB] find - Can't find " + JSON.stringify(finder))
+            else
+                this.utils.logger.log("[MongoDB] find - Found " + JSON.stringify(finder))
+        }
 
         return document
     }
@@ -73,11 +76,25 @@ class MongodbClient {
         try {
             await this.db.collection(collection).insertMany([document])
         } catch (e) {
-            this.utils.logger.log("[MongoDB] insertOrUpdate - ERROR: " + e.codeName)
+            this.utils.logger.log("[MongoDB] insert - ERROR: " + e.codeName)
             return false
         }
 
         this.utils.logger.log("[MongoDB] insert - Insert " + JSON.stringify(document))
+        return true
+    }
+
+    async update(collection, document, update) {
+        this.utils.logger.log("[MongoDB] update - Collection selected: " + collection)
+        try {
+            await this.db.collection(collection).updateOne(document, update)
+        } catch (e) {
+            console.log(e)
+            this.utils.logger.log("[MongoDB] update - ERROR: " + e.codeName)
+            return false
+        }
+
+        this.utils.logger.log("[MongoDB] update - Updated " + JSON.stringify(document))
         return true
     }
 

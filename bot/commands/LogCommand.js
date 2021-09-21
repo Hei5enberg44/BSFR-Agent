@@ -12,11 +12,12 @@ class LogCommand {
             "required": false
         },
     }
-    roles = ["Admin"]
+    roles = ["Admin", "Modérateur"]
 
     constructor(opt) {
-        this.utils  = opt.utils
-        this.config = opt.config
+        this.utils      = opt.utils
+        this.config     = opt.config
+        this.clients    = opt.clients
     }
 
     async run(interaction) {
@@ -53,6 +54,13 @@ class LogCommand {
             }
 
             self.utils.logger.log("[LogCommand] Log found")
+
+            await self.clients.mongo.insert("historical", {
+                "type"      : "getLog",
+                "userId"    : interaction.user.id,
+                "file"      : date + ".log",
+                "date"      : (new Date()).getTime()
+            })
 
             let attachment = new MessageAttachment(path, date + ".log")
 

@@ -11,11 +11,9 @@ class RemoveBan {
         const guild = this.clients.discord.getClient().guilds.cache.get(this.config.discord.guildId)
         const channel = guild.channels.cache.get(this.config.ids.channels.logs)
 
-        let title = "🔨 Déban de " + data.user.username
+        this.utils.logger.log("[RemoveBan] Unbanning " + data.user.tag)
 
-        this.utils.logger.log("[RemoveBan] " + title)
-
-        let embed = this.utils.embed.embed().setTitle(title)
+        let embed = this.utils.embed.embed().setTitle("🔨 Déban de " + data.user.username)
             .setColor('#f07848')
             .setThumbnail("https://cdn.discordapp.com/avatars/" + data.user.id + "/" + data.user.avatar + ".png")
             .addField("Utilisateur", "<@!" + data.user.id + ">")

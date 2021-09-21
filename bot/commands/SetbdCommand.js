@@ -39,6 +39,13 @@ class SetbdCommand {
             "birthday": interaction.options._hoistedOptions[0].value
         })
 
+        await this.clients.mongo.insert("historical", {
+            "type"      : "setBirthday",
+            "userId"    : interaction.user.id,
+            "birthday"  : interaction.options._hoistedOptions[0].value,
+            "date"      : (new Date()).getTime()
+        })
+
         if(mongoUpdated) {
             this.utils.logger.log("[SetbdCommand] Birth date has been saved")
             return interaction.reply({content: "La date de naissance a bien été enregistrer", ephemeral: true});
