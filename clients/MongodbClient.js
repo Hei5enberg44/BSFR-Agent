@@ -89,7 +89,6 @@ class MongodbClient {
         try {
             await this.db.collection(collection).updateOne(document, update)
         } catch (e) {
-            console.log(e)
             this.utils.logger.log("[MongoDB] update - ERROR: " + e.codeName)
             return false
         }

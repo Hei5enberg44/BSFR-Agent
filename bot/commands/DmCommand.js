@@ -1,46 +1,41 @@
 class DmCommand {
-    name = "dm"
-    description = "Envoie un message en DM à un membre via l'agent"
-    options = {
-        "member": {
-            "name": "membre",
-            "type": "user",
-            "description": "Membre",
-            "required": true
+    name        = "dm"
+    description = "Envoie un message en message privé à un membre."
+    options     = {
+        "member"    : {
+            "name"          : "membre",
+            "type"          : "user",
+            "description"   : "Membre",
+            "required"      : true
         },
-        "message": {
-            "name": "message",
-            "type": "string",
-            "description": "Message",
-            "required": true
+        "message"   : {
+            "name"          : "message",
+            "type"          : "string",
+            "description"   : "Message",
+            "required"      : true
         }
     }
-    roles = ["Admin", "Modérateur"]
+    roles       = ["Admin", "Modérateur"]
+    channels    = ["agentDm"]
 
     constructor(opt) {
         this.utils      = opt.utils
         this.config     = opt.config
         this.clients    = opt.clients
+        this.guild      = opt.guild
     }
 
     async run(interaction) {
-        if(this.config.ids.channels.agentDm !== interaction.channelId) {
-            this.utils.logger.log("[DmCommand] Command executed in the wrong channel")
-            return interaction.reply({content: "Merci d'effectuer cette commande dans <#" + this.config.ids.channels.agentDm + ">", ephemeral: true});
-        }
+        const member    = interaction.options._hoistedOptions[0].user
+        const message   = interaction.options._hoistedOptions[1].value
 
-        let member  = interaction.options._hoistedOptions[0].user
-        let message = interaction.options._hoistedOptions[1].value
-
-        const guild             = this.clients.discord.getClient().guilds.cache.get(this.config.discord.guildId)
-        const agentDmChannel    = guild.channels.resolve(this.config.ids.channels.agentDm)
-        const adminMembers      = guild.roles.cache.get(this.config.ids.roles.admin).members
-        const modoMembers       = guild.roles.cache.get(this.config.ids.roles.moderator).members
-        const staffMembers      = adminMembers.concat(modoMembers)
+        const agentDmChannel = this.guild.channels.resolve(this.config.ids.channels.agentDm)
 
         try {
             this.utils.logger.log("[DmCommand] Trying to send DM from " + interaction.user.tag + " to " + member.tag)
+
             await member.send({content: "<@!" + interaction.user.id + ">: " + message})
+
             this.utils.logger.log("[DmCommand] DM Sent")
 
             await this.clients.mongo.insert("historical", {
@@ -52,8 +47,10 @@ class DmCommand {
             })
 
             const createdThread = await this.clients.mongo.find("threads", {type: "dm", userId: member.id})
-            let thread = null
 
+            let thread
+
+            // If there is not existing thread for this user, create it and add every staff member in it
             if(createdThread.length === 0) {
                 thread = await agentDmChannel.threads.create({
                     name: member.username,
@@ -64,8 +61,13 @@ class DmCommand {
                 if(thread.id) {
                     this.utils.logger.log("[DmCommand] Thread successfully created")
 
+                    const adminMembers  = this.guild.roles.cache.get(this.config.ids.roles.admin).members
+                    const modoMembers   = this.guild.roles.cache.get(this.config.ids.roles.moderator).members
+                    const staffMembers  = adminMembers.concat(modoMembers)
+
                     for(const [, staffMember] of staffMembers) {
                         this.utils.logger.log("[DmCommand] Adding " + staffMember.user.tag + " to the new thread")
+
                         await thread.members.add(staffMember.user.id)
                     }
 
@@ -97,10 +99,10 @@ class DmCommand {
 
                 thread.send({content: "<@!" + interaction.user.id + ">: " + message})
             }
-            return interaction.reply({content: "Le DM à <@!" + member.id + "> a bien été envoyé !", ephemeral: false})
+            return interaction.reply({content: "Le message privé à <@!" + member.id + "> a bien été envoyé !", ephemeral: false})
         } catch (e) {
             this.utils.logger.log("[DmCommand] Can't send DM: " + e)
-            return interaction.reply({content: "Le DM à <@!" + member.id + "> n'a pas pu être envoyé", ephemeral: false})
+            return interaction.reply({content: "Le message privé à <@!" + member.id + "> n'a pas pu être envoyé.", ephemeral: false})
         }
     }
 }

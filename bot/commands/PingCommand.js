@@ -1,6 +1,7 @@
 class PingCommand {
-    name = "ping"
+    name        = "ping"
     description = "Test si le bot fonctionne."
+    channels    = []
 
     constructor(opt) {
         this.utils = opt.utils

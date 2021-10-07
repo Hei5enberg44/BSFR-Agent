@@ -1,18 +1,20 @@
 const fs = require('fs')
 const { MessageAttachment } = require("discord.js")
+const { isValid } = require("../functions/Date.js")
 
 class LogCommand {
-    name = "log"
+    name        = "log"
     description = "Récupère un fichier de log."
-    options = {
+    options     = {
         "date": {
-            "name": "date",
-            "type": "string",
-            "description": "Date du fichier de log demander au format JJ/MM/AAAA (ex: 11/06/2000)",
-            "required": false
+            "name"          : "date",
+            "type"          : "string",
+            "description"   : "Date du fichier de log demandé au format JJ/MM/AAAA (ex: 11/06/2000)",
+            "required"      : false
         },
     }
-    roles = ["Admin", "Modérateur"]
+    roles       = ["Admin", "Modérateur"]
+    channels    = ["logs"]
 
     constructor(opt) {
         this.utils      = opt.utils
@@ -21,19 +23,14 @@ class LogCommand {
     }
 
     async run(interaction) {
-        if(this.config.ids.channels.logs !== interaction.channelId) {
-            this.utils.logger.log("[LogCommand] Command executed in the wrong channel")
-            return interaction.reply({content: "Merci d'effectuer cette commande dans <#" + this.config.ids.channels.logs + ">", ephemeral: true});
-        }
-
         let rawDate = new Date()
         let date = rawDate.getFullYear() + '-' + ("0" + (rawDate.getUTCMonth() + 1)).slice(-2) + "-" + ("0" + rawDate.getDate()).slice(-2)
 
+        // Check if the submitted date is valid
         if(interaction.options._hoistedOptions.length !== 0) {
-            let regex = new RegExp('^(((0[1-9]|[12]\\d|3[01])\\/(0[13578]|1[02])\\/((19|[2-9]\\d)\\d{2}))|((0[1-9]|[12]\\d|30)\\/(0[13456789]|1[012])\\/((19|[2-9]\\d)\\d{2}))|((0[1-9]|1\\d|2[0-8])\\/02\\/((19|[2-9]\\d)\\d{2}))|(29\\/02\\/((1[6-9]|[2-9]\\d)(0[48]|[2468][048]|[13579][26])|((16|[2468][048]|[3579][26])00))))$')
             let wantedDate = interaction.options._hoistedOptions[0].value
 
-            if(!regex.test(wantedDate)) {
+            if(!isValid(wantedDate)) {
                 this.utils.logger.log("[LogCommand] Invalid date: " + wantedDate)
                 return interaction.reply({content: "Date invalide", ephemeral: true});
             }
@@ -50,7 +47,7 @@ class LogCommand {
         return fs.access(path, fs.F_OK, async function (error) {
             if(error) {
                 self.utils.logger.log("[LogCommand] Log doesn't exist")
-                return interaction.reply({content: "Le fichier demander n'existe pas.", ephemeral: false});
+                return interaction.reply({content: "Le fichier demandé n'existe pas.", ephemeral: false});
             }
 
             self.utils.logger.log("[LogCommand] Log found")
@@ -64,7 +61,7 @@ class LogCommand {
 
             let attachment = new MessageAttachment(path, date + ".log")
 
-            return interaction.reply({files: [attachment], ephemeral: false});
+            return interaction.reply({files: [attachment]});
         })
     }
 }

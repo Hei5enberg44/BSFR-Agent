@@ -1,34 +1,37 @@
 class UnmuteCommand {
-    name = "unmute"
-    description = "Unmute un utilisateur"
-    options = {
+    name        = "unmute"
+    description = "Démute un utilisateur."
+    options     = {
         "member": {
-            "name": "membre",
-            "type": "user",
-            "description": "Membre",
-            "required": true
+            "name"          : "membre",
+            "type"          : "user",
+            "description"   : "Membre",
+            "required"      : true
         },
         "reason": {
-            "name": "raison",
-            "type": "string",
-            "description": "Raison",
-            "required": true
+            "name"          : "raison",
+            "type"          : "string",
+            "description"   : "Raison",
+            "required"      : true
         }
     }
-    roles = ["Admin", "Modérateur"]
+    roles       = ["Admin", "Modérateur"]
+    channels    = []
 
     constructor(opt) {
         this.utils      = opt.utils
         this.config     = opt.config
         this.clients    = opt.clients
+        this.guild      = opt.guild
     }
 
     async run(interaction) {
-        let mutedMember = interaction.options._hoistedOptions[0].member
-        let reason      = interaction.options._hoistedOptions[1].value
+        const mutedMember = interaction.options._hoistedOptions[0].member
+        const reason      = interaction.options._hoistedOptions[1].value
 
         const usersToUnmute = await this.clients.mongo.find("users", { discordId: mutedMember.user.id, unmuteDate: {$exists: true} })
 
+        // If there is a user to unmute
         if(usersToUnmute.length > 0) {
             this.utils.logger.log("[UnmuteCommand] Unmutting " + mutedMember.user.tag)
 
@@ -42,15 +45,16 @@ class UnmuteCommand {
                 "unmuteReason"  : reason
             })
 
-            await this.clients.mongo.update("users", { "_id": usersToUnmute[0]._id }, { $unset: {
+            await this.clients.mongo.update("users", { "_id": usersToUnmute[0]._id }, {
+                $unset: {
                     "unmuteDate"    : 1,
                     "muteReason"    : 1,
                     "muterId"       : 1
-            }})
+                }
+            })
 
-            const guild         = this.clients.discord.getClient().guilds.cache.get(this.config.discord.guildId)
-            const muteRole      = guild.roles.cache.get(this.config.ids.roles.muted)
-            const logsChannel   = guild.channels.cache.get(this.config.ids.channels.logs)
+            const muteRole      = this.guild.roles.cache.get(this.config.ids.roles.muted)
+            const logsChannel   = this.guild.channels.cache.get(this.config.ids.channels.logs)
 
             await mutedMember.roles.remove(muteRole)
 
@@ -68,7 +72,7 @@ class UnmuteCommand {
                 .addField("Levée par", "<@!" + interaction.user.id + ">", true)
                 .addField("Raison mute", usersToUnmute[0].muteReason, true)
                 .addField("Raison unmute", reason, true)
-                .addField("Date unmute de base", (new Date(usersToUnmute[0].unmuteDate)).toLocaleString('fr-FR', { timeZone: 'Europe/Paris' }))
+                .addField("Date de démute de base", (new Date(usersToUnmute[0].unmuteDate)).toLocaleString('fr-FR', { timeZone: 'Europe/Paris' }))
 
             await logsChannel.send({embeds: [logsMessage]})
 

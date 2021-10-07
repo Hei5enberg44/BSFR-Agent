@@ -5,35 +5,37 @@ class JoinAndLeave {
         this.clients    = opt.clients
         this.config     = opt.config
         this.utils      = opt.utils
+        this.guild      = opt.guild
     }
 
     async listen(add, data) {
-        const guild     = this.clients.discord.getClient().guilds.cache.get(this.config.discord.guildId)
-        const channel   = guild.channels.cache.get(this.config.ids.channels.logs)
+        const logsChannel = this.guild.channels.cache.get(this.config.ids.channels.logs)
 
         let title   = add ? "📥 Arrivée de " : "📤 Départ de "
         let color   = add ? '#47EF66' : '#F04848'
         let message = add ? "Koukou twa" : "Orevouar"
 
+        // If it's a new member, check if this user was not muted
         if(add) {
             const user = await this.clients.mongo.find("users", {
                 "discordId" : data.user.id,
                 "unmuteDate": {$gt: (new Date()).getTime()}
             })
 
+            // If the user was muted, remute him
             if(user.length > 0) {
                 this.utils.logger.log("[JoinAndLeave] " + data.user.tag + " is still muted.")
 
-                let logsChannel = guild.channels.resolve(this.config.ids.channels.logs)
-                let muteRole    = guild.roles.cache.get(this.config.ids.roles.muted)
-                let mutedMember = await guild.members.fetch(data.user.id)
+                let muteRole    = this.guild.roles.cache.get(this.config.ids.roles.muted)
+                let mutedMember = await this.guild.members.cache.get(data.user.id)
+
                 let logsEmbed   = this.utils.embed.embed().setTitle("🔇 Re mute de " + mutedMember.user.username)
                     .setColor('#4886f0')
                     .setThumbnail("https://cdn.discordapp.com/avatars/" + mutedMember.user.id + "/" + mutedMember.user.avatar + ".png")
                     .addField("Le vilain", "<@!" + mutedMember.user.id + ">", true)
-                    .addField("La sanction a été prononcé par", "<@!" + user[0].muterId + ">", true)
+                    .addField("La sanction a été prononcée par", "<@!" + user[0].muterId + ">", true)
                     .addField("Raison", user[0].muteReason)
-                    .addField("Date Unmute", (new Date(user[0].unmuteDate)).toLocaleString('fr-FR', { timeZone: 'Europe/Paris' }))
+                    .addField("Date de démute", (new Date(user[0].unmuteDate)).toLocaleString('fr-FR', { timeZone: 'Europe/Paris' }))
 
                 await mutedMember.roles.add(muteRole)
                 await logsChannel.send({embeds: [logsEmbed]})
@@ -53,7 +55,7 @@ class JoinAndLeave {
             .setThumbnail("https://cdn.discordapp.com/avatars/" + data.user.id + "/" + data.user.avatar + ".png")
             .addField(message, "<@!" + data.user.id + ">")
 
-        channel.send({embeds: [embed]})
+        return logsChannel.send({embeds: [embed]})
     }
 }
 

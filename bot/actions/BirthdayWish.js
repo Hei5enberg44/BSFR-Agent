@@ -1,21 +1,24 @@
+const crypto = require('crypto');
+
+// Function to wish a birthday
 async function wish(opt) {
-    const client                = opt.clients.discord.getClient()
-    const guild                 = client.guilds.cache.get(opt.config.discord.guildId)
-    const birthdayWishChannel   = guild.channels.resolve(opt.config.ids.channels.birthdayWish)
+    const birthdayWishChannel = opt.guild.channels.resolve(opt.config.ids.channels.birthdayWish)
 
-    let date = (new Date()).toLocaleDateString('fr-FR', { timeZone: 'Europe/Paris' })
-    date = date.substr(0, 5)
+    // Creating date in format JJ/MM/YYYY and removing the year
+    let date = ((new Date()).toLocaleDateString('fr-FR', { timeZone: 'Europe/Paris' })).substr(1, 5)
 
-    const birthdayUsers     = await opt.clients.mongo.find("users", { birthday: {$regex: date}})
     const birthdayMessages  = await opt.clients.mongo.find("birthdayMessages", {})
+    const birthdayUsers     = await opt.clients.mongo.find("users", { birthday: {$regex: date}})
 
     for(const [, birthdayUser] of birthdayUsers.entries()) {
-        const user = await client.users.cache.get(birthdayUser.discordId)
+        const member = await opt.guild.members.cache.get(birthdayUser.discordId)
 
-        opt.utils.logger.log("[BirthdayWish] Happy Birthday to " + user.username + "#" + user.discriminator)
+        // Generating a new random number, if there is only one birthday messages, random variable will be equal to 0
+        const random = crypto.randomInt(birthdayMessages.length)
 
-        const random = Math.floor(Math.random() * birthdayMessages.length)
-        birthdayWishChannel.send(birthdayMessages[random].message + " <@!" + birthdayUser.discordId + ">")
+        opt.utils.logger.log("[BirthdayWish] Happy Birthday to " + member.user.tag)
+
+        birthdayWishChannel.send(birthdayMessages[random].message + " <@!" + member.user.id + ">")
     }
 }
 

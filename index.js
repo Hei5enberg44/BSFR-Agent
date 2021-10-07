@@ -14,7 +14,8 @@ class TheCoolerBot {
         this.clients    = {
             discord : new (require("./clients/DiscordClient.js"))(this),
             mongo   : new (require("./clients/MongodbClient.js"))(this),
-            twitter : new (require("./clients/TwitterClient.js"))(this)
+            twitter : new (require("./clients/TwitterClient.js"))(this),
+            twitch  : new (require("./clients/TwitchClient.js"))(this)
         };
 
         // Instanciation et initialisation des managers
@@ -29,6 +30,8 @@ class TheCoolerBot {
     }
 
     async init() {
+        let isBotStarted = false
+
         this.utils.logger.log("[Main] Starting Bot")
         // On fait login le bot à la gateway de Discord.
         this.clients.discord.loginClient()
@@ -44,6 +47,7 @@ class TheCoolerBot {
             const guild = this.clients.discord.getClient().guilds.cache.get(this.config.discord.guildId)
 
             await guild.members.fetch()
+            await guild.channels.fetch()
 
             // On change l'activité du bot.
             this.clients.discord.getClient().user.setActivity('By Krixs', {
@@ -51,15 +55,17 @@ class TheCoolerBot {
             })
 
             // On démarre le CommandManager.
-            await this.managers.commands.init()
-            await this.managers.listeners.init()
-            await this.managers.autoactions.init()
+            await this.managers.commands.init(guild)
+            await this.managers.listeners.init(guild)
+            await this.managers.autoactions.init(guild)
 
+            isBotStarted = true
             this.utils.logger.log("[Main] Bot Started")
         })
 
         this.clients.discord.getClient().on("raw", async packet => {
-            await this.managers.listeners.listen(packet)
+            if(isBotStarted)
+                await this.managers.listeners.listen(packet)
         })
     }
 }

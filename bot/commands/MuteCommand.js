@@ -2,43 +2,46 @@ const dateFunction = require("../functions/Date")
 const { getBanOrMuteOptions } = require("../functions/CommandsOptions")
 
 class MuteCommand {
-    name = "mute"
-    description = "Mute un utilisateur sur une période donnée"
-    options = getBanOrMuteOptions()
-    roles = ["Admin", "Modérateur"]
+    name        = "mute"
+    description = "Mute un utilisateur sur une période définie."
+    options     = getBanOrMuteOptions()
+    roles       = ["Admin", "Modérateur"]
+    channels    = []
 
     constructor(opt) {
         this.utils      = opt.utils
         this.config     = opt.config
         this.clients    = opt.clients
+        this.guild      = opt.guild
     }
 
     async run(interaction) {
-        let mutedMember = interaction.options._hoistedOptions[0].member
-        let reason      = interaction.options._hoistedOptions[1].value
-        let duration    = interaction.options._hoistedOptions[2].value
+        const mutedMember = interaction.options._hoistedOptions[0].member
+        const reason      = interaction.options._hoistedOptions[1].value
+        const duration    = interaction.options._hoistedOptions[2].value
 
-        const memberAlreadyMutted = await this.clients.mongo.find("users", {
+        const memberAlreadyMuted = await this.clients.mongo.find("users", {
             "discordId" : mutedMember.user.id,
             "unmuteDate": {$exists: true}
         })
 
-        if(memberAlreadyMutted.length > 0) {
+        // Check if the member is not already muted
+        if(memberAlreadyMuted.length > 0) {
             this.utils.logger.log("[MuteCommand] " + mutedMember.user.tag + " is already muted")
-            return interaction.reply({content: "<@!" + mutedMember.user.id + "> est déjà mute", ephemeral: true});
+            return interaction.reply({content: "<@!" + mutedMember.user.id + "> est déjà muté.", ephemeral: true});
         }
 
-        // On récupère le temps
+        // Get unmute date
         let date = dateFunction.treatDuration(duration)
 
+        // If the date is invalid
         if(!date) {
             this.utils.logger.log("[MuteCommand] Invalid time: " + duration)
-            return interaction.reply({content: "Temps invalide: " + duration, ephemeral: true});
+            return interaction.reply({content: "Temps invalide : " + duration, ephemeral: true});
         }
 
-        let guild       = this.clients.discord.getClient().guilds.cache.get(this.config.discord.guildId)
-        let logsChannel = guild.channels.resolve(this.config.ids.channels.logs)
-        let muteRole    = guild.roles.cache.get(this.config.ids.roles.muted)
+        const logsChannel = this.guild.channels.resolve(this.config.ids.channels.logs)
+        const muteRole    = this.guild.roles.cache.get(this.config.ids.roles.muted)
 
         const mongoUpdated = await this.clients.mongo.insertOrUpdate("users", { discordId: mutedMember.user.id }, {
             "unmuteDate": date.getTime(),
@@ -61,19 +64,21 @@ class MuteCommand {
                 .setColor('#4886f0')
                 .setThumbnail("https://cdn.discordapp.com/avatars/" + mutedMember.user.id + "/" + mutedMember.user.avatar + ".png")
                 .addField("Le vilain", "<@!" + mutedMember.user.id + ">", true)
-                .addField("La sanction a été prononcé par", "<@!" + interaction.user.id + ">", true)
+                .addField("La sanction a été prononcée par", "<@!" + interaction.user.id + ">", true)
                 .addField("Raison", reason)
-                .addField("Date Unmute", date.toLocaleString('fr-FR', { timeZone: 'Europe/Paris' }))
+                .addField("Date de démute", date.toLocaleString('fr-FR', { timeZone: 'Europe/Paris' }))
 
             await mutedMember.roles.add(muteRole)
+
+            // Send in logs and into muted member DM
             await logsChannel.send({embeds: [logsEmbed]})
-            await mutedMember.send({ content: "\n**[BSFR]**\n\nTu as été muté pour la raison suivante: \n`" + reason + "`\n\nTu seras démuté le " + date.toLocaleString('fr-FR', { timeZone: 'Europe/Paris' }) })
+            await mutedMember.send({ content: "\n**[BSFR]**\n\nTu as été muté pour la raison suivante : \n`" + reason + "`\n\nTu seras démuté le " + date.toLocaleString('fr-FR', { timeZone: 'Europe/Paris' }) })
 
             this.utils.logger.log("[MuteCommand] " + mutedMember.user.tag + " has been muted by " + interaction.user.tag)
-            return interaction.reply({content: "<@!" + mutedMember.user.id + "> a bien été mutée", ephemeral: true})
+            return interaction.reply({content: "<@!" + mutedMember.user.id + "> a bien été muté.", ephemeral: true})
         } else {
             this.utils.logger.log("[MuteCommand] Mute hasn't been saved")
-            return interaction.reply({content: "Impossible d'enregistrer le mute de <@!" + mutedMember.user.id + "> en base de données", ephemeral: true});
+            return interaction.reply({content: "Impossible d'enregistrer le mute de <@!" + mutedMember.user.id + "> en base de données.", ephemeral: true});
         }
     }
 }

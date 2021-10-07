@@ -10,10 +10,12 @@ class ListenManager {
         this.bannedWords    = {}
     }
 
-    async init() {
+    async init(guild) {
+        this.opt.guild = guild
+
         this.utils.logger.log("[ListenManager] Initialisation")
 
-        // On "scan" le dossier des commandes et on ajoute les commandes.
+        // For each files in folder
         fs.readdirSync("./bot/listeners/").forEach(file => {
             let listen = new (require("./listeners/" + file))(this.opt)
 
@@ -27,15 +29,19 @@ class ListenManager {
         const action    = packet.t;
         const data      = packet.d;
 
-        if(data !== null && data.guild_id === this.config.discord.guildId) {
+        // If there is data and the guild ID is the same has the selected discord server or if it's a DM
+        if(data && (data.guild_id === this.config.discord.guildId || data.guild_id === undefined)) {
             switch(action) {
                 case "MESSAGE_REACTION_ADD":
                     this.listeners["ValidationBan"].listen(data)
+                    this.listeners["ValidationTweet"].listen(data)
+                    this.listeners["ValidationRemove"].listen(data)
                     break;
                 case "MESSAGE_CREATE":
                     this.listeners["DM"].listen(data)
                     this.listeners["BannedWords"].listen(data)
                     this.listeners["FileScan"].listen(data)
+                    this.listeners["Clips"].listen(data)
                     break;
                 case "GUILD_MEMBER_ADD":
                     this.listeners["JoinAndLeave"].listen(true, data)
@@ -49,6 +55,9 @@ class ListenManager {
                     break;
                 case "GUILD_MEMBER_UPDATE":
                     this.listeners["StaffUpdate"].listen(data)
+                    break;
+                case "PRESENCE_UPDATE":
+                    this.listeners["Stream"].listen(data)
                     break;
                 case "THREAD_CREATE":
                     this.listeners["JoinThread"].listen(data)

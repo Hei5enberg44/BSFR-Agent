@@ -3,6 +3,7 @@ async function addBirthdayMessage(message, user, opt) {
 
     const isRegistered = await opt.clients.mongo.find("birthdayMessages",{"message": message})
 
+    // Check if the sentence is already registered
     if(isRegistered.length > 0) {
         await opt.clients.mongo.insert("historical", {
             "type"      : "addBirthdayMessage",
@@ -14,7 +15,7 @@ async function addBirthdayMessage(message, user, opt) {
 
         opt.utils.logger.log("[BirthdayMessage] " + message + " already exist in database")
 
-        return "Déjà Ajouté"
+        return "Déjà ajouté"
     } else {
         const mongoUpdated = await opt.clients.mongo.insert("birthdayMessages",  {
             "message"   : message,
@@ -22,6 +23,7 @@ async function addBirthdayMessage(message, user, opt) {
             "date"      : (new Date()).getTime()
         })
 
+        // If the sentence has been saved in database
         if(mongoUpdated) {
             await opt.clients.mongo.insert("historical", {
                 "type"      : "addBirthdayMessage",

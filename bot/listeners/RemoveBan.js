@@ -5,11 +5,11 @@ class RemoveBan {
         this.clients    = opt.clients
         this.config     = opt.config
         this.utils      = opt.utils
+        this.guild      = opt.guild
     }
 
     async listen(data) {
-        const guild = this.clients.discord.getClient().guilds.cache.get(this.config.discord.guildId)
-        const channel = guild.channels.cache.get(this.config.ids.channels.logs)
+        const logsChannel = this.guild.channels.cache.get(this.config.ids.channels.logs)
 
         this.utils.logger.log("[RemoveBan] Unbanning " + data.user.tag)
 
@@ -18,7 +18,7 @@ class RemoveBan {
             .setThumbnail("https://cdn.discordapp.com/avatars/" + data.user.id + "/" + data.user.avatar + ".png")
             .addField("Utilisateur", "<@!" + data.user.id + ">")
 
-        channel.send({embeds: [embed]})
+        return logsChannel.send({embeds: [embed]})
     }
 }
 

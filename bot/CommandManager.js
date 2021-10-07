@@ -15,9 +15,12 @@ class CommandManager {
         this.slashCommands = []
     }
 
-    async init() {
+    async init(guild) {
+        this.opt.guild = guild
+
         this.utils.logger.log("[CommandManager] Initialisation")
-        // On "scan" le dossier des commandes et on ajoute les commandes.
+
+        // For each file in the folder
         fs.readdirSync("./bot/commands/").forEach(file => {
             let cmd = new (require("./commands/" + file))(this.opt)
 
@@ -30,16 +33,20 @@ class CommandManager {
                 .setDescription(cmd.description)
 
             if(cmd.options !== undefined) {
+                // Setting all the options for the command
                 for (const [, cmdOption] of Object.entries(cmd.options)) {
                     switch(cmdOption.type) {
+                        case "channel":
+                            slashCommand.addChannelOption(option => this.setOption(option, cmdOption))
+                            break;
+                        case "integer":
+                            slashCommand.addIntegerOption(option => this.setOption(option, cmdOption));
+                            break;
                         case "string":
                             slashCommand.addStringOption(option => this.setOption(option, cmdOption));
                             break;
                         case "user":
                             slashCommand.addUserOption(option => this.setOption(option, cmdOption))
-                            break;
-                        case "channel":
-                            slashCommand.addChannelOption(option => this.setOption(option, cmdOption))
                             break;
                     }
                 }
@@ -60,11 +67,12 @@ class CommandManager {
 
             this.utils.logger.log("[CommandManager] SUCCESS: Refresh application (/) commands")
 
-            let guild = this.clients.discord.getClient().guilds.cache.get(this.config.discord.guildId)
             let commands = await guild?.commands.fetch()
 
+            // Update every command that have to be available only by specific roles
             for(const [, command] of commands.entries()) {
                 if(this.commands[command.name].roles) {
+                    this.utils.logger.log("[CommandManager] Setting roles for command '" + command.name + "'")
                     let permissions = []
 
                     for(let i in this.commands[command.name].roles) {
@@ -75,6 +83,7 @@ class CommandManager {
                         }]
                     }
 
+                    // Denying every other roles to access the command
                     permissions = [...permissions, {
                         id: guild.roles.cache.find(role => role.name === "@everyone").id,
                         type: "ROLE",
@@ -93,10 +102,29 @@ class CommandManager {
 
     registerEvent() {
         this.clients.discord.getClient().on('interactionCreate', async interaction => {
-            if (!interaction.isCommand()) return;
+            if (!interaction.isCommand())
+                return;
 
-            if(this.commands[interaction.commandName] !== undefined) {
+            // If the command exist
+            if(this.commands[interaction.commandName]) {
                 this.utils.logger.log("[CommandManager] " + interaction.user.tag + " a exécuté la commande '" + interaction.commandName + "'")
+
+                let wrongChannel = false
+
+                // Check if the command has been executed in the correct channel
+                for(let channel of this.commands[interaction.commandName].channels) {
+                    if(this.config.ids.channels[channel] !== interaction.channelId){
+                        wrongChannel = true
+                    } else {
+                        wrongChannel = false
+                        break
+                    }
+                }
+
+                if(wrongChannel) {
+                    this.utils.logger.log("[" + this.commands[interaction.commandName].constructor.name + "] Command executed in the wrong channel")
+                    return interaction.reply({content: "Merci d'effectuer cette commande dans un des channels suivants: " + this.commands[interaction.commandName].channels.map((channel) => {return "<#" + this.config.ids.channels[channel] + ">"}).join(" "), ephemeral: true});
+                }
 
                 this.commands[interaction.commandName].run(interaction)
             } else {

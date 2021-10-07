@@ -1,3 +1,5 @@
+const { isValid } = require("../functions/Date.js")
+
 class SetbdCommand {
     name = "setbd"
     description = "Assigne une date d'anniversaire."
@@ -9,6 +11,7 @@ class SetbdCommand {
             "required": true
         },
     }
+    channels = []
 
     constructor(opt) {
         this.clients    = opt.clients
@@ -22,17 +25,17 @@ class SetbdCommand {
             return interaction.reply({content: "Merci d'effectuer cette commande dans <#" + this.config.ids.channels.setbirthday + ">", ephemeral: true});
         }
 
-        let regex = new RegExp('^(((0[1-9]|[12]\\d|3[01])\\/(0[13578]|1[02])\\/((19|[2-9]\\d)\\d{2}))|((0[1-9]|[12]\\d|30)\\/(0[13456789]|1[012])\\/((19|[2-9]\\d)\\d{2}))|((0[1-9]|1\\d|2[0-8])\\/02\\/((19|[2-9]\\d)\\d{2}))|(29\\/02\\/((1[6-9]|[2-9]\\d)(0[48]|[2468][048]|[13579][26])|((16|[2468][048]|[3579][26])00))))$')
         let date = interaction.options._hoistedOptions[0].value
 
-        if(!regex.test(date)) {
+        // If date isn't valid
+        if(!isValid(date)) {
             this.utils.logger.log("[SetbdCommand] Invalid date: " + date)
             return interaction.reply({content: "Date invalide", ephemeral: true});
         }
 
-        if(parseInt(date.split("/")[2]) < 1900 || parseInt(date.split("/")[2]) > new Date().getFullYear()) {
-            this.utils.logger.log("[SetbdCommand] Birth date year is bellowed 1900 or higher than " + new Date().getFullYear() + ": " + date.split("/")[2])
-            return interaction.reply({content: "L'année de naissance doit être comprise entre 1900 et " + new Date().getFullYear(), ephemeral: true});
+        if(parseInt(date.split("/")[2]) > new Date().getFullYear()) {
+            this.utils.logger.log("[SetbdCommand] Birth date can't be higher than " + new Date().getFullYear() + ": " + date.split("/")[2])
+            return interaction.reply({content: "L'année de naissance ne doit pas être supérieur à " + new Date().getFullYear() + ".", ephemeral: true});
         }
 
         const mongoUpdated = await this.clients.mongo.insertOrUpdate("users", { discordId: interaction.user.id }, {
@@ -48,11 +51,11 @@ class SetbdCommand {
 
         if(mongoUpdated) {
             this.utils.logger.log("[SetbdCommand] Birth date has been saved")
-            return interaction.reply({content: "La date de naissance a bien été enregistrer", ephemeral: true});
+            return interaction.reply({content: "La date de naissance a bien été enregistrée.", ephemeral: true});
         }
 
         this.utils.logger.log("[SetbdCommand] Birth date hasn't been saved")
-        return interaction.reply({content: "La date de naissance n'a pas pu être enregistrer.", ephemeral: true});
+        return interaction.reply({content: "La date de naissance n'a pas pu être enregistrée.", ephemeral: true});
     }
 }
 

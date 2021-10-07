@@ -7,18 +7,16 @@ class FileScan {
         this.clients    = opt.clients
         this.config     = opt.config
         this.utils      = opt.utils
+        this.guild      = opt.guild
     }
 
     async listen(data) {
         if(data.attachments.length > 0 && data.author.id !== this.config.discord.clientId) {
-            const guild         = this.clients.discord.getClient().guilds.cache.get(this.config.discord.guildId)
-            const channel       = guild.channels.cache.get(data.channel_id)
+            const channel       = this.guild.channels.cache.get(data.channel_id)
+            const logsChannel   = this.guild.channels.cache.get(this.config.ids.channels.logs)
+            const author        = this.guild.members.cache.get(data.author.id)
+            const muteRole      = this.guild.roles.cache.get(this.config.ids.roles.muted)
             const message       = await channel.messages.fetch(data.id)
-            const logsChannel   = guild.channels.cache.get(this.config.ids.channels.logs)
-            const author        = guild.members.cache.get(data.author.id)
-            const muteRole      = guild.roles.cache.get(this.config.ids.roles.muted)
-
-            let react = await message.react("⚠")
 
             const ssh = new NodeSSH()
 
@@ -30,25 +28,55 @@ class FileScan {
             })
 
             for(const [, attachment] of data.attachments.entries()) {
-                if(attachment.content_type === undefined || !["image", "video", "audio"].includes(attachment.content_type)) {
+                // If the attachment is not an image, video or audio
+                if(
+                    attachment.content_type === undefined
+                    || (
+                        !attachment.content_type.includes("image")
+                        && !attachment.content_type.includes("video")
+                        && !attachment.content_type.includes("audio")
+                    )
+                ) {
+                    let react = await message.react("⚠")
+
+                    // Remote download the attachment
                     await ssh.execCommand('wget -P /home/adminbsfr/scan ' + attachment.url)
                     this.utils.logger.log("[FileScan] Scanning a file sent by " + data.author.username + "#" + data.author.discriminator)
 
                     await react.remove()
                     react = await message.react("🔄")
 
+                    // Start the scan
                     const result = await ssh.execCommand('clamscan /home/adminbsfr/scan/' + attachment.filename + " --max-filesize=100M --max-scansize=100M")
 
+                    // When the scan is done, delete the attachment from the remote server
                     await ssh.execCommand('rm /home/adminbsfr/scan/' + attachment.filename)
 
                     let infected = false
 
+                    // If the scan result shows that there is more than infected files.
                     if(result.stdout.search("Infected files: 0") === -1) {
                         infected = true
 
+                        // Mute the attachement sender
+                        await this.clients.mongo.insertOrUpdate("users", { discordId: author.user.id }, {
+                            "muteReason": "infected files",
+                        })
+
+                        await this.clients.mongo.insert("historical", {
+                            "type"      : "mute",
+                            "userId"    : author.user.id,
+                            "muteReason": "infected files",
+                            "date"      : (new Date()).getTime()
+                        })
+
                         await author.roles.add(muteRole)
+
+                        // Delete the attachment
                         await message.delete()
-                        const warningMessage = await channel.send({content: "❗ **Le fichier `" + attachment.filename + "` envoyer par <@!" + data.author.id + "> est infecté ❗**\nSi une personne a télécharger ce fichier, nous vous recommandons fortement de supprimer ce dernier ainsi que d'effectuer une analyse anti-virus."})
+
+                        // Send a warning message
+                        const warningMessage = await channel.send({content: "❗ **Le fichier `" + attachment.filename + "` envoyé par <@!" + data.author.id + "> est infecté ❗**\nSi l'un d'entre vous a téléchargé ce fichier, nous vous recommandons fortement de supprimer ce dernier ainsi que d'effectuer une analyse anti-virus."})
 
                         let logsMessage = this.utils.embed.embed().setTitle("❗ Fichier infecté")
                             .setColor('#FF0000')
@@ -59,11 +87,12 @@ class FileScan {
 
                         await logsChannel.send({content: "<@&" + this.config.ids.roles.moderator + ">", embeds: [logsMessage]})
 
-                        await author.send("\n**[BSFR]**\n\nLe fichier `" + attachment.filename + "` est infecté \nIl a été supprimé et tu as été muté. \nUn membre du staff te contactera rapidement.")
+                        await author.send("\n**[BSFR]**\n\nLe fichier que tu as uploadé `" + attachment.filename + "` est infecté \nIl a été supprimé et tu as été muté. \nUn membre du staff te contactera rapidement.")
 
+                        // Delete the warning message after 15 minutes
                         setTimeout(function () {
                             warningMessage.delete()
-                        }, 5000)
+                        }, 900000)
                     } else {
                         await react.remove()
                         react = await message.react("✅")
@@ -79,7 +108,8 @@ class FileScan {
                 }
             }
 
-            await ssh.dispose()
+            // Close the SSH connection
+            ssh.dispose()
         }
     }
 }

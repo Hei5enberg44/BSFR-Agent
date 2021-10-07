@@ -1,5 +1,5 @@
 async function addBannedWord(words, user, opt) {
-    words = words.replace(" ", "").split(",")
+    words = words.replace(" ", "").split(";")
     let response = []
 
     for (const index in words) {
@@ -8,8 +8,9 @@ async function addBannedWord(words, user, opt) {
         const isRegistered = await opt.clients.mongo.find("bannedWords",{"word": words[index].toLowerCase()})
         let result = ""
 
+        // Check if the word is already registered
         if(isRegistered.length > 0) {
-            result = "Déjà_Ajouté"
+            result = "Déjà_ajouté"
 
             await opt.clients.mongo.insert("historical", {
                 "type"      : "addBannedWord",
@@ -27,6 +28,7 @@ async function addBannedWord(words, user, opt) {
                 "date"      : (new Date()).getTime()
             })
 
+            // If the word has been saved in database
             if(mongoUpdated) {
                 result = "Ajouté"
 

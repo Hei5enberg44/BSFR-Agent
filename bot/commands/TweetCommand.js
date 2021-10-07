@@ -1,17 +1,17 @@
 class TweetCommand {
-    name = "tweet"
-    description = "Tweet sur le compte @BeatSaberFR"
-    options = {
+    maxLength   = 280
+    name        = "tweet"
+    description = "Tweete sur le compte @BeatSaberFR."
+    options     = {
         "message": {
-            "name": "texte",
-            "type": "string",
-            "description": "Ne pas dépasser 280 caractères",
-            "required": true
+            "name"          : "texte",
+            "type"          : "string",
+            "description"   : "Ne pas dépasser " + this.maxLength + " caractères",
+            "required"      : true
         }
     }
-    roles = ["Admin"]
-
-    maxLength = 280
+    roles       = ["Admin"]
+    channels    = ["admin"]
 
     constructor(opt) {
         this.utils      = opt.utils
@@ -20,34 +20,44 @@ class TweetCommand {
     }
 
     async run(interaction) {
-        if(this.config.ids.channels.admin !== interaction.channelId) {
-            this.utils.logger.log("[TweetCommand] Command executed in the wrong channel")
-            return interaction.reply({content: "Merci d'effectuer cette commande dans <#" + this.config.ids.channels.admin + ">", ephemeral: true});
-        }
-
         const message = interaction.options._hoistedOptions[0].value
 
+        // Check if the message length doesn't exceed 280
         if(message.length > this.maxLength) {
-            this.utils.logger.log("[TweetCommand] Message is too long (" + message.length - this.maxLength + " extra chars)")
-            return interaction.reply({content: "Le message est trop long (" + message.length - this.maxLength + " caractères en trop)"});
+            this.utils.logger.log("[TweetCommand] Message is too long (" + (message.length - this.maxLength) + " extra chars)")
+            return interaction.reply({content: "Le message est trop long (" + (message.length - this.maxLength) + " caractères en trop)."});
         }
 
-        try {
-            const tweet = await this.clients.twitter.tweet(message)
+        const embed = this.utils.embed.embed().setTitle("✉️ Confirmation envoie de tweet")
+            .setColor('#48aaf0')
+            .setThumbnail(interaction.user.displayAvatarURL({dynamic: true, size: 1024}))
+            .addField("Par", "<@!" + interaction.user.id + ">")
+            .addField("Tweet", message)
 
-            await this.clients.mongo.insert("historical", {
-                "type"      : "tweet",
-                "userId"    : interaction.user.id,
-                "message"   : message,
-                "tweetId"   : tweet.id,
-                "date"      : (new Date()).getTime()
-            })
+        const reply = await interaction.reply({embeds: [embed], fetchReply: true})
 
-            this.utils.logger.log("[TweetCommand] Tweet successfully sent")
-            return interaction.reply({content: "Le tweet a bien été envoyé."});
-        } catch (e) {
-            this.utils.logger.log("[TweetCommand] An error occured - " + e)
-            return interaction.reply({content: "Une erreur c'est produite."});
+        const mongoUpdated = await this.clients.mongo.insert("pendings",{
+            "type"      : "tweet",
+            "userId"    : interaction.user.id,
+            "message"   : message,
+            "messageId" : reply.id,
+        })
+
+        await this.clients.mongo.insert("historical", {
+            "type"      : "pendingTweet",
+            "userId"    : interaction.user.id,
+            "message"   : message,
+            "messageId" : reply.id,
+            "date"      : (new Date()).getTime()
+        })
+
+        if(mongoUpdated) {
+            await reply.react("✅")
+            await reply.react("❌")
+            this.utils.logger.log("[TweetCommand] Pending tweet has been saved")
+        } else {
+            await reply.editReply({content: "Une erreur est survenue lors de l'enregistrement en base de données."})
+            this.utils.logger.log("[TweetCommand] An error occured while saving pending tweet")
         }
     }
 }
