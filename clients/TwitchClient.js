@@ -42,6 +42,9 @@ class TwitchClient {
             }
         })
 
+        if(clip.data.data.length === 0)
+            return null;
+
         clip.data.data[0]["download_url"] = clip.data.data[0].thumbnail_url.split("-preview")[0] + ".mp4"
 
         return clip.data.data[0]

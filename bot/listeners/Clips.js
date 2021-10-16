@@ -28,7 +28,7 @@ class Clips {
 
     async listen(data) {
         if(data.channel_id === this.config.ids.channels.clips) {
-            const thread = this.guild.channels.cache.get(this.config.ids.channels.reuploadedClips)
+            const thread = await this.guild.channels.fetch(this.config.ids.channels.reuploadedClips)
 
             // Only get array of twitch clips link
             let clipLinks = data.content.split(" ").filter(part => part.includes(this.clips_url))
@@ -39,7 +39,11 @@ class Clips {
 
             for(let i in clipLinks) {
                 let clip = await this.clients.twitch.getClipInfo(clipLinks[i])
-                await this.download(thread, clip.download_url, "Twitch-" + clip.broadcaster_name)
+
+                if(clip !== null)
+                    await this.download(thread, clip.download_url, "Twitch-" + clip.broadcaster_name)
+                else
+                    this.utils.logger.log("[Clips] Impossible to download clip " + clipLinks[i] + " from " + data.author.username + "#" + data.author.discriminator)
             }
 
             for(let i in data.attachments) {
@@ -95,6 +99,11 @@ class Clips {
                 if(thread.archived) {
                     this.utils.logger.log("[Clips] Unarchiving Thread")
                     await thread.setArchived(false)
+                }
+
+                if(thread.locked) {
+                    this.utils.logger.log("[Clips] Unlocking Thread")
+                    await thread.setLocked(false)
                 }
 
                 await thread.send({content: "https://cdn.bsaber.fr/clips/" + author + "/" + fileName + ".mp4"})
