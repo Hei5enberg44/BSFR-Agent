@@ -59,7 +59,7 @@ async function publish(opt) {
             opt.utils.logger.log("[PublishYouTube] Sending videos links on discord.")
 
             // Send all the videos in one message in the youtube discord channel
-            await youtubeChannel.send(videosToPublish.map(video => "https://youtube.com/watch?v=" + video).join("\n") + " <@&" + opt.config.ids.roles.youtube + ">")
+            await youtubeChannel.send({content: videosToPublish.map(video => "https://youtube.com/watch?v=" + video).join("\n") + " <@&" + opt.config.ids.roles.youtube + ">"})
         }
     }
 }
