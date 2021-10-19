@@ -15,7 +15,8 @@ class TheCoolerBot {
             discord : new (require("./clients/DiscordClient.js"))(this),
             mongo   : new (require("./clients/MongodbClient.js"))(this),
             twitter : new (require("./clients/TwitterClient.js"))(this),
-            twitch  : new (require("./clients/TwitchClient.js"))(this)
+            twitch  : new (require("./clients/TwitchClient.js"))(this),
+            google  : new (require("./clients/GoogleClient.js"))(this)
         };
 
         // Instanciation et initialisation des managers
