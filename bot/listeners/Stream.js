@@ -21,11 +21,14 @@ class Stream {
 
             // If the member have the streamer role and the game streamed is Beat Saber
             if(streamRole && activity.state.toUpperCase() === "BEAT SABER") {
-                this.utils.logger.log("[Stream] " + member.user.tag + " is now streaming on " + activity.name + ": " + activity.url)
+                // 150000 = 2min30
+                if((new Date()).getTime() < activity.created_at + 150000) {
+                    this.utils.logger.log("[Stream] " + member.user.tag + " is now streaming on " + activity.name + ": " + activity.url)
 
-                const twitchChannel = this.guild.channels.cache.get(this.config.ids.channels.twitch)
+                    const twitchChannel = this.guild.channels.cache.get(this.config.ids.channels.twitch)
 
-                twitchChannel.send({content: "<@!" + member.user.id + "> - " + activity.details + " - " + activity.url, allowedMentions: {"users": []}})
+                    twitchChannel.send({content: "<@!" + member.user.id + "> - " + activity.details + " - " + activity.url, allowedMentions: {"users": []}})
+                }
             }
         }
     }

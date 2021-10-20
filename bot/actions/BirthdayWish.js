@@ -5,7 +5,7 @@ async function wish(opt) {
     const birthdayWishChannel = opt.guild.channels.resolve(opt.config.ids.channels.birthdayWish)
 
     // Creating date in format JJ/MM/YYYY and removing the year
-    let date = ((new Date()).toLocaleDateString('fr-FR', { timeZone: 'Europe/Paris' })).substr(1, 5)
+    let date = ((new Date()).toLocaleDateString('fr-FR', { timeZone: 'Europe/Paris' })).substr(0, 5)
 
     const birthdayMessages  = await opt.clients.mongo.find("birthdayMessages", {})
     const birthdayUsers     = await opt.clients.mongo.find("users", { birthday: {$regex: date}})
