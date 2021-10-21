@@ -47,7 +47,7 @@ async function publish(opt) {
 
                 if(videosInfos.data.items[0].status.privacyStatus !== "public") {
                     videosToPublish.splice(index, 1)
-                    videos.splice(videos.indexOf(id), 1)
+                    youtubeVideos.splice(youtubeVideos.indexOf(id), 1)
                 }
             }
 
