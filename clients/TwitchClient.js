@@ -32,15 +32,23 @@ class TwitchClient {
         else
             return false
 
-        let clip = await axios.get("https://api.twitch.tv/helix/clips", {
-            headers: {
-                Authorization: "Bearer " + await this.getToken(),
-                'Client-Id': this.config.twitch.clientId,
-            },
-            params: {
-                id
-            }
-        })
+        let clip = null
+
+        try {
+            clip = await axios.get("https://api.twitch.tv/helix/clips", {
+                headers: {
+                    Authorization: "Bearer " + await this.getToken(),
+                    'Client-Id': this.config.twitch.clientId,
+                },
+                params: {
+                    id
+                }
+            })
+        } catch (e) {
+            this.utils.logger.log("[TwitchClient] " + e.status)
+            return null;
+        }
+
 
         if(clip.data.data.length === 0)
             return null;
