@@ -34,6 +34,23 @@ async function publish(opt) {
             videosToPublish = youtubeVideos
 
         if(videosToPublish.length > 0) {
+            for(const [index, id] of videosToPublish.entries()) {
+                let videosInfos = await axios.get("https://www.googleapis.com/youtube/v3/videos", {
+                    headers: {
+                        Authorization: "Bearer " + accessToken
+                    },
+                    params: {
+                        part : "status",
+                        id
+                    }
+                })
+
+                if(videosInfos.data.items[0].status.privacyStatus !== "public") {
+                    videosToPublish.splice(index, 1)
+                    videos.splice(videos.indexOf(id), 1)
+                }
+            }
+
             opt.utils.logger.log("[PublishYouTube] Found " + videosToPublish.length + " new videos")
 
             let mongoUpdated
@@ -54,12 +71,14 @@ async function publish(opt) {
                 return false;
             }
 
-            const youtubeChannel = opt.guild.channels.cache.get(opt.config.ids.channels.youtube)
+            if(videosToPublish.length > 0) {
+                const youtubeChannel = opt.guild.channels.cache.get(opt.config.ids.channels.youtube)
 
-            opt.utils.logger.log("[PublishYouTube] Sending videos links on discord.")
+                opt.utils.logger.log("[PublishYouTube] Sending videos links on discord.")
 
-            // Send all the videos in one message in the youtube discord channel
-            await youtubeChannel.send({content: videosToPublish.map(video => "https://youtube.com/watch?v=" + video).join("\n") + " <@&" + opt.config.ids.roles.youtube + ">"})
+                // Send all the videos in one message in the youtube discord channel
+                await youtubeChannel.send({content: videosToPublish.map(video => "https://youtube.com/watch?v=" + video).join("\n") + " <@&" + opt.config.ids.roles.youtube + ">"})
+            }
         }
     }
 }
