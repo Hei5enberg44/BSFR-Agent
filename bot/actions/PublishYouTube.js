@@ -8,50 +8,52 @@ async function publish(opt) {
         const videos = await opt.clients.mongo.find("videos", {})
 
         // Get the 20 last videos of the channel order by most recent
-        let youtubeVideos = await axios.get("https://www.googleapis.com/youtube/v3/search", {
+        let rawYoutubeVideos = await axios.get("https://www.googleapis.com/youtube/v3/search", {
             headers: {
                 Authorization: "Bearer " + accessToken
             },
             params: {
-                maxResults  : 20,
+                maxResults  : 50,
                 order       : "date",
                 part        : "snippet",
                 forMine     : true,
-                type        : "video"
+                type        : "video",
+                fields      : "items/id/videoId"
             }
         })
 
         // Overwrite the variable to only get an array of videos ids.
-        youtubeVideos = youtubeVideos.data.items.map((youtubeVideo) => {return youtubeVideo.id.videoId})
+        rawYoutubeVideos = rawYoutubeVideos.data.items.map((youtubeVideo) => {return youtubeVideo.id.videoId})
 
-        let videosToPublish
+        let youtubeVideos = []
+
+        for(const [, id] of rawYoutubeVideos.entries()) {
+            let videosInfos = await axios.get("https://www.googleapis.com/youtube/v3/videos", {
+                headers: {
+                    Authorization: "Bearer " + accessToken
+                },
+                params: {
+                    part : "status",
+                    id
+                }
+            })
+
+            if(videosInfos.data.items[0].status.privacyStatus.toLowerCase() === "public") {
+                youtubeVideos.push(id)
+            }
+        }
+
+        let newVideos
 
         // If there is at least one videos in database.
         // Create an array of the missing videos in database (which needs to be publish)
         if(videos.length > 0)
-            videosToPublish = youtubeVideos.filter(x => !videos[0].ids.includes(x))
+            newVideos = youtubeVideos.filter(x => !videos[0].ids.includes(x))
         else
-            videosToPublish = youtubeVideos
+            newVideos = youtubeVideos
 
-        if(videosToPublish.length > 0) {
-            for(const [index, id] of videosToPublish.entries()) {
-                let videosInfos = await axios.get("https://www.googleapis.com/youtube/v3/videos", {
-                    headers: {
-                        Authorization: "Bearer " + accessToken
-                    },
-                    params: {
-                        part : "status",
-                        id
-                    }
-                })
-
-                if(videosInfos.data.items[0].status.privacyStatus !== "public") {
-                    videosToPublish.splice(index, 1)
-                    youtubeVideos.splice(youtubeVideos.indexOf(id), 1)
-                }
-            }
-
-            opt.utils.logger.log("[PublishYouTube] Found " + videosToPublish.length + " new videos")
+        if(newVideos.length > 0) {
+            opt.utils.logger.log("[PublishYouTube] Found " + newVideos.length + " new videos")
 
             let mongoUpdated
 
@@ -71,14 +73,12 @@ async function publish(opt) {
                 return false;
             }
 
-            if(videosToPublish.length > 0) {
-                const youtubeChannel = opt.guild.channels.cache.get(opt.config.ids.channels.youtube)
+            const youtubeChannel = opt.guild.channels.cache.get(opt.config.ids.channels.youtube)
 
-                opt.utils.logger.log("[PublishYouTube] Sending videos links on discord.")
+            opt.utils.logger.log("[PublishYouTube] Sending videos links on discord.")
 
-                // Send all the videos in one message in the youtube discord channel
-                await youtubeChannel.send({content: videosToPublish.map(video => "https://youtube.com/watch?v=" + video).join("\n") + " <@&" + opt.config.ids.roles.youtube + ">"})
-            }
+            // Send all the videos in one message in the youtube discord channel
+            await youtubeChannel.send({content: newVideos.map(video => "https://youtube.com/watch?v=" + video).join("\n") + " <@&" + opt.config.ids.roles.youtube + ">"})
         }
     }
 }
