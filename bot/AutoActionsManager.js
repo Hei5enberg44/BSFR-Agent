@@ -27,7 +27,7 @@ class AutoActionsManager {
             await wish(self)
         }, null, true, 'Europe/Paris')
 
-        new Cron('5 19-23 * * *', async function () {
+        new Cron('53 0 * * *', async function () {
             await publish(self)
         }, null, true, 'Europe/Paris')
     }

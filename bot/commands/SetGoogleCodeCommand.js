@@ -24,12 +24,7 @@ class SetGoogleCodeCommand {
 
         this.utils.logger.log('[SetGoogleCodeCommand] Setting code: ' + code)
 
-        const saved = await this.clients.google.authorize(2, code)
-
-        if(saved)
-            return interaction.reply({content: "Authentification Google réussie."})
-        else
-            return interaction.reply({content: "Erreur lors de l'authentification Google."})
+        await this.clients.google.authorize(2, code, interaction)
     }
 }
 

@@ -2,7 +2,18 @@ const axios = require('axios');
 
 // Function to publish a YouTube,
 async function publish(opt) {
-    const accessToken = await opt.clients.google.getAccessToken(opt.clients)
+    let accessToken = null;
+
+    try {
+        accessToken = await opt.clients.google.getAccessToken(opt.clients)
+    } catch (e) {
+        const logsChannel = opt.guild.channels.cache.get(opt.config.ids.channels.logs)
+
+        opt.utils.logger.log("[PublishYouTube] Something went wrong while getting access token")
+
+        await logsChannel.send({content: "Quelque chose s'est mal passé pendant la récupération du token d'accès Google."})
+        return false;
+    }
 
     if(accessToken !== null && accessToken !== "authorization needed") {
         const videos = await opt.clients.mongo.find("videos", {})

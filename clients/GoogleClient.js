@@ -1,6 +1,6 @@
 const { google } = require("googleapis")
 
-class TwitchClient {
+class GoogleClient {
     constructor(opt) {
         this.config = opt.config;
         this.utils = opt.utils;
@@ -9,8 +9,6 @@ class TwitchClient {
         this.oAuth2Client = new google.auth.OAuth2(this.config.google.clientId, this.config.google.clientSecret, this.config.google.redirectUrl)
 
         this.utils.logger.log("[GoogleClient] Creating new google client")
-
-
     }
 
     async getAccessToken(clients) {
@@ -55,7 +53,7 @@ class TwitchClient {
         }
     }
 
-    async authorize(part, code = null) {
+    async authorize(part, code = null, interaction = null) {
         if(part === 1) {
             const authUrl = this.oAuth2Client.generateAuthUrl({
                 access_type: 'offline',
@@ -68,11 +66,12 @@ class TwitchClient {
 
             return "authorization needed";
         } else {
-            this.oAuth2Client.getToken(code, async (err, token) => {
+            let status = false;
+
+            await this.oAuth2Client.getToken(code, async (err, token) => {
                 if(err) {
                     this.utils.logger.log("[GoogleClient] An error occured while retrieving access token: " + err)
                     await this.adminChannel.send({content: "Un problème est survenu lors de la récupération du jeton d'accès."})
-                    return false;
                 }
 
                 const mongoUpdated = await this.clients.mongo.insert("googleApi", {
@@ -84,14 +83,16 @@ class TwitchClient {
 
                 if(mongoUpdated){
                     this.utils.logger.log("[GoogleClient] Token saved.")
-                    return true;
+                    return interaction.reply({content: "Authentification Google réussie."})
                 } else {
                     this.utils.logger.log("[GoogleClient] Can't save token.")
-                    return false;
+                    return interaction.reply({content: "Erreur lors de l'authentification Google."})
                 }
             })
+
+            return status
         }
     }
 }
 
-module.exports = TwitchClient;
+module.exports = GoogleClient;
