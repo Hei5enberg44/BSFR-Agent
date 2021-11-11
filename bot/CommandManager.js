@@ -70,29 +70,29 @@ class CommandManager {
             let commands = await guild?.commands.fetch()
 
             // Update every command that have to be available only by specific roles
-            // for(const [, command] of commands.entries()) {
-            //     if(this.commands[command.name].roles) {
-            //         this.utils.logger.log("[CommandManager] Setting roles for command '" + command.name + "'")
-            //         let permissions = []
-            //
-            //         for(let i in this.commands[command.name].roles) {
-            //             permissions = [...permissions, {
-            //                 id: guild.roles.cache.find(role => role.name === this.commands[command.name].roles[i]).id,
-            //                 type: "ROLE",
-            //                 permission: true
-            //             }]
-            //         }
-            //
-            //         // Denying every other roles to access the command
-            //         permissions = [...permissions, {
-            //             id: guild.roles.cache.find(role => role.name === "@everyone").id,
-            //             type: "ROLE",
-            //             permission: false
-            //         }]
-            //
-            //         await command.permissions.set({ permissions })
-            //     }
-            // }
+            for(const [, command] of commands.entries()) {
+                if(this.commands[command.name].roles) {
+                    this.utils.logger.log("[CommandManager] Setting roles for command '" + command.name + "'")
+                    let permissions = []
+
+                    for(let i in this.commands[command.name].roles) {
+                        permissions = [...permissions, {
+                            id: guild.roles.cache.find(role => role.name === this.commands[command.name].roles[i]).id,
+                            type: "ROLE",
+                            permission: true
+                        }]
+                    }
+
+                    // Denying every other roles to access the command
+                    permissions = [...permissions, {
+                        id: guild.roles.cache.find(role => role.name === "@everyone").id,
+                        type: "ROLE",
+                        permission: false
+                    }]
+
+                    await command.permissions.set({ permissions })
+                }
+            }
         } catch (error) {
             this.utils.logger.log("[CommandManager] ERROR: " + error)
         }
