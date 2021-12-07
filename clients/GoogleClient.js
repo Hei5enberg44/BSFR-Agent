@@ -22,10 +22,9 @@ class GoogleClient {
         if (infos.length === 0)
             return this.authorize(1)
 
-        if(infos[0].expirationDate < (new Date()).getTime())
-            return this.refreshAccessToken(infos[0])
+        this.oAuth2Client.setCredentials({ refresh_token: infos[0].refresh_token })
 
-        return infos[0].accessToken
+        return this.oAuth2Client.credentials.accessToken
     }
 
     async refreshAccessToken(infos) {
