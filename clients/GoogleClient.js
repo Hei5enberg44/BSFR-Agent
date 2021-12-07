@@ -11,7 +11,7 @@ class GoogleClient {
         this.utils.logger.log("[GoogleClient] Creating new google client")
     }
 
-    async getAccessToken(clients) {
+    async getAuth(clients) {
         this.clients = clients
 
         const guild = this.clients.discord.getClient().guilds.cache.get(this.config.discord.guildId);
@@ -22,9 +22,12 @@ class GoogleClient {
         if (infos.length === 0)
             return this.authorize(1)
 
-        this.oAuth2Client.setCredentials({ refresh_token: infos[0].refresh_token })
+        // if(infos[0].expirationDate < (new Date()).getTime())
+        //     return this.refreshAccessToken(infos[0])
 
-        return this.oAuth2Client.credentials.accessToken
+        this.oAuth2Client.setCredentials(infos[0])
+
+        return this.oAuth2Client
     }
 
     async refreshAccessToken(infos) {

@@ -1,58 +1,54 @@
-const axios = require('axios');
+const { google } = require("googleapis")
 
-// Function to publish a YouTube,
+// Function to publish a YouTube video
 async function publish(opt) {
-    let accessToken = null;
+    let auth = null
 
     try {
-        accessToken = await opt.clients.google.getAccessToken(opt.clients)
+        auth = await opt.clients.google.getAuth(opt.clients)
     } catch (e) {
         const logsChannel = opt.guild.channels.cache.get(opt.config.ids.channels.logs)
 
         opt.utils.logger.log("[PublishYouTube] Something went wrong while getting access token")
 
         await logsChannel.send({content: "Quelque chose s'est mal passé pendant la récupération du token d'accès Google."})
-        return false;
+        return false
     }
 
-    if(accessToken !== null && accessToken !== "authorization needed") {
+    if(auth !== null) {
         const videos = await opt.clients.mongo.find("videos", {})
 
-        // Get the 20 last videos of the channel order by most recent
-        let rawYoutubeVideos = await axios.get("https://www.googleapis.com/youtube/v3/search", {
-            headers: {
-                Authorization: "Bearer " + accessToken
-            },
-            params: {
-                maxResults  : 50,
-                order       : "date",
-                part        : "snippet",
-                forMine     : true,
-                type        : "video",
-                fields      : "items/id/videoId"
+        const youtube = google.youtube('v3')
+        
+        // Get the 30 last publics videos of the channel order by most recent
+        let rawYoutubeVideos = []
+
+        const response = await youtube.search.list({
+            auth: auth,
+            part: 'snippet',
+            maxResults : 30,
+            order : 'date',
+            part : 'snippet',
+            forMine : true,
+            type : 'video',
+            fields : 'items/id/videoId',
+        })
+    
+        rawYoutubeVideos = response.data.items.map(youtubeVideo => { return youtubeVideo.id.videoId })
+    
+        let youtubeVideos = []
+    
+        let videosInfos = await youtube.videos.list({
+            auth: auth,
+            part : 'status,snippet',
+            id: rawYoutubeVideos.join(',')
+        })
+    
+        videosInfos.data.items.forEach(item => {
+            if(item.status.privacyStatus.toLowerCase() === "public") {
+                youtubeVideos.push(item.id)
             }
         })
-
-        // Overwrite the variable to only get an array of videos ids.
-        rawYoutubeVideos = rawYoutubeVideos.data.items.map((youtubeVideo) => {return youtubeVideo.id.videoId})
-
-        let youtubeVideos = []
-
-        for(const [, id] of rawYoutubeVideos.entries()) {
-            let videosInfos = await axios.get("https://www.googleapis.com/youtube/v3/videos", {
-                headers: {
-                    Authorization: "Bearer " + accessToken
-                },
-                params: {
-                    part : "status",
-                    id
-                }
-            })
-
-            if(videosInfos.data.items[0].status.privacyStatus.toLowerCase() === "public") {
-                youtubeVideos.push(id)
-            }
-        }
 
         let newVideos
 
