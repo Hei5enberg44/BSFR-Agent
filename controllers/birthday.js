@@ -47,15 +47,17 @@ module.exports = {
         for(const birthday of birthdays) {
             const member = guild.members.cache.get(birthday.memberId)
 
-            let message = ''
-            if(bdMessages.length > 0) {
-                const random = crypto.randomInt(bdMessages.length)
-                message = bdMessages[random].message
+            if(member) {
+                let message = ''
+                if(bdMessages.length > 0) {
+                    const random = crypto.randomInt(bdMessages.length)
+                    message = bdMessages[random].message
+                }
+
+                Logger.log('BirthdayWish', 'INFO', `Joyeux anniversaire ${member.user.tag}`)
+
+                happyBirthdayChannel.send(message + userMention(member.user.id))
             }
-
-            Logger.log('BirthdayWish', 'INFO', `Joyeux anniversaire ${member.user.tag}`)
-
-            happyBirthdayChannel.send(message + userMention(member.user.id))
         }
     }
 }
