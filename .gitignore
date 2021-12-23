@@ -1,8 +1,5 @@
-/node_modules/
-log.txt
 .idea
+/node_modules/
 config.json
-temp
 package-lock.json
 /logs/
-.scannerwork

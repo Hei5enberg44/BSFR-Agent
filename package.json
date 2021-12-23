@@ -1,28 +1,30 @@
 {
   "name": "bsfr-agent",
   "displayName": "BSFR Agent",
-  "version": "1.0.5",
+  "version": "2.0.0",
   "description": "Admin agent bot for BSFR",
-  "main": "index.js",
+  "main": "bot.js",
   "scripts": {
-    "run": "node index.js"
+    "run": "node bot.js"
   },
   "repository": {
     "type": "git",
-    "url": "https://gitlab-mut.omedan.com/adminbsfr/the-cooler-bot"
+    "url": "https://gitlab.weezle.xyz/bsfr/agent"
   },
   "author": "BSFR",
   "license": "ISC",
   "dependencies": {
-    "@discordjs/builders": "^0.5.0",
-    "@discordjs/rest": "^0.1.0-canary.0",
-    "axios": "^0.21.4",
+    "@discordjs/builders": "^0.9.0",
+    "chalk": "^4.1.2",
     "cron": "^1.8.2",
-    "discord-api-types": "^0.22.0",
-    "discord.js": "^13.1.0",
-    "googleapis": "^88.2.0",
-    "mongodb": "^4.1.1",
-    "node-ssh": "^12.0.0",
-    "twitter-api-v2": "^1.5.1"
+    "discord.js": "^13.3.1",
+    "form-data": "^4.0.0",
+    "googleapis": "^92.0.0",
+    "mariadb": "^2.5.5",
+    "nextcloud-node-client": "^1.8.1",
+    "node-fetch": "^2.6.1",
+    "sequelize": "^6.12.2",
+    "tmp": "^0.2.1",
+    "twit": "^2.2.11"
   }
 }
