@@ -70,7 +70,7 @@ module.exports = {
                 case 'birthdayMessages':
                     const messagesList = await birthdayMessages.add(text, interaction.user)
 
-                    Logger.log('BannedWords', 'INFO', `${interaction.user.tag} a ajouté le message d\'anniversaire suivant : ${text.trim()}`)
+                    Logger.log('BirthdayMessages', 'INFO', `${interaction.user.tag} a ajouté le message d\'anniversaire suivant : ${text.trim()}`)
 
                     embed.setColor('#2ECC71').setTitle('🥳 Ajout d\'un message d\'anniversaire')
 
