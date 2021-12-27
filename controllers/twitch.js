@@ -44,7 +44,7 @@ module.exports = {
             const accessToken = await module.exports.getToken()
             
             if(accessToken) {
-                const clipId = url.split('https://clips.twitch.tv/')[1]
+                const clipId = url.includes('https://clips.twitch.tv/') ? url.split('https://clips.twitch.tv/')[1] : url.replace(/https:\/\/www\.twitch\.tv\/[^\/]+\/clip\/([^\/]+)/i, '$1')
 
                 const clipRequest = await fetch('https://api.twitch.tv/helix/clips?id=' + clipId, {
                     headers: {
@@ -98,7 +98,7 @@ module.exports = {
      */
     getClip: async function(message) {
         try {
-            const clipsList = message.content.replace(/\n/g, ' ').split(' ').filter(x => x.includes('https://clips.twitch.tv/'))
+            const clipsList = message.content.replace(/\n/g, ' ').split(' ').filter(x => x.includes('https://clips.twitch.tv/') || x.includes('https://www.twitch.tv/'))
 
             let uploadedClipsCount = 0
 
@@ -118,7 +118,7 @@ module.exports = {
                 }
             }
 
-            if(clipsList.length + attachments.size > 0) {
+            if(uploadedClipsCount > 0) {
                 Logger.log('Clips', 'INFO', `${uploadedClipsCount} clip(s) uploadé(s)`)
             }
         } catch(error) {
