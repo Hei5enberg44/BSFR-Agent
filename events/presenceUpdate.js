@@ -19,7 +19,7 @@ module.exports = {
 	 * @param {Presence} newPresence The presence after the update
      */
     async twitch(oldPresence, newPresence) {
-		const activity = newPresence.activities.find(activity => activity.name.toUpperCase() === 'TWITCH')
+		const activity = newPresence.activities.find(a => a.name.toUpperCase() === 'TWITCH')
 
 		if(activity) {
 			const streamRole = newPresence.member.roles.cache.find(role => role.id === config.guild.roles["Streamer"])

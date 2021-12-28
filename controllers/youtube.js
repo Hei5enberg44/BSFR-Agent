@@ -32,7 +32,7 @@ module.exports = {
             const guild = client.guilds.cache.get(config.guild.id)
             const youtubeChannel = guild.channels.cache.get(config.guild.channels.youtube.id)
 
-            await youtubeChannel.send({ content: `${roleMention(config.guild.roles['YouTube'])}\n${newVideos.map(video => `https://youtu.be/${video.videoId}`).join('\n')}` })
+            await youtubeChannel.send({ content: `${roleMention(config.guild.roles['YouTube'])}\n${newVideos.map(video => 'https://youtu.be/' + video.videoId).join('\n')}` })
         }
     }
 }

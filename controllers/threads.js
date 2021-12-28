@@ -24,7 +24,7 @@ module.exports = {
      * @param {string} type type de thread
      * @param {string|null} threadId identifiant du thread
      * @param {string|null} memberId identifiant du membre
-     * @returns {Object} thread
+     * @returns {Promise<Object>} thread
      */
     get: async function(type, threadId, memberId) {
         const thread = await Threads.findOne({
@@ -43,7 +43,7 @@ module.exports = {
     /**
      * Récupère des threads par leur type
      * @param {string} type type de thread
-     * @returns {Object} threads
+     * @returns {Promise<Object>} threads
      */
     getByType: async function(type) {
         const threads = await Threads.findAll({

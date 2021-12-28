@@ -31,7 +31,6 @@ module.exports = {
             part: 'snippet',
             maxResults : 15,
             order : 'date',
-            part : 'snippet',
             forMine : true,
             type : 'video',
             fields : 'items/id/videoId'

@@ -92,8 +92,6 @@ module.exports = {
             } else {
                 const logsChannel = interaction.guild.channels.cache.get(config.guild.channels.logs.id)
 
-                const embeds = []
-
                 embeds.push(new MessageEmbed()
                     .setColor('#2ECC71')
                     .setTitle('🔨 Ban de ' + member.username)
