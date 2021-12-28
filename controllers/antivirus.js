@@ -14,7 +14,7 @@ module.exports = {
     /**
      * Scan antivirus d'un fichier
      * @param {String} url lien vers le fichier
-     * @returns {Object} résultat de l'analyse
+     * @returns {Promise<Object>} résultat de l'analyse
      */
     scan: async function(url) {
         try {
