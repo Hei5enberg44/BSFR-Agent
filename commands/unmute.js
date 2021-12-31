@@ -55,7 +55,7 @@ module.exports = {
                 .addField('Levée par', userMention(interaction.user.id), true)
                 .addField('Raison unmute', reason, true)
                 .addField('Date de démute initiale', new Date(isMuted.unmuteDate * 1000).toLocaleString('fr-FR', { timeZone: 'Europe/Paris' }))
-                .setFooter(`${config.appName} ${config.appVersion}`, config.appLogo))
+                .setFooter({ text: `${config.appName} ${config.appVersion}`, iconURL: config.appLogo }))
 
             const guildMember = interaction.guild.members.cache.get(member.id)
             await guildMember.roles.remove(muteRole)

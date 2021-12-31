@@ -28,7 +28,7 @@ module.exports = {
             .setTitle('📤 Départ de ' + member.user.username)
             .setThumbnail(member.user.displayAvatarURL({ dynamic: true }))
             .addField('Orevouar', userMention(member.user.id))
-            .setFooter(`${config.appName} ${config.appVersion}`, config.appLogo)
+            .setFooter({ text: `${config.appName} ${config.appVersion}`, iconURL: config.appLogo })
         
         await logsChannel.send({ embeds: [embed] })
 

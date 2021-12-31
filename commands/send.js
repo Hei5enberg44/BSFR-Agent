@@ -49,7 +49,7 @@ module.exports = {
                 .addField('Par', userMention(interaction.user.id), true)
                 .addField('Channel', channelMention(channel.id), true)
                 .addField('Message', hyperlink('Lien', sentMessage.url) + ' - ' + message)
-                .setFooter(`${config.appName} ${config.appVersion}`, config.appLogo)
+                .setFooter({ text: `${config.appName} ${config.appVersion}`, iconURL: config.appLogo })
             
             await logsChannel.send({ embeds: [embed] })
 

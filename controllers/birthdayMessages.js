@@ -115,7 +115,7 @@ module.exports = {
         const embed = new MessageEmbed()
 			.setThumbnail(user.displayAvatarURL({ dynamic: true }))
 			.addField('Membre', user.tag)
-			.setFooter(`${config.appName} ${config.appVersion}`, config.appLogo)
+			.setFooter({ text: `${config.appName} ${config.appVersion}`, iconURL: config.appLogo })
 
 		if(reaction.emoji.name === '✅') {
 			const ids = r.data.map(message => message.id)

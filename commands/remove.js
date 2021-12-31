@@ -50,7 +50,7 @@ module.exports = {
                 .setColor('#9B59B6')
                 .setThumbnail(interaction.user.displayAvatarURL({ dynamic: true }))
                 .addField('Membre', interaction.user.tag)
-                .setFooter(`${config.appName} ${config.appVersion}`, config.appLogo)
+                .setFooter({ text: `${config.appName} ${config.appVersion}`, iconURL: config.appLogo })
             
             let reply
 

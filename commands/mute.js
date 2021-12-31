@@ -65,7 +65,7 @@ module.exports = {
                 .addField('La sanction a été prononcée par', userMention(interaction.user.id), true)
                 .addField('Raison', reason)
                 .addField('Date de démute', new Date(date * 1000).toLocaleString('fr-FR', { timeZone: 'Europe/Paris' }))
-                .setFooter(`${config.appName} ${config.appVersion}`, config.appLogo))
+                .setFooter({ text: `${config.appName} ${config.appVersion}`, iconURL: config.appLogo }))
 
             const guildMember = interaction.guild.members.cache.get(member.id)
             await guildMember.roles.add(muteRole)

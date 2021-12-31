@@ -67,7 +67,7 @@ module.exports = {
                     .addField('La sanction a été demandée par', userMention(interaction.user.id, true))
                     .addField('Raison', reason)
                     .addField('Date de débannissement', new Date(date * 1000).toLocaleString('fr-FR', { timeZone: 'Europe/Paris' }))
-                    .setFooter(`${config.appName} ${config.appVersion}`, config.appLogo))
+                    .setFooter({ text: `${config.appName} ${config.appVersion}`, iconURL: config.appLogo }))
 
                 const guildMember = interaction.guild.members.cache.get(member.id)
                 await guildMember.roles.add(muteRole)
@@ -100,7 +100,7 @@ module.exports = {
                     .addField('La sanction a été prononcée par', userMention(interaction.user.id), true)
                     .addField('Raison', reason)
                     .addField('Date de débannissement', new Date(date * 1000).toLocaleString('fr-FR', { timeZone: 'Europe/Paris' }))
-                    .setFooter(`${config.appName} ${config.appVersion}`, config.appLogo))
+                    .setFooter({ text: `${config.appName} ${config.appVersion}`, iconURL: config.appLogo }))
 
                 await ban.add(member.id, interaction.user.id, interaction.user.id, reason, date)
 

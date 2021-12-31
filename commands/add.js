@@ -50,7 +50,7 @@ module.exports = {
             let embed = new MessageEmbed()
                 .setThumbnail(interaction.user.displayAvatarURL({ dynamic: true }))
                 .addField('Membre', interaction.user.tag)
-                .setFooter(`${config.appName} ${config.appVersion}`, config.appLogo)
+                .setFooter({ text: `${config.appName} ${config.appVersion}`, iconURL: config.appLogo })
 
             switch(subject) {
                 case 'bannedWords':

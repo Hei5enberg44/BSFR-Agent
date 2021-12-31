@@ -50,7 +50,7 @@ module.exports = {
 
             let embed = new MessageEmbed()
                 .setColor('#F1C40F')
-                .setFooter(`${config.appName} ${config.appVersion}`, config.appLogo)
+                .setFooter({ text: `${config.appName} ${config.appVersion}`, iconURL: config.appLogo })
 
             switch(subject) {
                 case 'bannedWords':

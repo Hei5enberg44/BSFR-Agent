@@ -83,7 +83,7 @@ module.exports = {
                     .addField('Le vilain', userMention(message.author.id))
                     .addField('Les mots interdits utilisés', usedBannedWords.join(', '))
                     .addField('Message', hyperlink('Lien', message.url))
-                    .setFooter(`${config.appName} ${config.appVersion}`, config.appLogo)
+                    .setFooter({ text: `${config.appName} ${config.appVersion}`, iconURL: config.appLogo })
                 
                 await logsChannel.send({ content: roleMention(config.guild.roles['Modérateur']), embeds: [embed] })
             }
@@ -153,7 +153,7 @@ module.exports = {
         const embed = new MessageEmbed()
 			.setThumbnail(user.displayAvatarURL({ dynamic: true }))
 			.addField('Membre', user.tag)
-			.setFooter(`${config.appName} ${config.appVersion}`, config.appLogo)
+			.setFooter({ text: `${config.appName} ${config.appVersion}`, iconURL: config.appLogo })
 
 		if(reaction.emoji.name === '✅') {
 			const ids = r.data.map(word => word.id)

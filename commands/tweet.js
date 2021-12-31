@@ -38,7 +38,7 @@ module.exports = {
                 .setThumbnail(interaction.user.displayAvatarURL({ dynamic: true }))
                 .addField('Par', userMention(interaction.user.id))
                 .addField('Tweet', text)
-                .setFooter(`${config.appName} ${config.appVersion}`, config.appLogo)
+                .setFooter({ text: `${config.appName} ${config.appVersion}`, iconURL: config.appLogo })
             
             const reply = await interaction.reply({ embeds: [embed], fetchReply: true })
 

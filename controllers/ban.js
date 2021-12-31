@@ -172,7 +172,7 @@ module.exports = {
 			.setThumbnail(member.displayAvatarURL({ dynamic: true }))
 			.addField('Le vilain', userMention(banInfos.memberId))
 			.addField('La sanction a été demandée par', userMention(banInfos.bannedBy))
-			.setFooter(`${config.appName} ${config.appVersion}`, config.appLogo)
+			.setFooter({ text: `${config.appName} ${config.appVersion}`, iconURL: config.appLogo })
 
 		if(reaction.emoji.name === '✅') {
 			embeds.push(embed.setColor('#2ECC71')

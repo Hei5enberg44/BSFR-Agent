@@ -16,7 +16,7 @@ module.exports = {
             .setTitle("🔨 Déban de " + ban.user.username)
             .setThumbnail(ban.user.displayAvatarURL({ dynamic: true }))
             .addField("Utilisateur", userMention(ban.user.id))
-            .setFooter(`${config.appName} ${config.appVersion}`, config.appLogo)
+            .setFooter({ text: `${config.appName} ${config.appVersion}`, iconURL: config.appLogo })
 
         await logsChannel.send({ embeds: [embed] })
 	}

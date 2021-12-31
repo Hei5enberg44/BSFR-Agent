@@ -111,7 +111,7 @@ module.exports = {
                             .setThumbnail(message.author.displayAvatarURL({ dynamic: true }))
                             .addField('Le méchant', userMention(message.author.id), true)
                             .addField('Nom du fichier', attachment.name, true)
-                            .setFooter(`${config.appName} ${config.appVersion}`, config.appLogo))
+                            .setFooter({ text: `${config.appName} ${config.appVersion}`, iconURL: config.appLogo }))
 
                         try {
                             await message.author.send({ content: `${bold('[BSFR]')}\n\nLe fichier que tu as uploadé ${inlineCode(attachment.name)} est infecté.\nIl a été supprimé et tu as été muté.\nUn membre du staff te contactera rapidement.` })

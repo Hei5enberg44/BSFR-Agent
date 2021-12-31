@@ -111,7 +111,7 @@ module.exports = {
                 .addField('La sanction a été prononcée par', userMention(isMuted.mutedBy))
                 .addField('Raison', isMuted.reason)
                 .addField('Date de démute', new Date(isMuted.unmuteDate * 1000).toLocaleString('fr-FR', { timeZone: 'Europe/Paris' }))
-                .setFooter(`${config.appName} ${config.appVersion}`, config.appLogo)
+                .setFooter({ text: `${config.appName} ${config.appVersion}`, iconURL: config.appLogo })
 
             await member.roles.add(muteRole)
             await logsChannel.send({ embeds: [embed] })
@@ -151,7 +151,7 @@ module.exports = {
                     .addField('Le vilain', userMention(mutedMember.memberId), true)
                     .addField('Prononcée par', userMention(mutedMember.mutedBy), true)
                     .addField('Raison', mutedMember.reason)
-                    .setFooter(`${config.appName} ${config.appVersion}`, config.appLogo))
+                    .setFooter({ text: `${config.appName} ${config.appVersion}`, iconURL: config.appLogo }))
     
                 await memberToUnmute.roles.remove(muteRole)
     
@@ -172,7 +172,7 @@ module.exports = {
                     .addField('Le vilain', userMention(mutedMember.memberId), true)
                     .addField('La sanction avait été prononcée par', userMention(mutedMember.mutedBy))
                     .addField('Raison', mutedMember.reason)
-                    .setFooter(`${config.appName} ${config.appVersion}`, config.appLogo))
+                    .setFooter({ text: `${config.appName} ${config.appVersion}`, iconURL: config.appLogo }))
 
                 Logger.log('UnmuteCommand', 'INFO', `Le membre "${mutedMember.memberId}" n'a pas été démuté car celui-ci n'est plus présent sur le serveur`)
             }
