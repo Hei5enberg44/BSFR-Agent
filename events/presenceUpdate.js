@@ -27,7 +27,7 @@ module.exports = {
 			if(streamRole && activity.state.toUpperCase() === 'BEAT SABER') {
 				// 150000 = 2min30
 				if((new Date().getTime()) < activity.createdAt.getTime() + 150000) {
-					Logger.log('Stream', 'INFO', `${newPresence.user.tag} stream ${activity.name} : ${activity.url}`)
+					Logger.log('Stream', 'INFO', `${newPresence.user.tag} stream sur ${activity.name} : ${activity.url}`)
 
 					const twitchChannel = newPresence.guild.channels.cache.get(config.guild.channels.twitch.id)
 
