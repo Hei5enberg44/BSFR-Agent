@@ -1,4 +1,4 @@
-const { Collection, MessageEmbed } = require('discord.js')
+const { Client, Collection, MessageEmbed } = require('discord.js')
 const { channelMention } = require('@discordjs/builders')
 const Logger = require('../utils/logger')
 const { CommandError } = require('../utils/error')
@@ -6,6 +6,9 @@ const config = require('../config.json')
 const fs = require('fs')
 
 class Commands {
+    /**
+     * @param {Client} client client Discord
+     */
     constructor(client) {
         this.client = client
     }
@@ -30,7 +33,7 @@ class Commands {
 
         // On applique les rôles aux commandes
         Logger.log('CommandManager', 'INFO', `Actualisation des commandes (/) de l'application`)
-        const guild = await this.client.guilds.cache.get(config.guild.id)
+        const guild = this.client.guilds.cache.get(config.guild.id)
         await guild.commands.set(commands).then(cmds => {
             const fullPermissions = []
             for(const [ commandId, cmd ] of cmds.entries()) {
