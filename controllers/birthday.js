@@ -20,6 +20,16 @@ module.exports = {
     },
 
     /**
+     * Supprime une date d'anniversaire de la base de données
+     * @param {String} memberId identifiant du membre
+     */
+    unset: async function(memberId) {
+        await Birthdays.destroy({
+            where: { memberId: memberId }
+        })
+    },
+
+    /**
      * Récupère la liste des anniversaire pour les membres dont c'est l'anniversaire ce jour
      * @returns {Promise<Array.<{id: Number, memberId: String, date: Date}>>} liste des anniversaires
      */
