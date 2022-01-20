@@ -64,7 +64,7 @@ module.exports = {
     test: async function(message) {
         if(!message.author.bot) {
             const bannedWordsList = await BannedWords.findAll()
-            const logsChannel = message.guild.channels.cache.get(config.guild.channels.logs.id)
+            const logsChannel = message.guild.channels.cache.get(config.guild.channels.logs)
 
             let usedBannedWords = []
             for(const bannedWord of bannedWordsList) {

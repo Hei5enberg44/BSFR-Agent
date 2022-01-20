@@ -75,7 +75,7 @@ class Commands {
                 let wrongChannel = false
                 if(command.channels) {
                     for(const channel of command.channels) {
-                        if(config.guild.channels[channel].id !== interaction.channelId) {
+                        if(config.guild.channels[channel] !== interaction.channelId) {
                             wrongChannel = true
                         } else {
                             wrongChannel = false
@@ -85,7 +85,7 @@ class Commands {
                 }
 
                 if(wrongChannel)
-                    throw new CommandError('Merci d\'effectuer cette commande dans un des channels suivant :\n' + command.channels.map(channel => channelMention(config.guild.channels[channel].id)).join('\n'), interaction.commandName)
+                    throw new CommandError('Merci d\'effectuer cette commande dans un des channels suivant :\n' + command.channels.map(channel => channelMention(config.guild.channels[channel])).join('\n'), interaction.commandName)
 
                 await command.execute(interaction)
             } catch(error) {

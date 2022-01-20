@@ -19,7 +19,7 @@ module.exports = {
      * @param {GuildMember} member The member that has joined a guild
      */
     async welcome(member) {
-        const logsChannel = member.guild.channels.cache.get(config.guild.channels.logs.id)
+        const logsChannel = member.guild.channels.cache.get(config.guild.channels.logs)
 
         const embed = new MessageEmbed()
             .setColor('#2ECC71')

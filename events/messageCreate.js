@@ -21,7 +21,7 @@ module.exports = {
                 await module.exports.feur(message)
 
                 // Récupération des clips Twitch
-                if(message.channel.id === config.guild.channels.clips.id) {
+                if(message.channel.id === config.guild.channels.clips) {
                     try {
                         await twitch.getClip(message)
                     } catch(error) {
@@ -64,7 +64,7 @@ module.exports = {
     async dm(message) {
         if(message.author.id !== config.clientId) {
             const guild = message.client.guilds.cache.find(g => g.id === config.guild.id)
-            const agentDmChannel = guild.channels.cache.get(config.guild.channels.agentDm.id)
+            const agentDmChannel = guild.channels.cache.get(config.guild.channels.agentDm)
             const adminsList = guild.roles.cache.get(config.guild.roles["Admin"]).members
             const modosList = guild.roles.cache.get(config.guild.roles["Modérateur"]).members
 

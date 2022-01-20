@@ -21,7 +21,7 @@ module.exports = {
      * @param {GuildMember} member The member that has left/been kicked from the guild
      */
     async bye(member) {
-        const logsChannel = member.guild.channels.cache.get(config.guild.channels.logs.id)
+        const logsChannel = member.guild.channels.cache.get(config.guild.channels.logs)
 
         const embed = new MessageEmbed()
             .setColor('#E74C3C')

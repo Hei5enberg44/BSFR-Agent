@@ -162,7 +162,7 @@ module.exports = {
 		const banInfos = await module.exports.get(banId)
 
 		const guild = reaction.client.guilds.cache.get(config.guild.id)
-		const logsChannel = guild.channels.cache.get(config.guild.channels.logs.id)
+		const logsChannel = guild.channels.cache.get(config.guild.channels.logs)
 		const muteRole = guild.roles.cache.get(config.guild.roles['Muted'])
 		const member = guild.members.cache.get(banInfos.memberId)
 
@@ -246,7 +246,7 @@ module.exports = {
                 try {
                     await guildBan.user.send({ content: `${bold('[BSFR]')}\n\nTu as été débanni.\nTâche d'être plus sage à l'avenir.\n\nVoici le lien d'invitation du serveur : ${config.links.discordInvite}` })
                 } catch(error) {
-                    const moderationChannel = guild.channels.cache.get(config.guild.channels.moderation.id)
+                    const moderationChannel = guild.channels.cache.get(config.guild.channels.moderation)
                     moderationChannel.send({ content: `${roleMention(config.guild.roles["Modérateur"])} - ${bold('Déban de')} ${userMention(guildBan.user.id)}\n\nImpossible d'envoyer le lien d'invitation automatiquement.\nMerci de réinviter l'utilisateur manuellement.\n\nLien d'invitation : ${config.links.discordInvite}` })
                 }
             }

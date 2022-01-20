@@ -50,7 +50,7 @@ module.exports = {
 
             if(!date) throw new CommandInteractionError('Durée invalide : ' + duration)
 
-            const adminChannel = interaction.guild.channels.cache.get(config.guild.channels.admin.id)
+            const adminChannel = interaction.guild.channels.cache.get(config.guild.channels.admin)
             const muteRole = interaction.guild.roles.cache.get(config.guild.roles['Muted'])
 
             let askForBan = true
@@ -90,7 +90,7 @@ module.exports = {
                 Logger.log('BanCommand', 'INFO', `${interaction.user.tag} a effectué une demande de bannissement à l'encontre de ${member.tag}`)
                 await interaction.reply({ content: 'La demande de ban a bien été envoyée', ephemeral: true })
             } else {
-                const logsChannel = interaction.guild.channels.cache.get(config.guild.channels.logs.id)
+                const logsChannel = interaction.guild.channels.cache.get(config.guild.channels.logs)
 
                 embeds.push(new MessageEmbed()
                     .setColor('#2ECC71')

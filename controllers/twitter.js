@@ -56,7 +56,7 @@ module.exports = {
 		const tweetInfos = await module.exports.get(tweetId)
 
 		const guild = reaction.client.guilds.cache.get(config.guild.id)
-		const logsChannel = guild.channels.cache.get(config.guild.channels.logs.id)
+		const logsChannel = guild.channels.cache.get(config.guild.channels.logs)
 
         if(reaction.emoji.name === '✅') {
 			const embed = new MessageEmbed()

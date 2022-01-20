@@ -50,7 +50,7 @@ module.exports = {
 
             if(!date) throw new CommandInteractionError('Durée invalide : ' + duration)
 
-            const logsChannel = interaction.guild.channels.cache.get(config.guild.channels.logs.id)
+            const logsChannel = interaction.guild.channels.cache.get(config.guild.channels.logs)
             const muteRole = interaction.guild.roles.cache.get(config.guild.roles['Muted'])
 
             await mute.add(member.id, interaction.user.id, reason, date)

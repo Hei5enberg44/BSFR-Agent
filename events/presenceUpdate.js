@@ -29,7 +29,7 @@ module.exports = {
 				if((new Date().getTime()) < activity.createdAt.getTime() + 150000) {
 					Logger.log('Stream', 'INFO', `${newPresence.user.tag} stream sur ${activity.name} : ${activity.url}`)
 
-					const twitchChannel = newPresence.guild.channels.cache.get(config.guild.channels.twitch.id)
+					const twitchChannel = newPresence.guild.channels.cache.get(config.guild.channels.twitch)
 
 					await twitchChannel.send({ content: `${userMention(newPresence.member.id)} - ${activity.details} - ${activity.url}`, allowedMentions: { repliedUser: false } })
 				}

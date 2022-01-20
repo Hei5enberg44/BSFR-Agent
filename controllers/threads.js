@@ -59,7 +59,7 @@ module.exports = {
      * @param {GuildMember} member membre à ajouter dans les threads
      */
     addMember: async function(type, member) {
-        const agentDmChannel = member.guild.channels.cache.get(config.guild.channels.agentDm.id)
+        const agentDmChannel = member.guild.channels.cache.get(config.guild.channels.agentDm)
         const threads = await module.exports.getByType(type)
 
         await agentDmChannel.threads.fetch()
@@ -88,7 +88,7 @@ module.exports = {
      * @param {GuildMember} member membre à supprimer des threads
      */
      removeMember: async function(type, member) {
-        const agentDmChannel = member.guild.channels.cache.get(config.guild.channels.agentDm.id)
+        const agentDmChannel = member.guild.channels.cache.get(config.guild.channels.agentDm)
         const threads = await module.exports.getByType(type)
 
         await agentDmChannel.threads.fetch()

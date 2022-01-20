@@ -39,7 +39,7 @@ module.exports = {
             const isMuted = await mute.isMuted(member.id)
             if(!isMuted) throw new CommandInteractionError(`${userMention(member.id)} n'est pas muté`)
 
-            const logsChannel = interaction.guild.channels.cache.get(config.guild.channels.logs.id)
+            const logsChannel = interaction.guild.channels.cache.get(config.guild.channels.logs)
             const muteRole = interaction.guild.roles.cache.get(config.guild.roles.Muted)
 
             await mute.remove(member.id)

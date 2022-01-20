@@ -38,7 +38,7 @@ module.exports = {
             if(channel.type === 'GUILD_CATEGORY')
                 throw new CommandInteractionError('Merci de sélectionner un channel correct')
             
-            const logsChannel = interaction.guild.channels.cache.get(config.guild.channels.logs.id)
+            const logsChannel = interaction.guild.channels.cache.get(config.guild.channels.logs)
 
             const sentMessage = await channel.send(message)
 

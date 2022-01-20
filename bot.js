@@ -80,4 +80,3 @@ try {
     console.log(error)
     Logger.log('Application', 'ERROR', `Démarrage du bot impossible : ${error.message}`)
 }
-

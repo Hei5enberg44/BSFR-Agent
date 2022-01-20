@@ -100,7 +100,7 @@ module.exports = {
 
                         const warningMessage = await message.channel.send({ content: `❗ ${bold('Le fichier ' + inlineCode(attachment.name) + ' envoyé par ' + userMention(message.author.id) + ' est infecté ❗')}\nSi l'un d'entre vous a téléchargé ce fichier, nous vous recommandons fortement de supprimer ce dernier ainsi que d'effectuer une analyse anti-virus.` })
 
-                        const logsChannel = message.guild.channels.cache.get(config.guild.channels.logs.id)
+                        const logsChannel = message.guild.channels.cache.get(config.guild.channels.logs)
                         const muteRole = message.guild.roles.cache.get(config.guild.roles['Muted'])
 
                         const embeds = []

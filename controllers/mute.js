@@ -100,7 +100,7 @@ module.exports = {
         const date = Math.floor(new Date().getTime() / 1000)
 
         if(isMuted && isMuted.unmuteDate > date) {
-            const logsChannel = member.guild.channels.cache.get(config.guild.channels.logs.id)
+            const logsChannel = member.guild.channels.cache.get(config.guild.channels.logs)
             const muteRole = member.guild.roles.cache.get(config.guild.roles.Muted)
 
             const embed = new MessageEmbed()
@@ -126,7 +126,7 @@ module.exports = {
      */
     unmute: async function(client) {
         const guild = client.guilds.cache.find(g => g.id === config.guild.id)
-        const logsChannel = guild.channels.cache.get(config.guild.channels.logs.id)
+        const logsChannel = guild.channels.cache.get(config.guild.channels.logs)
         const muteRole = guild.roles.cache.get(config.guild.roles.Muted)
 
         const date = Math.floor(new Date().getTime() / 1000)

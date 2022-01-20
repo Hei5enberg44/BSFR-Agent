@@ -9,7 +9,7 @@ module.exports = {
 	 */
 	async execute(ban) {
         const guild = ban.client.guilds.cache.get(config.guild.id)
-		const logsChannel = guild.channels.cache.get(config.guild.channels.logs.id)
+		const logsChannel = guild.channels.cache.get(config.guild.channels.logs)
 
         const embed = new MessageEmbed()
             .setColor('#2ECC71')
