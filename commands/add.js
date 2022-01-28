@@ -2,6 +2,7 @@ const { MessageEmbed, CommandInteraction } = require('discord.js')
 const { CommandError, CommandInteractionError } = require('../utils/error')
 const bannedWords = require('../controllers/bannedWords')
 const birthdayMessages = require('../controllers/birthdayMessages')
+const maliciousURL = require('../controllers/maliciousURL')
 const Logger = require('../utils/logger')
 const config = require('../config.json')
 
@@ -20,8 +21,12 @@ module.exports = {
                         value: 'bannedWords'
                     },
                     {
-                        name: 'Messages d\'anniversaire',
-                        value: 'birthdayMessages'
+                        name: 'Message d\'anniversaire',
+                        value: 'birthdayMessage'
+                    },
+                    {
+                        name: 'URL malveillant',
+                        value: 'maliciousURL'
                     }
                 ],
                 required: true
@@ -48,6 +53,7 @@ module.exports = {
             const text = interaction.options.getString('texte')
 
             let embed = new MessageEmbed()
+                .setColor('#2ECC71')
                 .setThumbnail(interaction.user.displayAvatarURL({ dynamic: true }))
                 .addField('Membre', interaction.user.tag)
                 .setFooter({ text: `${config.appName} ${config.appVersion}`, iconURL: config.appLogo })
@@ -58,7 +64,7 @@ module.exports = {
 
                     Logger.log('BannedWords', 'INFO', `${interaction.user.tag} a ajouté les mots bannis suivants : ${text.split(';').map(word => word.trim()).join(', ')}`)
 
-                    embed.setColor('#E74C3C').setTitle('⛔ Ajout de mots bannis')
+                    embed.setTitle('⛔ Ajout de mots bannis')
 
                     for(const [action, words] of Object.entries(wordsList)) {
                         if(words.length > 0) {
@@ -67,16 +73,30 @@ module.exports = {
                     }
 
                     break
-                case 'birthdayMessages':
+                case 'birthdayMessage':
                     const messagesList = await birthdayMessages.add(text, interaction.user)
 
                     Logger.log('BirthdayMessages', 'INFO', `${interaction.user.tag} a ajouté le message d\'anniversaire suivant : ${text.trim()}`)
 
-                    embed.setColor('#2ECC71').setTitle('🥳 Ajout d\'un message d\'anniversaire')
+                    embed.setTitle('🥳 Ajout d\'un message d\'anniversaire')
 
                     for(const [action, message] of Object.entries(messagesList)) {
                         if(message !== '') {
                             embed.addField(action === 'new' ? 'Ajouté' : 'Déjà ajouté', message)
+                        }
+                    }
+
+                    break
+                case 'maliciousURL':
+                    const urlsList = await maliciousURL.add(text, interaction.user)
+
+                    Logger.log('MaliciousURL', 'INFO', `${interaction.user.tag} a ajouté l'URL malveillant suivant : ${text.trim()}`)
+
+                    embed.setTitle('☣️ Ajout d\'un URL malveillant')
+
+                    for(const [action, url] of Object.entries(urlsList)) {
+                        if(url !== '') {
+                            embed.addField(action === 'new' ? 'Ajouté' : 'Déjà ajouté', url)
                         }
                     }
 

@@ -2,6 +2,7 @@ const { MessageEmbed, CommandInteraction } = require('discord.js')
 const { CommandError, CommandInteractionError, BannedWordsError, BirthdayMessagesError } = require('../utils/error')
 const bannedWords = require('../controllers/bannedWords')
 const birthdayMessages = require('../controllers/birthdayMessages')
+const maliciousURL = require('../controllers/maliciousURL')
 const config = require('../config.json')
 
 module.exports = {
@@ -21,6 +22,10 @@ module.exports = {
                     {
                         name: 'Messages d\'anniversaire',
                         value: 'birthdayMessages'
+                    },
+                    {
+                        name: 'URL malveillants',
+                        value: 'maliciousURL'
                     }
                 ],
                 required: true
@@ -65,6 +70,13 @@ module.exports = {
 
                     embed.setTitle('📒 Liste des messages d\'anniversaire')
                     embed.addField('Messages', messagesList)
+
+                    break
+                case 'maliciousURL':
+                    const urlsList = await maliciousURL.list(page)
+
+                    embed.setTitle('📒 Liste des URLs malveillants')
+                    embed.addField('URLs', urlsList)
 
                     break
             }

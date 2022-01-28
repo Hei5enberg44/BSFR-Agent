@@ -2,6 +2,7 @@ const { MessageEmbed, CommandInteraction } = require('discord.js')
 const { CommandError, CommandInteractionError } = require('../utils/error')
 const bannedWords = require('../controllers/bannedWords')
 const birthdayMessages = require('../controllers/birthdayMessages')
+const maliciousURL = require('../controllers/maliciousURL')
 const config = require('../config.json')
 
 module.exports = {
@@ -21,6 +22,10 @@ module.exports = {
                     {
                         name: 'Messages d\'anniversaire',
                         value: 'birthdayMessages'
+                    },
+                    {
+                        name: 'URLs malveillants',
+                        value: 'maliciousURL'
                     }
                 ],
                 required: true
@@ -83,6 +88,21 @@ module.exports = {
                     reply = await interaction.reply({ embeds: [embed], fetchReply: true })
 
                     await birthdayMessages.remove(messagesList, interaction.user.id, interaction.channelId, reply.id)
+
+                    break
+                case 'maliciousURL':
+                    const urlsList = await maliciousURL.get(ids)
+
+                    if(urlsList.length === 0)
+                        throw new CommandInteractionError('Aucun URL malveillant à supprimer trouvé')
+
+                    embed.setTitle('🗑️ Confirmation de la suppression d\'URL malveillant')
+                    embed.setDescription('Êtes-vous sûr de vouloir supprimer les URLs malveillants suivants ?')
+                    embed.addField('URLs malveillants', urlsList.map(url => url.url).join('\n'))
+
+                    reply = await interaction.reply({ embeds: [embed], fetchReply: true })
+
+                    await maliciousURL.remove(urlsList, interaction.user.id, interaction.channelId, reply.id)
 
                     break
             }

@@ -25,6 +25,14 @@ class CommandInteractionError extends Error {
     }
 }
 
+class BannedWordsError extends Error {
+    constructor(message) {
+        super(message)
+        this.name = this.constructor.name
+        Error.captureStackTrace(this, this.constructor)
+    }
+}
+
 class BirthdayMessagesError extends Error {
     constructor(message) {
         super(message)
@@ -33,7 +41,7 @@ class BirthdayMessagesError extends Error {
     }
 }
 
-class BannedWordsError extends Error {
+class MaliciousURLError extends Error {
     constructor(message) {
         super(message)
         this.name = this.constructor.name
@@ -66,5 +74,5 @@ class NextcloudError extends Error {
 }
 
 module.exports = {
-    DatabaseError, CommandError, CommandInteractionError, BirthdayMessagesError, BannedWordsError, TwitchError, NextcloudError, AntivirusError
+    DatabaseError, CommandError, CommandInteractionError, BannedWordsError, BirthdayMessagesError, MaliciousURLError, TwitchError, NextcloudError, AntivirusError
 }

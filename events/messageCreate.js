@@ -2,6 +2,7 @@ const { Message } = require('discord.js')
 const { userMention } = require('@discordjs/builders')
 const crypto = require('crypto')
 const bannedWords = require('../controllers/bannedWords')
+const maliciousURL = require('../controllers/maliciousURL')
 const threads = require('../controllers/threads')
 const antivirus = require('../controllers/antivirus')
 const twitch = require('../controllers/twitch')
@@ -18,6 +19,7 @@ module.exports = {
             if(message.guildId) {
                 // Si ce n'est pas un dm
                 await bannedWords.test(message)
+                await maliciousURL.test(message)
                 await module.exports.feur(message)
 
                 // Récupération des clips Twitch

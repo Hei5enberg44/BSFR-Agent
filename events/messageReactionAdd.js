@@ -3,6 +3,7 @@ const { Reactions } = require('../controllers/database')
 const { Op } = require('sequelize')
 const bannedWords = require('../controllers/bannedWords')
 const birthdayMessages = require('../controllers/birthdayMessages')
+const maliciousURL = require('../controllers/maliciousURL')
 const ban = require('../controllers/ban')
 const twitter = require('../controllers/twitter')
 
@@ -36,6 +37,10 @@ module.exports = {
 				// Supression de messages d'anniversaire
 				case 'removeBirthdayMessage':
 					await birthdayMessages.confirmRemove(reaction, user, r)
+					break
+				// Supression d'URL malveillants
+				case 'removeMaliciousURL':
+					await maliciousURL.confirmRemove(reaction, user, r)
 					break
 				// Confirmation de bannissement d'un membre
 				case 'banRequest':

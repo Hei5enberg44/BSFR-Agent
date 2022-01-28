@@ -45,6 +45,20 @@ const BirthdayMessages = sequelize.define('birthday_messages', {
     freezeTableName: true
 })
 
+const MaliciousURL = sequelize.define('malicious_url', {
+    id: {
+        type: DataTypes.INTEGER,
+        autoIncrement: true,
+        primaryKey: true
+    },
+    url: DataTypes.TEXT,
+    memberId: DataTypes.STRING(255),
+    date: DataTypes.DATE
+}, {
+    timestamps: false,
+    freezeTableName: true
+})
+
 const Reactions = sequelize.define('reactions', {
     id: {
         type: DataTypes.INTEGER,
@@ -149,5 +163,5 @@ const YoutubeVideos = sequelize.define('youtube_videos', {
 })
 
 module.exports = {
-    test, BannedWords, BirthdayMessages, Reactions, Birthdays, Mutes, Bans, Threads, Tweets, YoutubeVideos
+    test, BannedWords, BirthdayMessages, MaliciousURL, Reactions, Birthdays, Mutes, Bans, Threads, Tweets, YoutubeVideos
 }
