@@ -54,7 +54,7 @@ module.exports = {
             const muteRole = interaction.guild.roles.cache.get(config.guild.roles['Muted'])
 
             let askForBan = true
-            if(interaction.member.roles.cache.find(r => r.id === config.guild.roles['Admin'])) askForBan = false
+            if(interaction.member.roles.cache.find(r => r.id === config.guild.roles['Admin'] || r.id === config.guild.roles['Modérateur'])) askForBan = false
 
             const embeds = []
 
