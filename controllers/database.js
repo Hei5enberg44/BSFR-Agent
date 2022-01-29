@@ -98,7 +98,7 @@ const Mutes = sequelize.define('mutes', {
     memberId: DataTypes.STRING(255),
     mutedBy: DataTypes.STRING(255),
     reason: DataTypes.TEXT,
-    unmuteDate: DataTypes.INTEGER
+    unmuteDate: DataTypes.BIGINT
 }, {
     timestamps: false,
     freezeTableName: true
@@ -114,7 +114,7 @@ const Bans = sequelize.define('bans', {
     bannedBy: DataTypes.STRING(255),
     approvedBy: DataTypes.STRING(255),
     reason: DataTypes.TEXT,
-    unbanDate: DataTypes.INTEGER
+    unbanDate: DataTypes.BIGINT
 }, {
     timestamps: false,
     freezeTableName: true
