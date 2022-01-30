@@ -22,7 +22,7 @@ module.exports = {
                 await module.exports.feur(message)
 
                 // Test si un URL malveillant a été envoyé
-                if(message.match(/https?:\/\//)) {
+                if(message.content.match(/https?:\/\//)) {
                     await maliciousURL.test(message)
                 }
 
