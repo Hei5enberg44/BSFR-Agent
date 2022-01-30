@@ -19,8 +19,12 @@ module.exports = {
             if(message.guildId) {
                 // Si ce n'est pas un dm
                 await bannedWords.test(message)
-                await maliciousURL.test(message)
                 await module.exports.feur(message)
+
+                // Test si un URL malveillant a été envoyé
+                if(message.match(/https?:\/\//)) {
+                    await maliciousURL.test(message)
+                }
 
                 // Récupération des clips Twitch
                 if(message.channel.id === config.guild.channels.clips) {

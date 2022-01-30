@@ -65,7 +65,8 @@ module.exports = {
 
             let usedMaliciousURL = []
             for(const url of urlsList) {
-                if(message.content.toLowerCase().includes(url.url.toLowerCase()) && usedMaliciousURL.indexOf(url.url) === -1) {
+                const regex = new RegExp(`https?:\/\/${url.url.toLowerCase()}`)
+                if(message.content.toLowerCase().match(regex) && usedMaliciousURL.indexOf(url.url) === -1) {
                     usedMaliciousURL.push(url.url)
                 }
             }
