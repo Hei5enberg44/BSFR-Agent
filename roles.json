@@ -1,0 +1,80 @@
+[
+    {
+        "name": "Grip",
+        "roles": [
+            { "name": "One Finger Claw Grip", "multiple": false },
+            { "name": "Two Finger Claw Grip", "multiple": false },
+            { "name": "Claw Grip", "multiple": false },
+            { "name": "X-Grip", "multiple": false },
+            { "name": "Y-Grip", "multiple": false },
+            { "name": "V-Grip", "multiple": false },
+            { "name": "B-Grip", "multiple": false },
+            { "name": "S-Grip", "multiple": false },
+            { "name": "Palm Grip", "multiple": false },
+            { "name": "K-Grip", "multiple": false },
+            { "name": "C-Grip", "multiple": false },
+            { "name": "F-Grip", "multiple": false },
+            { "name": "O-Grip", "multiple": false },
+            { "name": "BK-Grip", "multiple": false },
+            { "name": "MN-Grip", "multiple": false },
+            { "name": "R-Grip", "multiple": false },
+            { "name": "RK-Grip", "multiple": false },
+            { "name": "D-Grip", "multiple": false },
+            { "name": "M-Grip", "multiple": false },
+            { "name": "Custom Grip", "multiple": false },
+            { "name": "Default Grip", "multiple": false },
+            { "name": "Saber Config", "multiple": true }
+        ]
+    },
+    {
+        "name": "Région",
+        "roles": [
+            { "name": "France", "multiple": false },
+            { "name": "Suisse", "multiple": false },
+            { "name": "Belgique", "multiple": false },
+            { "name": "Québec", "multiple": false },
+            { "name": "Brésil", "multiple": false },
+            { "name": "Israël", "multiple": false }
+        ]
+    },
+    {
+        "name": "Casque",
+        "roles": [
+            { "name": "Vive", "multiple": false },
+            { "name": "Index", "multiple": false },
+            { "name": "Oculus Rift", "multiple": false },
+            { "name": "Rift S", "multiple": false },
+            { "name": "Quest", "multiple": false },
+            { "name": "Quest 2", "multiple": false },
+            { "name": "Cosmos", "multiple": false },
+            { "name": "WMR", "multiple": false },
+            { "name": "PSVR", "multiple": false },
+            { "name": "Pimax", "multiple": false }
+        ]
+    },
+    {
+        "name": "Notification",
+        "roles": [
+            { "name": "Annonce", "multiple": true },
+            { "name": "YouTube", "multiple": true }
+        ]
+    },
+    {
+        "name": "Type de joueur",
+        "roles": [
+            { "name": "Jump Player", "multiple": true },
+            { "name": "Tech Player", "multiple": true },
+            { "name": "Stream Player", "multiple": true },
+            { "name": "Speed Player", "multiple": true },
+            { "name": "Slider Player", "multiple": true },
+            { "name": "Chill Player", "multiple": true },
+            { "name": "Challenge Player", "multiple": true },
+            { "name": "Gallop Player", "multiple": true },
+            { "name": "Accuracy Player", "multiple": true },
+            { "name": "Stamina Player", "multiple": true },
+            { "name": "Balanced Player", "multiple": true },
+            { "name": "Shitty map Player", "multiple": true },
+            { "name": "Vibro Player", "multiple": true }
+        ]
+    }
+]

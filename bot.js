@@ -53,6 +53,7 @@ try {
             const guild = client.guilds.cache.get(config.guild.id)
             await guild.members.fetch()
             await guild.channels.fetch()
+            await guild.roles.fetch()
         
             // Chargement des commandes
             const commands = new Commands(client)
