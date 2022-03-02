@@ -1,5 +1,5 @@
 const { CommandInteraction, MessageEmbed } = require('discord.js')
-const { roleMention } = require('@discordjs/builders')
+const { roleMention, bold } = require('@discordjs/builders')
 const { CommandError, CommandInteractionError } = require('../utils/error')
 const roles = require('../roles.json')
 const Logger = require('../utils/logger')
@@ -129,7 +129,7 @@ module.exports = {
                             // On vérifie si plusieurs rôles de ce même groupe peuvent être attibués simultanément
                             const error = (!roleToAdd.multiple && roleGroupRolesList.filter(rl => memberRoles.map(mr => mr.name).includes(rl.name)).find(r => !r.multiple)) ? true : false
                             if(error) {
-                                embed.setColor('#E74C3C').setDescription(`Vous possédez déjà un rôle de ${roleGroup.name}.\nVeuillez le supprimer avant de pouvoir ajouter le rôle ${roleMention(role.id)} ».`)
+                                embed.setColor('#E74C3C').setDescription(`Vous possédez déjà un rôle de ${bold(roleGroup.name)}.\nVeuillez le supprimer avant de pouvoir ajouter le rôle ${roleMention(role.id)}.`)
                             } else {
                                 Logger.log('RolesCommand', 'INFO', `Le membre ${interaction.user.tag} possède maintenant le rôle @${role.name}`)
                                 await interaction.member.roles.add(role)
@@ -155,7 +155,7 @@ module.exports = {
                     if(role) {
                         // On vérifie si le membre possède le rôle qu'il souhaite supprimer
                         if(!memberRoles.find(r => r.name === roleToRemove.name)) {
-                            embed.setColor('#E74C3C').setDescription(`Vous ne possédez pas le rôle ${roleMention(role.id)} ».`)
+                            embed.setColor('#E74C3C').setDescription(`Vous ne possédez pas le rôle ${roleMention(role.id)}.`)
                         } else {
                             Logger.log('RolesCommand', 'INFO', `Le membre ${interaction.user.tag} ne possède plus le rôle @${role.name}.`)
                             await interaction.member.roles.remove(role)
