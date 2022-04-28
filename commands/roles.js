@@ -1,5 +1,6 @@
-const { CommandInteraction, MessageEmbed } = require('discord.js')
+const { CommandInteraction } = require('discord.js')
 const { roleMention, bold } = require('@discordjs/builders')
+const Embed = require('../utils/embed')
 const { CommandError, CommandInteractionError } = require('../utils/error')
 const roles = require('../roles.json')
 const Logger = require('../utils/logger')
@@ -20,16 +21,16 @@ module.exports = {
                 name: 'add',
                 description: 'Ajoute un rôle',
                 options: roles.map((g, i) => {
-                    roles[i].id = g.name.toLowerCase().replace(/\s/g, '')
+                    roles[i].id = g.category.toLowerCase().replace(/\s/g, '')
                     return {
                         type: 'SUB_COMMAND',
                         name: g.id,
-                        description: `Ajoute un rôle de ${g.name.toLowerCase()}`,
+                        description: `Ajoute un rôle de ${g.category.toLowerCase()}`,
                         options: [
                             {
                                 type: 'STRING',
                                 name: 'role',
-                                description: `Rôle de ${g.name.toLowerCase()} à ajouter`,
+                                description: `Rôle de ${g.category.toLowerCase()} à ajouter`,
                                 choices: g.roles.map(r => {
                                     return { name: r.name, value: r.name }
                                 }),
@@ -44,16 +45,16 @@ module.exports = {
                 name: 'remove',
                 description: 'Supprime un rôle',
                 options: roles.map((g, i) => {
-                    roles[i].id = g.name.toLowerCase().replace(/\s/g, '')
+                    roles[i].id = g.category.toLowerCase().replace(/\s/g, '')
                     return {
                         type: 'SUB_COMMAND',
                         name: g.id,
-                        description: `Supprime un rôle de ${g.name.toLowerCase()}`,
+                        description: `Supprime un rôle de ${g.category.toLowerCase()}`,
                         options: [
                             {
                                 type: 'STRING',
                                 name: 'role',
-                                description: `Rôle de ${g.name.toLowerCase()} à supprimer`,
+                                description: `Rôle de ${g.category.toLowerCase()} à supprimer`,
                                 choices: g.roles.map(r => {
                                     return { name: r.name, value: r.name }
                                 }),
@@ -63,7 +64,8 @@ module.exports = {
                     }
                 })
             }
-        ]
+        ],
+        default_member_permissions: '0'
     },
     channels: [ 'rolesAutoAssignables' ],
 
@@ -80,8 +82,7 @@ module.exports = {
 
             const memberRoles = interaction.member.roles.cache
 
-            const embed = new MessageEmbed()
-                .setFooter({ text: `${config.appName} ${config.appVersion}`, iconURL: config.appLogo })
+            const embed = new Embed()
 
             let roleGroupId, roleGroup, roleGroupRolesList, role
             switch(action) {
@@ -90,8 +91,8 @@ module.exports = {
                     for(const group of roles) {
                         for(const role of group.roles) {
                             if(memberRoles.find(r => r.name === role.name)) {
-                                if(!rolesList[group.name]) rolesList[group.name] = []
-                                rolesList[group.name].push(role.name)
+                                if(!rolesList[group.category]) rolesList[group.category] = []
+                                rolesList[group.category].push(role.name)
                             }
                         }
                     }

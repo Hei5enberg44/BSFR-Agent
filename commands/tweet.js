@@ -1,5 +1,6 @@
-const { MessageEmbed, CommandInteraction } = require('discord.js')
+const { CommandInteraction } = require('discord.js')
 const { userMention } = require('@discordjs/builders')
+const Embed = require('../utils/embed')
 const { CommandError, CommandInteractionError } = require('../utils/error')
 const twitter = require('../controllers/twitter')
 const Logger = require('../utils/logger')
@@ -17,7 +18,7 @@ module.exports = {
                 required: true
             }
         ],
-        defaultPermission: false
+        default_member_permissions: '0'
     },
     roles: [ 'Admin' ],
     channels: [ 'admin' ],
@@ -32,13 +33,12 @@ module.exports = {
 
             if(text.length > 280) throw new CommandInteractionError('Votre tweet fait plus de 280 caractères !') 
 
-            const embed = new MessageEmbed()
+            const embed = new Embed()
                 .setColor('#9B59B6')
                 .setTitle('✉️ Confirmation de l\'envoi de tweet')
                 .setThumbnail(interaction.user.displayAvatarURL({ dynamic: true }))
                 .addField('Par', userMention(interaction.user.id))
                 .addField('Tweet', text)
-                .setFooter({ text: `${config.appName} ${config.appVersion}`, iconURL: config.appLogo })
             
             const reply = await interaction.reply({ embeds: [embed], fetchReply: true })
 

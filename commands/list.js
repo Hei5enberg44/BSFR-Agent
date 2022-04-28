@@ -1,14 +1,14 @@
-const { MessageEmbed, CommandInteraction } = require('discord.js')
+const { CommandInteraction } = require('discord.js')
+const Embed = require('../utils/embed')
 const { CommandError, CommandInteractionError, BannedWordsError, BirthdayMessagesError } = require('../utils/error')
 const bannedWords = require('../controllers/bannedWords')
 const birthdayMessages = require('../controllers/birthdayMessages')
 const maliciousURL = require('../controllers/maliciousURL')
-const config = require('../config.json')
 
 module.exports = {
 	data: {
 		name: 'list',
-		description: 'Listes divers',
+		description: 'Listes diverses',
         options: [
             {
                 type: 'STRING',
@@ -37,7 +37,7 @@ module.exports = {
                 required: false
             }
         ],
-        defaultPermission: false
+        default_member_permissions: '0'
     },
     roles: [ 'Admin', 'Modérateur' ],
     channels: [ 'agentCommands' ],
@@ -53,9 +53,7 @@ module.exports = {
 
             if(page < 1) throw new CommandInteractionError('Le numéro de page doit être supérieur ou égal à 1')
 
-            let embed = new MessageEmbed()
-                .setColor('#F1C40F')
-                .setFooter({ text: `${config.appName} ${config.appVersion}`, iconURL: config.appLogo })
+            let embed = new Embed().setColor('#F1C40F')
 
             switch(subject) {
                 case 'bannedWords':

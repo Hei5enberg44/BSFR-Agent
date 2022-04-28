@@ -1,8 +1,8 @@
-const { GuildMember, MessageEmbed, MessageReaction, User } = require("discord.js")
+const { GuildMember, MessageReaction, User } = require("discord.js")
+const Embed = require('../utils/embed')
 const { BirthdayMessagesError } = require('../utils/error')
 const { BirthdayMessages, Reactions } = require('./database')
 const Logger = require('../utils/logger')
-const config = require('../config.json')
 
 module.exports = {
     /**
@@ -112,10 +112,9 @@ module.exports = {
 	 * @param {{id: Number, type: String, data: Array.<{id: Number, message: String, memberId: String, date: Date}>, memberId: String, channelId: String, messageId: String, date: Date}} r données concernant la réaction
 	 */
     confirmRemove: async function(reaction, user, r) {
-        const embed = new MessageEmbed()
+        const embed = new Embed()
 			.setThumbnail(user.displayAvatarURL({ dynamic: true }))
 			.addField('Membre', user.tag)
-			.setFooter({ text: `${config.appName} ${config.appVersion}`, iconURL: config.appLogo })
 
 		if(reaction.emoji.name === '✅') {
 			const ids = r.data.map(message => message.id)

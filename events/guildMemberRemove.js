@@ -1,5 +1,6 @@
-const { MessageEmbed, GuildMember } = require('discord.js')
+const { GuildMember } = require('discord.js')
 const { userMention } = require('@discordjs/builders')
+const Embed = require('../utils/embed')
 const { Birthdays } = require('../controllers/database')
 const threads = require('../controllers/threads')
 const Logger = require('../utils/logger')
@@ -23,12 +24,11 @@ module.exports = {
     async bye(member) {
         const logsChannel = member.guild.channels.cache.get(config.guild.channels.logs)
 
-        const embed = new MessageEmbed()
+        const embed = new Embed()
             .setColor('#E74C3C')
             .setTitle('📤 Départ de ' + member.user.username)
             .setThumbnail(member.user.displayAvatarURL({ dynamic: true }))
             .addField('Orevouar', userMention(member.user.id))
-            .setFooter({ text: `${config.appName} ${config.appVersion}`, iconURL: config.appLogo })
         
         await logsChannel.send({ embeds: [embed] })
 

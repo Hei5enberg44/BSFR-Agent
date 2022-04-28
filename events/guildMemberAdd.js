@@ -1,5 +1,6 @@
-const { MessageEmbed, GuildMember } = require('discord.js')
+const { GuildMember } = require('discord.js')
 const { userMention } = require('@discordjs/builders')
+const Embed = require('../utils/embed')
 const mute = require('../controllers/mute')
 const Logger = require('../utils/logger')
 const config = require('../config.json')
@@ -21,12 +22,11 @@ module.exports = {
     async welcome(member) {
         const logsChannel = member.guild.channels.cache.get(config.guild.channels.logs)
 
-        const embed = new MessageEmbed()
+        const embed = new Embed()
             .setColor('#2ECC71')
             .setTitle('📥 Arrivée de ' + member.user.username)
             .setThumbnail(member.user.displayAvatarURL({ dynamic: true }))
             .addField('Koukou twa', userMention(member.user.id))
-            .setFooter({ text: `${config.appName} ${config.appVersion}`, iconURL: config.appLogo })
 
         await logsChannel.send({ embeds: [embed] })
 

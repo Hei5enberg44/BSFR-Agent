@@ -16,7 +16,7 @@ module.exports = {
                 required: true
             }
         ],
-        defaultPermission: false
+        default_member_permissions: '0'
     },
     roles: [ 'Admin', 'Modérateur' ],
 

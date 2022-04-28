@@ -1,5 +1,6 @@
-const { GuildMember, Message, MessageEmbed, MessageReaction, User } = require("discord.js")
+const { GuildMember, Message, MessageReaction, User } = require("discord.js")
 const { userMention, roleMention } = require("@discordjs/builders")
+const Embed = require('../utils/embed')
 const { MaliciousURLError } = require('../utils/error')
 const { MaliciousURL, Reactions } = require('./database')
 const Logger = require('../utils/logger')
@@ -74,13 +75,12 @@ module.exports = {
             if(usedMaliciousURL.length > 0) {
                 Logger.log('MaliciousURL', 'INFO', `URL(s) malveillant(s) trouvé(s) dans un message de ${message.author.tag} : ${usedMaliciousURL.join(', ')}`)
 
-                const embed = new MessageEmbed()
+                const embed = new Embed()
                     .setColor('#E74C3C')
                     .setTitle('⛔ Envoi d\'URL malveillant')
                     .setThumbnail(message.author.displayAvatarURL({ dynamic: true }))
                     .addField('Le vilain', userMention(message.author.id))
                     .addField('Contenu du message', message.content)
-                    .setFooter({ text: `${config.appName} ${config.appVersion}`, iconURL: config.appLogo })
                 
                 await message.delete()
                 
@@ -151,10 +151,9 @@ module.exports = {
 	 * @param {{id: Number, type: String, data: Array.<{id: Number, url: String, memberId: String, date: Date}>, memberId: String, channelId: String, messageId: String, date: Date}} r données concernant la réaction
 	 */
     confirmRemove: async function(reaction, user, r) {
-        const embed = new MessageEmbed()
+        const embed = new Embed()
 			.setThumbnail(user.displayAvatarURL({ dynamic: true }))
 			.addField('Membre', user.tag)
-			.setFooter({ text: `${config.appName} ${config.appVersion}`, iconURL: config.appLogo })
 
 		if(reaction.emoji.name === '✅') {
 			const ids = r.data.map(url => url.id)

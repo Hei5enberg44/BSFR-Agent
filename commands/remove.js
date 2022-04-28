@@ -1,4 +1,5 @@
-const { MessageEmbed, CommandInteraction } = require('discord.js')
+const { CommandInteraction } = require('discord.js')
+const Embed = require('../utils/embed')
 const { CommandError, CommandInteractionError } = require('../utils/error')
 const bannedWords = require('../controllers/bannedWords')
 const birthdayMessages = require('../controllers/birthdayMessages')
@@ -37,7 +38,7 @@ module.exports = {
                 required: true
             }
         ],
-        defaultPermission: false
+        default_member_permissions: '0'
     },
     roles: [ 'Admin', 'Modérateur' ],
     channels: [ 'agentCommands' ],
@@ -51,11 +52,10 @@ module.exports = {
             const subject = interaction.options.getString('sujet')
             const ids = interaction.options.getString('ids')
 
-            let embed = new MessageEmbed()
+            let embed = new Embed()
                 .setColor('#9B59B6')
                 .setThumbnail(interaction.user.displayAvatarURL({ dynamic: true }))
                 .addField('Membre', interaction.user.tag)
-                .setFooter({ text: `${config.appName} ${config.appVersion}`, iconURL: config.appLogo })
             
             let reply
 

@@ -1,5 +1,6 @@
-const { Client, MessageEmbed, GuildMember } = require('discord.js')
+const { Client, GuildMember } = require('discord.js')
 const { userMention, bold } = require('@discordjs/builders')
+const Embed = require('../utils/embed')
 const { Mutes } = require('../controllers/database')
 const { Op } = require('sequelize')
 const Logger = require('../utils/logger')
@@ -92,7 +93,7 @@ module.exports = {
     },
 
     /**
-     * Si le membre avait été muté avant son départ et que le mute n'est pas terminé, on le mute à nouveau
+     * Si le membre avait été mute avant son départ et que le mute n'est pas terminé, on le mute à nouveau
      * @param {GuildMember} member The member that has joined a guild
      */
     remute: async function(member) {
@@ -103,7 +104,7 @@ module.exports = {
             const logsChannel = member.guild.channels.cache.get(config.guild.channels.logs)
             const muteRole = member.guild.roles.cache.get(config.guild.roles.Muted)
 
-            const embed = new MessageEmbed()
+            const embed = new Embed()
                 .setColor('#2ECC71')
                 .setTitle('🔇 Re mute de ' + member.user.username)
                 .setThumbnail(member.displayAvatarURL({ dynamic: true }))
@@ -111,12 +112,11 @@ module.exports = {
                 .addField('La sanction a été prononcée par', userMention(isMuted.mutedBy))
                 .addField('Raison', isMuted.reason)
                 .addField('Date de démute', new Date(isMuted.unmuteDate * 1000).toLocaleString('fr-FR', { timeZone: 'Europe/Paris' }))
-                .setFooter({ text: `${config.appName} ${config.appVersion}`, iconURL: config.appLogo })
 
             await member.roles.add(muteRole)
             await logsChannel.send({ embeds: [embed] })
 
-            Logger.log('Mute', 'INFO', `Le membre ${member.user.tag} est toujours muté`)
+            Logger.log('Mute', 'INFO', `Le membre ${member.user.tag} est toujours mute`)
         }
     },
 
@@ -144,37 +144,35 @@ module.exports = {
             await module.exports.remove(mutedMember.memberId)
 
             if(memberToUnmute) {
-                embeds.push(new MessageEmbed()
+                embeds.push(new Embed()
                     .setColor('#2ECC71')
                     .setTitle('🔇 Unmute de ' + memberToUnmute.user.username)
                     .setThumbnail(memberToUnmute.displayAvatarURL({ dynamic: true }))
                     .addField('Le vilain', userMention(mutedMember.memberId), true)
                     .addField('Prononcée par', userMention(mutedMember.mutedBy), true)
-                    .addField('Raison', mutedMember.reason)
-                    .setFooter({ text: `${config.appName} ${config.appVersion}`, iconURL: config.appLogo }))
+                    .addField('Raison', mutedMember.reason))
     
                 await memberToUnmute.roles.remove(muteRole)
     
                 try {
-                    await memberToUnmute.send({ content: `${bold('[BSFR]')}\n\nTu as été démuté.` })
+                    await memberToUnmute.send({ content: `${bold('[BSFR]')}\n\nTu as été unmute.` })
                 } catch(error) {
-                    embeds.push(new MessageEmbed()
+                    embeds.push(new Embed()
                         .setColor('#E74C3C')
                         .setDescription('Le message n\'a pas pu être envoyé au membre'))
                 }
 
-                Logger.log('UnmuteCommand', 'INFO', `Le membre ${memberToUnmute.user.tag} a été démuté`)
+                Logger.log('UnmuteCommand', 'INFO', `Le membre ${memberToUnmute.user.tag} a été unmute`)
             } else {
-                embeds.push(new MessageEmbed()
+                embeds.push(new Embed()
                     .setColor('#E74C3C')
                     .setTitle('🔇 Unmute de ' + mutedMember.memberId)
                     .setDescription('Le membre n\'est plus présent sur le discord')
                     .addField('Le vilain', userMention(mutedMember.memberId), true)
                     .addField('La sanction avait été prononcée par', userMention(mutedMember.mutedBy))
-                    .addField('Raison', mutedMember.reason)
-                    .setFooter({ text: `${config.appName} ${config.appVersion}`, iconURL: config.appLogo }))
+                    .addField('Raison', mutedMember.reason))
 
-                Logger.log('UnmuteCommand', 'INFO', `Le membre "${mutedMember.memberId}" n'a pas été démuté car celui-ci n'est plus présent sur le serveur`)
+                Logger.log('UnmuteCommand', 'INFO', `Le membre "${mutedMember.memberId}" n'a pas été unmute car celui-ci n'est plus présent sur le serveur`)
             }
 
             await logsChannel.send({ embeds: embeds })

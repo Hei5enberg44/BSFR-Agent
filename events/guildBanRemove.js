@@ -1,5 +1,6 @@
-const { MessageEmbed, GuildBan } = require('discord.js')
+const { GuildBan } = require('discord.js')
 const { userMention } = require('@discordjs/builders')
+const Embed = require('../utils/embed')
 const config = require('../config.json')
 
 module.exports = {
@@ -11,12 +12,11 @@ module.exports = {
         const guild = ban.client.guilds.cache.get(config.guild.id)
 		const logsChannel = guild.channels.cache.get(config.guild.channels.logs)
 
-        const embed = new MessageEmbed()
+        const embed = new Embed()
             .setColor('#2ECC71')
             .setTitle("🔨 Déban de " + ban.user.username)
             .setThumbnail(ban.user.displayAvatarURL({ dynamic: true }))
             .addField("Utilisateur", userMention(ban.user.id))
-            .setFooter({ text: `${config.appName} ${config.appVersion}`, iconURL: config.appLogo })
 
         await logsChannel.send({ embeds: [embed] })
 	}

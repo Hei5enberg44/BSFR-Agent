@@ -1,5 +1,6 @@
-const { GuildMember, Message, MessageEmbed, MessageReaction, User } = require("discord.js")
+const { GuildMember, Message, MessageReaction, User } = require("discord.js")
 const { userMention, roleMention, hyperlink } = require("@discordjs/builders")
+const Embed = require('../utils/embed')
 const { BannedWordsError } = require('../utils/error')
 const { BannedWords, Reactions } = require('./database')
 const Logger = require('../utils/logger')
@@ -76,14 +77,13 @@ module.exports = {
             if(usedBannedWords.length > 0) {
                 Logger.log('BannedWords', 'INFO', `Mot(s) banni(s) trouvé(s) dans un message de ${message.author.tag} : ${usedBannedWords.join(', ')}`)
 
-                const embed = new MessageEmbed()
+                const embed = new Embed()
                     .setColor('#E74C3C')
                     .setTitle('⛔ Usage de mots bannis')
                     .setThumbnail(message.author.displayAvatarURL({ dynamic: true }))
                     .addField('Le vilain', userMention(message.author.id))
                     .addField('Les mots interdits utilisés', usedBannedWords.join(', '))
                     .addField('Message', hyperlink('Lien', message.url))
-                    .setFooter({ text: `${config.appName} ${config.appVersion}`, iconURL: config.appLogo })
                 
                 await logsChannel.send({ content: roleMention(config.guild.roles['Modérateur']), embeds: [embed] })
             }
@@ -150,10 +150,9 @@ module.exports = {
 	 * @param {{id: Number, type: String, data: Array.<{id: Number, word: String, memberId: String, date: Date}>, memberId: String, channelId: String, messageId: String, date: Date}} r données concernant la réaction
      */
     confirmRemove: async function(reaction, user, r) {
-        const embed = new MessageEmbed()
+        const embed = new Embed()
 			.setThumbnail(user.displayAvatarURL({ dynamic: true }))
 			.addField('Membre', user.tag)
-			.setFooter({ text: `${config.appName} ${config.appVersion}`, iconURL: config.appLogo })
 
 		if(reaction.emoji.name === '✅') {
 			const ids = r.data.map(word => word.id)

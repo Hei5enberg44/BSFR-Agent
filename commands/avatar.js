@@ -12,7 +12,8 @@ module.exports = {
                 description: 'Membre pour lequel récupérer l\'avatar',
                 required: false
             }
-        ]
+        ],
+        default_member_permissions: '0'
     },
 
     /**

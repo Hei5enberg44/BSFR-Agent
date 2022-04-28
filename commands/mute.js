@@ -1,5 +1,6 @@
-const { MessageEmbed, CommandInteraction } = require('discord.js')
+const { CommandInteraction } = require('discord.js')
 const { bold, inlineCode, userMention } = require('@discordjs/builders')
+const Embed = require('../utils/embed')
 const { CommandError, CommandInteractionError } = require('../utils/error')
 const mute = require('../controllers/mute')
 const Logger = require('../utils/logger')
@@ -29,7 +30,7 @@ module.exports = {
                 required: true
             }
         ],
-        defaultPermission: false
+        default_member_permissions: '0'
     },
     roles: [ 'Admin', 'Modérateur' ],
 
@@ -44,7 +45,7 @@ module.exports = {
             const duration = interaction.options.getString('durée')
 
             const isMuted = await mute.isMuted(member.id)
-            if(isMuted) throw new CommandInteractionError(`${userMention(member.id)} est déjà muté`)
+            if(isMuted) throw new CommandInteractionError(`${userMention(member.id)} est déjà mute`)
 
             const date = mute.getUnmuteDate(duration)
 
@@ -57,32 +58,31 @@ module.exports = {
 
             const embeds = []
 
-            embeds.push(new MessageEmbed()
+            embeds.push(new Embed()
                 .setColor('#2ECC71')
                 .setTitle('🔇 Mute de ' + member.username)
                 .setThumbnail(member.displayAvatarURL({ dynamic: true }))
                 .addField('Le vilain', userMention(member.id), true)
                 .addField('La sanction a été prononcée par', userMention(interaction.user.id), true)
                 .addField('Raison', reason)
-                .addField('Date de démute', new Date(date * 1000).toLocaleString('fr-FR', { timeZone: 'Europe/Paris' }))
-                .setFooter({ text: `${config.appName} ${config.appVersion}`, iconURL: config.appLogo }))
+                .addField('Date de démute', new Date(date * 1000).toLocaleString('fr-FR', { timeZone: 'Europe/Paris' })))
 
             const guildMember = interaction.guild.members.cache.get(member.id)
             await guildMember.roles.add(muteRole)
 
             try {
-                await member.send({ content: `${bold('[BSFR]')}\n\nTu as été muté pour la raison suivante :\n${inlineCode(reason)}\n\nTu seras démuté le ${new Date(date * 1000).toLocaleString('fr-FR', { timeZone: 'Europe/Paris' })}` })
+                await member.send({ content: `${bold('[BSFR]')}\n\nTu as été mute pour la raison suivante :\n${inlineCode(reason)}\n\nTu seras unmute le ${new Date(date * 1000).toLocaleString('fr-FR', { timeZone: 'Europe/Paris' })}` })
             } catch(error) {
-                embeds.push(new MessageEmbed()
+                embeds.push(new Embed()
                     .setColor('#E74C3C')
                     .setDescription('Le message n\'a pas pu être envoyé au membre'))
             }
             
             await logsChannel.send({ embeds: embeds })
 
-            Logger.log('MuteCommand', 'INFO', `Le membre ${member.tag} a été muté par ${interaction.user.tag}`)
+            Logger.log('MuteCommand', 'INFO', `Le membre ${member.tag} a été mute par ${interaction.user.tag}`)
 
-            await interaction.reply({ content: `${userMention(member.id)} a bien été muté`, ephemeral: true })
+            await interaction.reply({ content: `${userMention(member.id)} a bien été mute`, ephemeral: true })
         } catch(error) {
             if(error instanceof CommandInteractionError) {
                 throw new CommandError(error.message, interaction.commandName)

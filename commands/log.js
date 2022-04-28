@@ -14,7 +14,7 @@ module.exports = {
                 required: false
             }
         ],
-        defaultPermission: false
+        default_member_permissions: '0'
     },
     roles: [ 'Admin', 'Modérateur' ],
     channels: [ 'logs' ],

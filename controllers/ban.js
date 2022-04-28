@@ -1,5 +1,6 @@
-const { Client, MessageReaction, User, MessageEmbed } = require('discord.js')
+const { Client, MessageReaction, User } = require('discord.js')
 const { userMention, roleMention, bold, inlineCode } = require('@discordjs/builders')
+const Embed = require('../utils/embed')
 const { Bans, Reactions } = require('../controllers/database')
 const { Op } = require('sequelize')
 const Logger = require('../utils/logger')
@@ -168,11 +169,10 @@ module.exports = {
 
 		const embeds = []
 
-		const embed = new MessageEmbed()
+		const embed = new Embed()
 			.setThumbnail(member.displayAvatarURL({ dynamic: true }))
 			.addField('Le vilain', userMention(banInfos.memberId))
 			.addField('La sanction a été demandée par', userMention(banInfos.bannedBy))
-			.setFooter({ text: `${config.appName} ${config.appVersion}`, iconURL: config.appLogo })
 
 		if(reaction.emoji.name === '✅') {
 			embeds.push(embed.setColor('#2ECC71')
@@ -189,7 +189,7 @@ module.exports = {
 			try {
                 await member.send({ content: `${bold('[BSFR]')}\n\nTu as été banni pour la raison suivante :\n${inlineCode(banInfos.reason)}\n\nLorsque ton ban sera levé, tu recevras un message ici ou de la part du staff.` })
             } catch(error) {
-                embeds.push(new MessageEmbed()
+                embeds.push(new Embed()
                     .setColor('#E74C3C')
                     .setDescription('Le message n\'a pas pu être envoyé au membre'))
             }
@@ -215,9 +215,9 @@ module.exports = {
 			await logsChannel.send({ embeds: embeds })
 
 			try {
-                await member.send({ content: `${bold('[BSFR]')}\n\nLa demande de bannissement n'a pas été approuvée.\nTu es désormais démuté.` })
+                await member.send({ content: `${bold('[BSFR]')}\n\nLa demande de bannissement n'a pas été approuvée.\nTu es désormais unmute.` })
             } catch(error) {
-                embeds.push(new MessageEmbed()
+                embeds.push(new Embed()
                     .setColor('#E74C3C')
                     .setDescription('Le message n\'a pas pu être envoyé au membre'))
             }

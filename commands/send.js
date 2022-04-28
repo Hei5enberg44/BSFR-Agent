@@ -1,5 +1,6 @@
-const { MessageEmbed, CommandInteraction } = require('discord.js')
+const { CommandInteraction } = require('discord.js')
 const { hyperlink, userMention, channelMention } = require('@discordjs/builders')
+const Embed = require('../utils/embed')
 const { CommandError, CommandInteractionError } = require('../utils/error')
 const Logger = require('../utils/logger')
 const config = require('../config.json')
@@ -22,7 +23,7 @@ module.exports = {
                 required: true
             }
         ],
-        defaultPermission: false
+        default_member_permissions: '0'
     },
     roles: [ 'Admin', 'Modérateur' ],
 
@@ -42,14 +43,13 @@ module.exports = {
 
             const sentMessage = await channel.send(message)
 
-            const embed = new MessageEmbed()
+            const embed = new Embed()
                 .setColor('#2ECC71')
                 .setTitle('✍️ Envoi de message')
                 .setThumbnail(interaction.user.displayAvatarURL({ dynamic: true }))
                 .addField('Par', userMention(interaction.user.id), true)
                 .addField('Channel', channelMention(channel.id), true)
                 .addField('Message', hyperlink('Lien', sentMessage.url) + ' - ' + message)
-                .setFooter({ text: `${config.appName} ${config.appVersion}`, iconURL: config.appLogo })
             
             await logsChannel.send({ embeds: [embed] })
 

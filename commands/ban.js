@@ -1,5 +1,6 @@
-const { MessageEmbed, CommandInteraction } = require('discord.js')
+const { CommandInteraction } = require('discord.js')
 const { bold, inlineCode, userMention, roleMention } = require('@discordjs/builders')
+const Embed = require('../utils/embed')
 const { CommandError, CommandInteractionError } = require('../utils/error')
 const ban = require('../controllers/ban')
 const Logger = require('../utils/logger')
@@ -29,7 +30,7 @@ module.exports = {
                 required: true
             }
         ],
-        defaultPermission: false
+        default_member_permissions: '0'
     },
     roles: [ 'Admin', 'Modérateur' ],
 
@@ -59,23 +60,22 @@ module.exports = {
             const embeds = []
 
             if(askForBan) {
-                embeds.push(new MessageEmbed()
+                embeds.push(new Embed()
                     .setColor('#9B59B6')
                     .setTitle('🔨 Demande de ban de ' + member.username)
                     .setThumbnail(member.displayAvatarURL({ dynamic: true }))
                     .addField('Le vilain', userMention(member.id), true)
                     .addField('La sanction a été demandée par', userMention(interaction.user.id, true))
                     .addField('Raison', reason)
-                    .addField('Date de débannissement', new Date(date * 1000).toLocaleString('fr-FR', { timeZone: 'Europe/Paris' }))
-                    .setFooter({ text: `${config.appName} ${config.appVersion}`, iconURL: config.appLogo }))
+                    .addField('Date de débannissement', new Date(date * 1000).toLocaleString('fr-FR', { timeZone: 'Europe/Paris' })))
 
                 const guildMember = interaction.guild.members.cache.get(member.id)
                 await guildMember.roles.add(muteRole)
 
                 try {
-                    await member.send(`${bold('[BSFR]')}\n\nUne demande de bannissement à ton encontre est en attente pour la raison suivante :\n${inlineCode(reason)}\n\nTu as été temporairement muté le temps qu'une décision soit prise.`)
+                    await member.send(`${bold('[BSFR]')}\n\nUne demande de bannissement à ton encontre est en attente pour la raison suivante :\n${inlineCode(reason)}\n\nTu as été temporairement mute le temps qu'une décision soit prise.`)
                 } catch(error) {
-                    embeds.push(new MessageEmbed()
+                    embeds.push(new Embed()
                         .setColor('#E74C3C')
                         .setDescription('Le message n\'a pas pu être envoyé au membre'))
                 }
@@ -92,15 +92,14 @@ module.exports = {
             } else {
                 const logsChannel = interaction.guild.channels.cache.get(config.guild.channels.logs)
 
-                embeds.push(new MessageEmbed()
+                embeds.push(new Embed()
                     .setColor('#2ECC71')
                     .setTitle('🔨 Ban de ' + member.username)
                     .setThumbnail(member.displayAvatarURL({ dynamic: true }))
                     .addField('Le vilain', userMention(member.id), true)
                     .addField('La sanction a été prononcée par', userMention(interaction.user.id), true)
                     .addField('Raison', reason)
-                    .addField('Date de débannissement', new Date(date * 1000).toLocaleString('fr-FR', { timeZone: 'Europe/Paris' }))
-                    .setFooter({ text: `${config.appName} ${config.appVersion}`, iconURL: config.appLogo }))
+                    .addField('Date de débannissement', new Date(date * 1000).toLocaleString('fr-FR', { timeZone: 'Europe/Paris' })))
 
                 await ban.add(member.id, interaction.user.id, interaction.user.id, reason, date)
 

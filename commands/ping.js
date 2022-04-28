@@ -5,7 +5,8 @@ const Logger = require('../utils/logger')
 module.exports = {
 	data: {
 		name: 'ping',
-		description: 'Test si le bot fonctionne'
+		description: 'Test si le bot fonctionne',
+        default_member_permissions: '0'
     },
 
     /**
