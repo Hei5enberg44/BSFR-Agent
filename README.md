@@ -1,6 +1,6 @@
 <h1>bsfr-agent</h1>
 <p>
-  <img alt="Version" src="https://img.shields.io/badge/version-2.4.1-blue.svg?cacheSeconds=2592000" />
+  <img alt="Version" src="https://img.shields.io/badge/version-2.4.2-blue.svg?cacheSeconds=2592000" />
   <a href="#" target="_blank">
     <img alt="License: ISC" src="https://img.shields.io/badge/License-ISC-yellow.svg" />
   </a>
@@ -312,6 +312,43 @@ __Exemples :__
 
 ```
 /roles remove notification role:Annonce
+```
+
+***
+
+- ### /dm : Envoie un message privé à un membre
+
+Permet d'envoyer un message privé de la part de l'Agent à un membre de la guild.
+
+__Paramètres :__
+
+|    Nom    | Obligatoire | Contenu |
+| --------- |:-----------:| ------- |
+| **membre** | ☑ | Membre de la guild |
+| **message** | ☑ | Message |
+
+__Exemples :__
+
+```
+/dm membre:@Hei5enberg#6969 message:Coucou !
+```
+
+***
+
+- ### /r : Répond à un message privé
+
+Permet de répondre à un message privé via un thread de messages privés.
+
+__Paramètres :__
+
+|    Nom    | Obligatoire | Contenu |
+| --------- |:-----------:| ------- |
+| **message** | ☑ | Message |
+
+__Exemples :__
+
+```
+/r message:Coucou !
 ```
 
 ## Auteur
