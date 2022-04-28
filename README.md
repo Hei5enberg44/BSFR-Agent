@@ -52,7 +52,7 @@ __Paramètres :__
 |    Nom    | Obligatoire | Contenu |
 | --------- |:-----------:| ------- |
 | **sujet** | ☑ | Choix parmis `Mots à bannir`, `Message d'anniversaire`, `URL malveillant` |
-| **page** | ☐ | Numéro de page à afficher |
+| **page** |   | Numéro de page à afficher |
 
 __Exemples :__
 
@@ -112,7 +112,7 @@ Permet d'afficher votre avatar ou celui d'un membre.
 
 |    Nom    | Obligatoire | Contenu |
 | --------- |:-----------:| ------- |
-| **membre** | ☐ | Membre de la guild |
+| **membre** |   | Membre de la guild |
 
 __Exemples :__
 
@@ -257,7 +257,7 @@ __Paramètres :__
 
 |    Nom    | Obligatoire | Contenu |
 | --------- |:-----------:| ------- |
-| **date** | ☐ | Date du fichier de log demandé au format `JJ/MM/AAAA` |
+| **date** |   | Date du fichier de log demandé au format `JJ/MM/AAAA` |
 
 __Exemples :__
 
