@@ -1,0 +1,68 @@
+{
+    "appName": "Agent",
+    "appVersion": "2.4.0",
+    "appLogo": "https://cdn.discordapp.com/app-icons/694109037746323517/ea9e6a5b70270e83628706be0ae4a36a.png",
+    "token": "",
+    "clientId": "",
+    "guild": {
+        "id": "",
+        "channels": {
+            "birthday": "",
+            "logs": "",
+            "admin": "",
+            "agentDm": "",
+            "moderation": "",
+            "happyBirthday": "",
+            "youtube": "",
+            "clips": "",
+            "reuploadedClips": "",
+            "twitch": "",
+            "agentCommands": "",
+            "rolesAutoAssignables": ""
+        },
+        "roles": {
+            "Admin": "",
+            "Modérateur": "",
+            "Muted": "",
+            "YouTube": "",
+            "Streamer": "",
+            "Membre": "",
+            "Not French Boi": ""
+        }
+    },
+    "twitter": {
+        "appKey": "",
+        "appSecret": "",
+        "accessToken": "",
+        "accessSecret": ""
+    },
+    "google": {
+        "clientId": "",
+        "clientSecret": "",
+        "accessToken": "",
+        "refreshToken": ""
+    },
+    "twitch": {
+        "clientId": "",
+        "clientSecret": "",
+        "clipsLocation": ""
+    },
+    "database": {
+        "host": "localhost",
+        "port": 3306,
+        "username": "",
+        "password": "",
+        "name": "bsfr_agent"
+    },
+    "antivirus": {
+        "apiKey": ""
+    },
+    "nextcloud": {
+        "username": "",
+        "password": "",
+        "url": ""
+    },
+    "links": {
+        "discordInvite": "https://discord.gg/8cAAa7J"
+    }
+}
