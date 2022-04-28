@@ -62,15 +62,15 @@ module.exports = {
             const member = guild.members.cache.get(birthday.memberId)
 
             if(member) {
-                let message = ''
+                let message = 'Joyeux anniversaire !'
                 if(bdMessages.length > 0) {
                     const random = crypto.randomInt(bdMessages.length)
                     message = bdMessages[random].message
                 }
 
-                Logger.log('BirthdayWish', 'INFO', `Joyeux anniversaire ${member.user.tag}`)
+                Logger.log('BirthdayWish', 'INFO', `Joyeux anniversaire ${member.user.tag} !`)
 
-                happyBirthdayChannel.send(message + userMention(member.user.id))
+                happyBirthdayChannel.send(message + ' ' + userMention(member.user.id))
             }
         }
     }
