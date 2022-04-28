@@ -71,10 +71,6 @@ module.exports = {
         if(message.author.id !== config.clientId) {
             const guild = message.client.guilds.cache.find(g => g.id === config.guild.id)
             const agentDmChannel = guild.channels.cache.get(config.guild.channels.agentDm)
-            const adminsList = guild.roles.cache.get(config.guild.roles["Admin"]).members
-            const modosList = guild.roles.cache.get(config.guild.roles["Modérateur"]).members
-
-            const members = adminsList.concat(modosList)
 
             const createdThread = await threads.get('dm', null, message.author.id)
 
@@ -87,10 +83,15 @@ module.exports = {
                 })
 
                 if(!thread.id) {
-                    Logger.log('DM', 'ERROR', 'Impossible de créer le thread')
+                    Logger.log('DM', 'ERROR', `Échec de la création du thread ${message.author.username}`)
                     await agentDmChannel.send({ content: `Impossible de créer le thread\n${userMention(message.author.id)}: ${message.content}` })
                 } else {
-                    Logger.log('DM', 'INFO', 'Thread créé')
+                    Logger.log('DM', 'INFO', `Thread "${message.author.username}" créé`)
+
+                    const adminsList = guild.roles.cache.get(config.guild.roles["Admin"]).members
+                    const modosList = guild.roles.cache.get(config.guild.roles["Modérateur"]).members
+
+                    const members = adminsList.concat(modosList)
 
                     for(const [, member] of members) {
                         Logger.log('DM', 'INFO', `Ajout de ${member.user.tag} au nouveau thread`)
@@ -103,9 +104,9 @@ module.exports = {
                 thread = await agentDmChannel.threads.fetch(createdThread.threadId)
 
                 if(thread) {
-                    Logger.log('DM', 'INFO', 'Thread trouvé pour ' + message.author.username)
+                    Logger.log('DM', 'INFO', `Thread "${message.author.username}" trouvé`)
                 } else {
-                    Logger.log('DM', 'ERROR', 'Thread non trouvé pour ' + message.author.username)
+                    Logger.log('DM', 'ERROR', `Thread "${message.author.username}" introuvable`)
                 }
             }
 

@@ -4,7 +4,6 @@ const Embed = require('../utils/embed')
 const { CommandError, CommandInteractionError } = require('../utils/error')
 const twitter = require('../controllers/twitter')
 const Logger = require('../utils/logger')
-const config = require('../config.json')
 
 module.exports = {
 	data: {

@@ -87,7 +87,7 @@ module.exports = {
      * @param {string} type type de threads dans lequel supprimer le membre
      * @param {GuildMember} member membre à supprimer des threads
      */
-     removeMember: async function(type, member) {
+    removeMember: async function(type, member) {
         const agentDmChannel = member.guild.channels.cache.get(config.guild.channels.agentDm)
         const threads = await module.exports.getByType(type)
 

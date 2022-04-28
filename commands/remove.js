@@ -4,7 +4,6 @@ const { CommandError, CommandInteractionError } = require('../utils/error')
 const bannedWords = require('../controllers/bannedWords')
 const birthdayMessages = require('../controllers/birthdayMessages')
 const maliciousURL = require('../controllers/maliciousURL')
-const config = require('../config.json')
 
 module.exports = {
 	data: {
