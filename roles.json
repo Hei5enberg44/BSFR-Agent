@@ -1,6 +1,6 @@
 [
     {
-        "name": "Grip",
+        "category": "Grip",
         "roles": [
             { "name": "One Finger Claw Grip", "multiple": false },
             { "name": "Two Finger Claw Grip", "multiple": false },
@@ -8,6 +8,7 @@
             { "name": "X-Grip", "multiple": false },
             { "name": "B-Grip", "multiple": false },
             { "name": "K-Grip", "multiple": false },
+            { "name": "M-Grip", "multiple": false },
             { "name": "R-Grip", "multiple": false },
             { "name": "Custom Grip", "multiple": false },
             { "name": "Default Grip", "multiple": false },
@@ -15,7 +16,7 @@
         ]
     },
     {
-        "name": "Région",
+        "category": "Région",
         "roles": [
             { "name": "France", "multiple": false },
             { "name": "Suisse", "multiple": false },
@@ -25,7 +26,7 @@
         ]
     },
     {
-        "name": "Casque",
+        "category": "Casque",
         "roles": [
             { "name": "HTC Cosmos", "multiple": false },
             { "name": "HTC Vive", "multiple": false },
@@ -39,14 +40,14 @@
         ]
     },
     {
-        "name": "Notification",
+        "category": "Notification",
         "roles": [
             { "name": "Annonce", "multiple": true },
             { "name": "YouTube", "multiple": true }
         ]
     },
     {
-        "name": "Type de joueur",
+        "category": "Type de joueur",
         "roles": [
             { "name": "Tech Player", "multiple": true },
             { "name": "Speed Player", "multiple": true },
