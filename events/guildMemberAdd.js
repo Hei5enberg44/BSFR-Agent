@@ -27,6 +27,7 @@ module.exports = {
             .setTitle('📥 Arrivée de ' + member.user.username)
             .setThumbnail(member.user.displayAvatarURL({ dynamic: true }))
             .addField('Koukou twa', userMention(member.user.id))
+            .addField('Compte créé le', `${(new Date(member.user.createdTimestamp)).toLocaleString()}`)
 
         await logsChannel.send({ embeds: [embed] })
 
