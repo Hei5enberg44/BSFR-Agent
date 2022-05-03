@@ -1,4 +1,5 @@
 const { Message, MessageAttachment } = require('discord.js')
+const Embed = require('../utils/embed')
 const { TwitchError, NextcloudError } = require('../utils/error')
 const fetch = require('node-fetch')
 const crypto = require('crypto')
@@ -105,7 +106,16 @@ module.exports = {
             for(const url of clipsList) {
                 Logger.log('Clips', 'INFO', 'Récupération d\'un clip Twitch de la part de ' + message.author.tag)
                 const result = await module.exports.getClipByUrl(url)
-                if(result) uploadedClipsCount++
+                if(result) {
+                    uploadedClipsCount++
+                } else {
+                    const logsChannel = message.guild.channels.cache.find(c => c.id === config.guild.channels.logs)
+                    const embed = new Embed()
+                        .setColor('#E74C3C')
+                        .setTitle('🎬 Échec de l\'upload d\'un clip')
+                        .setDescription(`Une erreur est survenue lors de l'upload du clip ${url}`)
+                    await logsChannel.send({ embeds: [embed] })
+                }
             }
 
             const attachments = message.attachments
@@ -114,11 +124,27 @@ module.exports = {
                 if(attachment.contentType.match(/(video)/i)) {
                     Logger.log('Clips', 'INFO', 'Récupération d\'un clip Twitch de la part de ' + message.author.tag)
                     const result = await module.exports.getClipByAttachment(attachment, message.author.id)
-                    if(result) uploadedClipsCount++
+                    if(result) {
+                        uploadedClipsCount++
+                    } else {
+                        const logsChannel = message.guild.channels.cache.find(c => c.id === config.guild.channels.logs)
+                        const embed = new Embed()
+                            .setColor('#E74C3C')
+                            .setTitle('🎬 Échec de l\'upload d\'un clip')
+                            .setDescription(`Une erreur est survenue lors de l'upload du clip ${attachment.url}`)
+                        await logsChannel.send({ embeds: [embed] })
+                    }
                 }
             }
 
             if(uploadedClipsCount > 0) {
+                const logsChannel = message.guild.channels.cache.find(c => c.id === config.guild.channels.logs)
+                const embed = new Embed()
+                    .setColor('#2ECC71')
+                    .setTitle('🎬 Nouveau(x) clip(s) uploadé(s) !')
+                    .setDescription(`${message.author.tag} a uploadé ${uploadedClipsCount} clip(s)`)
+                await logsChannel.send({ embeds: [embed] })
+
                 Logger.log('Clips', 'INFO', `${uploadedClipsCount} clip(s) uploadé(s)`)
             }
         } catch(error) {
