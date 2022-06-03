@@ -50,7 +50,7 @@ module.exports = {
                         for(const c of cities) {
                             citiesButtons.addComponents(
                                 new MessageButton()
-                                    .setCustomId(c.nom_de_la_commune)
+                                    .setCustomId(`${c.code_postal},${c.nom_de_la_commune}`)
                                     .setLabel(c.nom_de_la_commune)
                                     .setStyle('PRIMARY')
                             )
@@ -66,9 +66,9 @@ module.exports = {
                             if(reason === 'time') {
                                 await interaction.editReply({ content: 'Vous avez mis trop de temps à répondre', components: [] })
                             } else {
-                                const c = collected.first().customId
+                                const c = collected.first().customId.split(',')
 
-                                await city.set(interaction.user.id, c)
+                                await city.set(interaction.user.id, c[0], c[1])
 
                                 await interaction.editReply({ content: 'Votre ville d\'origine a bien été enregistrée', components: [] })
 

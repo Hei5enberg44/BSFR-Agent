@@ -4,15 +4,17 @@ module.exports = {
     /**
      * Ajoute une ville d'origine dans la base de données
      * @param {String} memberId identifiant du membre
+     * @param {String} postalCode nom de la ville
      * @param {String} cityName nom de la ville
      */
-    set: async function(memberId, cityName) {
+    set: async function(memberId, postalCode, cityName) {
         const c = await Cities.findOne({ where: { memberId: memberId } })
 
         if(c) await module.exports.unset(memberId)
 
         const city = await FranceCities.findOne({
             where: {
+                code_postal: postalCode,
                 nom_de_la_commune: cityName
             },
             group: 'nom_de_la_commune'
