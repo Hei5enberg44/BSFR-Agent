@@ -1,6 +1,6 @@
 <h1>bsfr-agent</h1>
 <p>
-  <img alt="Version" src="https://img.shields.io/badge/version-2.5.0-blue.svg?cacheSeconds=2592000" />
+  <img alt="Version" src="https://img.shields.io/badge/version-2.6.0-blue.svg?cacheSeconds=2592000" />
   <a href="#" target="_blank">
     <img alt="License: ISC" src="https://img.shields.io/badge/License-ISC-yellow.svg" />
   </a>
@@ -349,6 +349,36 @@ __Exemples :__
 
 ```
 /r message:Coucou !
+```
+
+***
+
+- ### /city set : Ajoute une ville d'origine
+
+Permet d'ajouter sa ville d'origine à la base de données.
+
+__Paramètres :__
+
+|    Nom    | Obligatoire | Contenu |
+| --------- |:-----------:| ------- |
+| **code_postal** | ☑ | Code postal |
+
+__Exemples :__
+
+```
+/city set code_postal:46800
+```
+
+***
+
+- ### /city unset : Supprime une ville d'origine
+
+Permet de supprimer sa ville d'origine de la base de données.
+
+__Exemples :__
+
+```
+/city unset
 ```
 
 ## Auteur
