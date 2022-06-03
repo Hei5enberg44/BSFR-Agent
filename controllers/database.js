@@ -162,6 +162,38 @@ const YoutubeVideos = sequelize.define('youtube_videos', {
     freezeTableName: true
 })
 
+const FranceCities = sequelize.define('france_cities', {
+    id: {
+        type: DataTypes.INTEGER,
+        autoIncrement: true,
+        primaryKey: true
+    },
+    code_commune_insee: DataTypes.STRING(5),
+    nom_de_la_commune: DataTypes.STRING(255),
+    code_postal: DataTypes.INTEGER,
+    ligne_5: DataTypes.STRING(255),
+    libelle_d_acheminement: DataTypes.STRING(255),
+    coordonnees_gps: DataTypes.STRING(255)
+}, {
+    timestamps: false,
+    freezeTableName: true
+})
+
+const Cities = sequelize.define('cities', {
+    id: {
+        type: DataTypes.INTEGER,
+        autoIncrement: true,
+        primaryKey: true
+    },
+    memberId: DataTypes.STRING(255),
+    code_postal: DataTypes.INTEGER,
+    nom_de_la_commune: DataTypes.STRING(255),
+    coordonnees_gps: DataTypes.STRING(255)
+}, {
+    timestamps: false,
+    freezeTableName: true
+})
+
 module.exports = {
-    test, BannedWords, BirthdayMessages, MaliciousURL, Reactions, Birthdays, Mutes, Bans, Threads, Tweets, YoutubeVideos
+    test, BannedWords, BirthdayMessages, MaliciousURL, Reactions, Birthdays, Mutes, Bans, Threads, Tweets, YoutubeVideos, FranceCities, Cities
 }
