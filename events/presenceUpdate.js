@@ -24,7 +24,7 @@ module.exports = {
 		if(activity) {
 			const streamRole = newPresence.member.roles.cache.find(role => role.id === config.guild.roles["Streamer"])
 
-			if(streamRole && activity.state.toUpperCase() === 'BEAT SABER') {
+			if(streamRole && activity.state?.toUpperCase() === 'BEAT SABER') {
 				// 150000 = 2min30
 				if((new Date().getTime()) < activity.createdAt.getTime() + 150000) {
 					Logger.log('Stream', 'INFO', `${newPresence.user.tag} stream sur ${activity.name} : ${activity.url}`)

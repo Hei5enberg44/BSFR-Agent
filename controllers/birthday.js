@@ -13,7 +13,7 @@ module.exports = {
      * @param {Number} date date de naissance au format timestamp
      */
     set: async function(memberId, date) {
-        const bd = Birthdays.findOne({ where: { memberId: memberId } })
+        const bd = await Birthdays.findOne({ where: { memberId: memberId } })
 
         if(bd) await module.exports.unset(memberId)
 
