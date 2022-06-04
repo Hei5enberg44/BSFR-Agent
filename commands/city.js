@@ -45,18 +45,22 @@ module.exports = {
                     const cities = await city.getCitiesByPostalCode(postalCode)
 
                     if(cities.length > 0) {
-                        const citiesButtons = new MessageActionRow()
-
-                        for(const c of cities) {
-                            citiesButtons.addComponents(
-                                new MessageButton()
-                                    .setCustomId(`${c.code_postal},${c.nom_de_la_commune}`)
-                                    .setLabel(c.nom_de_la_commune)
-                                    .setStyle('PRIMARY')
-                            )
+                        let components = []
+                        for(let row = 0; row < Math.ceil(cities.length / 5); row++) {
+                            const citiesButtons = new MessageActionRow()
+                            const citiesRow = cities.slice(row * 5, row * 5 + 5)
+                            for(const c of citiesRow) {
+                                citiesButtons.addComponents(
+                                    new MessageButton()
+                                        .setCustomId(`${c.code_postal},${c.nom_de_la_commune}`)
+                                        .setLabel(c.nom_de_la_commune)
+                                        .setStyle('PRIMARY')
+                                )
+                            }
+                            components.push(citiesButtons)
                         }
 
-                        await interaction.reply({ content: 'Veuillez sélectionner votre ville :', components: [citiesButtons], ephemeral: true })
+                        await interaction.reply({ content: 'Veuillez sélectionner votre ville :', components: components, ephemeral: true })
 
                         const filter = i => i.user.id === interaction.user.id
 
