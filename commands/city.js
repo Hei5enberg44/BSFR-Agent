@@ -45,6 +45,7 @@ module.exports = {
                     const cities = await city.getCitiesByPostalCode(postalCode)
 
                     if(cities.length > 0) {
+                        const customId = (new Date()).getTime()
                         const maxRows = 4
                         const maxItemsPerRow = 5
                         const pageCount = Math.ceil(cities.length / (maxRows * maxItemsPerRow))
@@ -61,7 +62,7 @@ module.exports = {
                                 for(const c of citiesRow) {
                                     citiesButtons.addComponents(
                                         new MessageButton()
-                                            .setCustomId(`${c.code_postal},${c.nom_de_la_commune}`)
+                                            .setCustomId(`${c.code_postal}_${c.nom_de_la_commune}_${customId}`)
                                             .setLabel(c.nom_de_la_commune)
                                             .setStyle('SECONDARY')
                                     )
@@ -72,12 +73,12 @@ module.exports = {
                             const citiesButtons = new MessageActionRow()
                             citiesButtons.addComponents(
                                 new MessageButton()
-                                    .setCustomId('previous')
+                                    .setCustomId(`previous_${customId}`)
                                     .setLabel('Précédent')
                                     .setStyle('PRIMARY')
                                     .setDisabled(page > 0 ? false : true),
                                 new MessageButton()
-                                    .setCustomId('next')
+                                    .setCustomId(`next_${customId}`)
                                     .setLabel('Suivant')
                                     .setStyle('PRIMARY')
                                     .setDisabled(page < pageCount - 1 ? false : true)
@@ -91,17 +92,17 @@ module.exports = {
 
                         await interaction.reply({ content: 'Veuillez sélectionner votre ville :', components: components, ephemeral: true })
 
-                        const filter = i => i.user.id === interaction.user.id
+                        const filter = i => i.customId.includes(customId) && i.user.id === interaction.user.id
 
                         const collector = interaction.channel.createMessageComponentCollector({ filter, time: 15000 })
 
                         collector.on('collect', async i => {
                             const choice = i.customId
 
-                            if(!['previous', 'next'].find(x => x === choice)) {
+                            if(![`previous_${customId}`, `next_${customId}`].find(x => x === choice)) {
                                 await i.deferUpdate()
 
-                                const c = choice.split(',')
+                                const c = choice.split('_')
                                 await city.set(interaction.user.id, c[0], c[1])
 
                                 await i.editReply({ content: 'Votre ville d\'origine a bien été enregistrée', components: [] })
@@ -111,7 +112,7 @@ module.exports = {
                                 collector.resetTimer()
                                 await i.deferUpdate()
 
-                                page = choice === 'previous' ? page - 1 : page + 1
+                                page = choice === `previous_${customId}` ? page - 1 : page + 1
                                 components = getComponents(page)
 
                                 await i.editReply({ content: 'Veuillez sélectionner votre ville :', components: components })
