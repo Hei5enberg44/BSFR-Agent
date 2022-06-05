@@ -1,7 +1,7 @@
 const { GuildMember } = require('discord.js')
 const { userMention } = require('@discordjs/builders')
 const Embed = require('../utils/embed')
-const { Birthdays } = require('../controllers/database')
+const { Birthdays, Cities } = require('../controllers/database')
 const threads = require('../controllers/threads')
 const Logger = require('../utils/logger')
 const config = require('../config.json')
@@ -14,6 +14,7 @@ module.exports = {
 	async execute(member) {
 		await module.exports.bye(member)
         await module.exports.removeBirthday(member)
+        await module.exports.removeCity(member)
         await module.exports.updateThreads(member)
 	},
 
@@ -47,6 +48,20 @@ module.exports = {
         })
 
         if(del > 0) Logger.log('Birthday', 'INFO', `Le membre ${member.user.tag} a quitté le serveur, sa date d'anniversaire a été supprimée de la base de données`)
+    },
+
+    /**
+     * Si un membre part, on le supprime de la table cities
+     * @param {GuildMember} member The member that has left/been kicked from the guild
+     */
+    async removeCity(member) {
+        const del = await Cities.destroy({
+            where: {
+                memberId: member.user.id
+            }
+        })
+
+        if(del > 0) Logger.log('City', 'INFO', `Le membre ${member.user.tag} a quitté le serveur, sa ville d'origine a été supprimée de la base de données`)
     },
 
     /**
