@@ -1,7 +1,7 @@
 const { GuildMember } = require('discord.js')
 const { userMention } = require('@discordjs/builders')
 const Embed = require('../utils/embed')
-const { Birthdays, Cities } = require('../controllers/database')
+const { Birthdays, Cities, Twitch } = require('../controllers/database')
 const threads = require('../controllers/threads')
 const Logger = require('../utils/logger')
 const config = require('../config.json')
@@ -15,6 +15,7 @@ module.exports = {
 		await module.exports.bye(member)
         await module.exports.removeBirthday(member)
         await module.exports.removeCity(member)
+        await module.exports.removeTwitch(member)
         await module.exports.updateThreads(member)
 	},
 
@@ -65,10 +66,24 @@ module.exports = {
     },
 
     /**
+     * Si un membre part, on le supprime de la table twitch
+     * @param {GuildMember} member The member that has left/been kicked from the guild
+     */
+    async removeTwitch(member) {
+        const del = await Twitch.destroy({
+            where: {
+                memberId: member.user.id
+            }
+        })
+
+        if(del > 0) Logger.log('Twitch', 'INFO', `Le membre ${member.user.tag} a quitté le serveur, sa chaîne Twitch a été supprimée de la base de données`)
+    },
+
+    /**
 	 * Supprime un membre des threads de messages privés si celui-ci quitte le serveur
 	 * @param {GuildMember} member The member that has left/been kicked from the guild
 	 */
-     async updateThreads(member) {
+    async updateThreads(member) {
         const isInStaff = member.roles.cache.find(r => [ config.guild.roles['Admin'], config.guild.roles['Modérateur'] ].includes(r.id))
 
         // Si le membre faisait partie du staff

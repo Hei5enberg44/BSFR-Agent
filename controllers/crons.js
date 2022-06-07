@@ -3,6 +3,7 @@ const birthday = require('../controllers/birthday')
 const mute = require('../controllers/mute')
 const ban = require('../controllers/ban')
 const youtube = require('../controllers/youtube')
+const twitch = require('../controllers/twitch')
 const Logger = require('../utils/logger')
 
 module.exports = {
@@ -36,5 +37,13 @@ module.exports = {
         }, null, true, 'Europe/Paris')
 
         Logger.log('CronManager', 'INFO', 'Tâche "unban" chargée')
+    },
+
+    live: async function(client) {
+        new CronJob('*/5 * * * *', async function () {
+            await twitch.live(client)
+        }, null, true, 'Europe/Paris')
+
+        Logger.log('CronManager', 'INFO', 'Tâche "live" chargée')
     }
 }

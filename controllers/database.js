@@ -194,6 +194,21 @@ const Cities = sequelize.define('cities', {
     freezeTableName: true
 })
 
+const Twitch = sequelize.define('twitch', {
+    id: {
+        type: DataTypes.INTEGER,
+        autoIncrement: true,
+        primaryKey: true
+    },
+    memberId: DataTypes.STRING(255),
+    channelName: DataTypes.STRING(255),
+    live: DataTypes.BOOLEAN,
+    messageId: DataTypes.STRING(255)
+}, {
+    timestamps: false,
+    freezeTableName: true
+})
+
 module.exports = {
-    test, BannedWords, BirthdayMessages, MaliciousURL, Reactions, Birthdays, Mutes, Bans, Threads, Tweets, YoutubeVideos, FranceCities, Cities
+    test, BannedWords, BirthdayMessages, MaliciousURL, Reactions, Birthdays, Mutes, Bans, Threads, Tweets, YoutubeVideos, FranceCities, Cities, Twitch
 }

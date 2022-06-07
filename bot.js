@@ -69,6 +69,7 @@ try {
             await crons.unmute(client)
             await crons.unban(client)
             await crons.publish(client)
+            await crons.live(client)
         
             Logger.log('Application', 'INFO', 'Le bot est prêt !')
         })

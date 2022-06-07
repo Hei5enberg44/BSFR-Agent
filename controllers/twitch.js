@@ -1,6 +1,8 @@
-const { Message, MessageAttachment } = require('discord.js')
+const { Client, Message, MessageAttachment } = require('discord.js')
 const Embed = require('../utils/embed')
+const { hyperlink } = require('@discordjs/builders')
 const { TwitchError, NextcloudError } = require('../utils/error')
+const { Twitch } = require('./database')
 const fetch = require('node-fetch')
 const crypto = require('crypto')
 const tmp = require('tmp')
@@ -194,7 +196,7 @@ module.exports = {
     /**
      * Récupération d'un clip depuis une pièce jointe à un message Discord
      * @param {MessageAttachment} attachment pièce jointe d'un message Discord
-     * @param {String} memberId identifiant du membre Discord aillant uploadé le clip
+     * @param {String} memberId identifiant du membre Discord ayant uploadé le clip
      * @returns {Promise<Boolean>}
      */
     getClipByAttachment: async function(attachment, memberId) {
@@ -226,6 +228,141 @@ module.exports = {
                 throw new TwitchError(error.message)
             }
         }
+    },
+
+    /**
+     * Recherche les membres en live sur Twitch et envoie une notification dans le channel #twitch-youtube
+     * @param {Client} client client Discord
+     */
+    live: async function(client) {
+        try {
+            const gameId = '503116'
+            const accessToken = await module.exports.getToken()
+            
+            if(accessToken) {
+                const streamers = await Twitch.findAll()
+
+                const users = new URLSearchParams()
+                for(const streamer of streamers) {
+                    users.append('user_login', streamer.channelName)
+                }
+
+                try {
+                    const streaming = await new Promise(async (resolve, reject) => {
+                        const streams = []
+                        let after = null
+
+                        do {
+                            const streamsRequest = await fetch(`https://api.twitch.tv/helix/streams?${after ? `after=${after}&` : ''}first=50&${users.toString()}`, {
+                                headers: {
+                                    'Authorization': 'Bearer ' + accessToken,
+                                    'Client-Id': config.twitch.clientId
+                                }
+                            })
+
+                            if(streamsRequest.ok) {
+                                const streamsResult = await streamsRequest.json()
+                                streams.push(...streamsResult.data)
+                                after = streamsResult.pagination.cursor ?? null
+                            } else {
+                                after = null
+                                reject(`Récupération de la liste des membres en stream impossible (${streamsRequest.status}: ${streamsRequest.statusText})`)
+                            }
+                        } while(after)
+
+                        resolve(streams)
+                    })
+
+                    for(const streamer of streamers) {
+                        const user = streaming.find(s => s.user_name.toLowerCase() === streamer.channelName.toLowerCase() && s.type === 'live' && s.game_id === gameId)
+                        
+                        if(user) {
+                            const userLogin = user.user_login
+                            const gameName = user.game_name
+                            const title = user.title
+                            const viewerCount = user.viewer_count.toString()
+                            const thumbnailUrl = user.thumbnail_url.replace('{width}', 1280).replace('{height}', 720)
+
+                            const guild = client.guilds.cache.find(g => g.id === config.guild.id)
+                            const member = guild.members.cache.find(m => m.id === streamer.memberId)
+                            const twitchChannel = guild.channels.cache.find(c => c.id === config.guild.channels.twitch)
+
+                            const embed = new Embed()
+                                .setColor('#6441A5')
+                                .setTitle(`${member.displayName} est en live !`)
+                                .setDescription(`${hyperlink(title, `https://www.twitch.tv/${userLogin}`)}`)
+                                .setThumbnail(member.displayAvatarURL({ dynamic: true }))
+                                .addFields(
+                                    { name: 'Jeu', value: gameName, inline: true },
+                                    { name: '\u200b', value: '\u200b', inline: true },
+                                    { name: 'Viewers', value: viewerCount, inline: true }
+                                )
+                                .setImage(thumbnailUrl)
+                            
+                            if(!streamer.live) {
+                                const message = await twitchChannel.send({ embeds: [embed] })
+                                
+                                streamer.live = true
+                                streamer.messageId = message.id
+                                await streamer.save()
+
+                                Logger.log('Twitch', 'INFO', `${member.user.tag} est en live !`)
+                            } else {
+                                if(streamer.messageId !== '') {
+                                    const message = await twitchChannel.messages.fetch(streamer.messageId)
+                                    await message.edit({ embeds: [embed] })
+                                }
+                            }
+                        } else {
+                            if(streamer.live) {
+                                streamer.live = false
+                                streamer.messageId = ''
+                                await streamer.save()
+                            }
+                        }
+                    }
+                } catch(error) {
+                    throw new TwitchError(error)
+                }
+            }
+        } catch(error) {
+            if(error instanceof TwitchError) {
+                Logger.log('Twitch', 'ERROR', error.message)
+            } else {
+                throw new TwitchError(error.message)
+            }
+        }
+    },
+
+    /**
+     * Lie un compte Twitch à un membre Discord
+     * @param {String} memberId identifiant du membre Discord auquel lier à un compte Twitch
+     * @param {String} channelName nom de la chaîne Twitch à lier au membre Discord
+     */
+    link: async function(memberId, channelName) {
+        const streamer = await Twitch.findOne({ where: { memberId: memberId } })
+
+        if(streamer) {
+            streamer.channelName = channelName
+            streamer.live = false
+            streamer.messageId = ''
+            streamer.save()
+        } else {
+            await Twitch.create({
+                memberId: memberId,
+                channelName: channelName,
+                live: false,
+                messageId: ''
+            })
+        }
+    },
+
+    /**
+     * Délie un compte Twitch d'un membre Discord
+     * @param {String} memberId identifiant du membre Discord pour lequel délier un compte Twitch
+     */
+    unlink: async function(memberId) {
+        await Twitch.destroy({ where: { memberId: memberId } })
     },
 
     /**
