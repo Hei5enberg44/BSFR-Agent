@@ -121,7 +121,7 @@ module.exports = {
 			await BirthdayMessages.destroy({ where: { id: ids } })
 			await Reactions.destroy({ where: { id: r.id } })
 
-			Logger.log('BirthdayMessages', 'INFO', `${user.tag} a supprimé les messages d\'anniversaire suivants : ${r.data.map(message => message.message).join(', ')}`)
+			Logger.log('BirthdayMessages', 'INFO', `${user.tag} a supprimé les messages d'anniversaire suivants : ${r.data.map(message => message.message).join(', ')}`)
 
 			embed.setColor('#2ECC71')
 				.setTitle('🗑️ Suppression de messages d\'anniversaire')

@@ -46,7 +46,7 @@ module.exports = {
             await reply.react('✅')
             await reply.react('❌')
 
-            Logger.log('Twitter', 'INFO', `${interaction.user.tag} a effectué une demande d\'envoi de Tweet`)
+            Logger.log('Twitter', 'INFO', `${interaction.user.tag} a effectué une demande d'envoi de Tweet`)
         } catch(error) {
             if(error instanceof CommandInteractionError) {
                 throw new CommandError(error.message, interaction.commandName)

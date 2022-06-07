@@ -75,7 +75,7 @@ module.exports = {
                 case 'birthdayMessage':
                     const messagesList = await birthdayMessages.add(text, interaction.user)
 
-                    Logger.log('BirthdayMessages', 'INFO', `${interaction.user.tag} a ajouté le message d\'anniversaire suivant : ${text.trim()}`)
+                    Logger.log('BirthdayMessages', 'INFO', `${interaction.user.tag} a ajouté le message d'anniversaire suivant : ${text.trim()}`)
 
                     embed.setTitle('🥳 Ajout d\'un message d\'anniversaire')
 
