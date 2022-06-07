@@ -1,6 +1,6 @@
 <h1>bsfr-agent</h1>
 <p>
-  <img alt="Version" src="https://img.shields.io/badge/version-2.6.2-blue.svg?cacheSeconds=2592000" />
+  <img alt="Version" src="https://img.shields.io/badge/version-2.7.0-blue.svg?cacheSeconds=2592000" />
   <a href="#" target="_blank">
     <img alt="License: ISC" src="https://img.shields.io/badge/License-ISC-yellow.svg" />
   </a>
@@ -379,6 +379,36 @@ __Exemples :__
 
 ```
 /city unset
+```
+
+***
+
+- ### /twitch link : Lie un compte Twitch à membre
+
+Lie un compte Twitch afin d'activer les notifications lorsque le streameur est en live.
+
+__Paramètres :__
+
+|    Nom    | Obligatoire | Contenu |
+| --------- |:-----------:| ------- |
+| **chaine** | ☑ | Nom de la chaîne Twitch à lier au membre |
+
+__Exemples :__
+
+```
+/twitch link chaine:hei5enberg44
+```
+
+***
+
+- ### /twitch unlink : Délie un compte Twitch d'un membre
+
+Délie le compte Twitch afin de désactiver les notifications lorsque le streameur est en live.
+
+__Exemples :__
+
+```
+/twitch unlink
 ```
 
 ## Auteur
