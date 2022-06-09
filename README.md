@@ -13,6 +13,7 @@
 
 ## Pré-requis
 
+- FFMPEG (pour le téléchargement des clips/vidéos Twitch)
 - Serveur NextCloud (pour l'hébergement des clips Twitch)
 - Clé d'API Twitch (pour le téléchargement des clips Twitch postés dans le channel #clips)
 - Clé d'API Twitter (pour l'envoi de Tweets via le bot)
