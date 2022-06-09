@@ -285,6 +285,13 @@ module.exports = {
         return videoToken
     },
 
+    /**
+     * Récupération de la liste des chunks constituants une VOD
+     * @param {String} videoId identifiant de la VOD
+     * @param {String} token token de la VOD
+     * @param {String} sig signature de la VOD
+     * @returns {Promise<String>} liste des chunks constituants la VOD
+     */
     getVideoPlaylist: async function(videoId, token, sig) {
         const params = new URLSearchParams({
             nauth: token,
@@ -312,6 +319,11 @@ module.exports = {
         }
     },
 
+    /**
+     * Récupération d'un fichier playlist contenant la liste des chunks constituants une VOD
+     * @param {String} videoId identifiant de la VOD
+     * @returns {Promise<String>} URL du fichier playlist
+     */
     getRestrictedVideoPlaylist: async function(videoId) {
         const videoInfosRequest = await fetch(`https://api.twitch.tv/kraken/videos/${videoId}`, {
             method: 'GET',
@@ -383,6 +395,11 @@ module.exports = {
         }
     },
 
+    /**
+     * Téléchargement d'une VOD
+     * @param {String} videoId identifiant de la VOD à télécharger
+     * @returns {Promise<tmp.FileResult>} fichier téléchargé
+     */
     downloadVideo: async function(videoId) {
         const videoToken = await module.exports.getVideoToken(videoId)
         const videoPlaylistRaw = await module.exports.getVideoPlaylist(videoId, videoToken.data.videoPlaybackAccessToken.value, videoToken.data.videoPlaybackAccessToken.signature)
