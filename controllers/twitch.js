@@ -4,8 +4,10 @@ const { hyperlink } = require('@discordjs/builders')
 const { TwitchError, NextcloudError } = require('../utils/error')
 const { Twitch } = require('./database')
 const fetch = require('node-fetch')
+const pLimit = require('p-limit')
 const crypto = require('crypto')
 const tmp = require('tmp')
+const path = require('path')
 const fs = require('fs')
 const ffmpeg = require('fluent-ffmpeg')
 const nextcloud = require('../controllers/nextcloud')
@@ -129,19 +131,18 @@ module.exports = {
 
                 const newFolder = await nextcloud.createFolder(`${config.twitch.clipsLocation}/${folderName}`)
                 await nextcloud.uploadFile(file.name, `${newFolder.name}/${fileName}.mp4`)
+                file.removeCallback()
             } catch(error) {
+                file.removeCallback()
                 if(error instanceof NextcloudError) {
-                    file.removeCallback()
                     throw new TwitchError(error.message)
                 }
             }
 
-            file.removeCallback()
-
             return true
         } catch(error) {
             if(error instanceof TwitchError) {
-                Logger.log('Clips', 'WARNING', error.message)
+                Logger.log('Clips', 'ERROR', error.message)
                 return false
             } else {
                 throw new TwitchError(error.message)
@@ -166,14 +167,13 @@ module.exports = {
 
                 const newFolder = await nextcloud.createFolder(`${config.twitch.clipsLocation}/${folderName}`)
                 await nextcloud.uploadFile(file.name, `${newFolder.name}/${fileName}.mp4`)
+                file.removeCallback()
             } catch(error) {
+                file.removeCallback()
                 if(error instanceof NextcloudError) {
-                    file.removeCallback()
                     throw new TwitchError(error.message)
                 }
             }
-
-            file.removeCallback()
 
             return true
         } catch(error) {
@@ -447,49 +447,54 @@ module.exports = {
             }
         }
 
-        const tmpChunks = []
-        for(const video of videoList) {
-            let isDone = false
-            let tryUnmute = vodAge < 24
-            tryUnmute = true
-            let errorCount = 0
+        const limit = pLimit(10)
+        const tmpChunks = await Promise.all(videoList.map(async (video) => {
+            return await limit(async () => {
+                let isDone = false
+                let tryUnmute = vodAge < 24
+                tryUnmute = true
+                let errorCount = 0
 
-            const fileName = video.key.includes('?') ? video.key.split('?')[0] : video.key
-            const tmpChunk = tmp.fileSync({ name: `${videoId}-${fileName}` })
+                const fileName = video.key.includes('?') ? video.key.split('?')[0] : video.key
+                const tmpChunk = tmp.fileSync({ name: `${videoId}-${fileName}` })
 
-            while(!isDone && errorCount < 10) {
-                try {
-                    if(tryUnmute && video.key.includes('-muted')) {
-                        await module.exports.downloadChunk(baseUrl + video.key.replace('-muted', ''), tmpChunk.name)
-                    } else {
-                        await module.exports.downloadChunk(baseUrl + video.key, tmpChunk.name)
-                    }
+                while(!isDone && errorCount < 10) {
+                    try {
+                        if(tryUnmute && video.key.includes('-muted')) {
+                            await module.exports.downloadChunk(baseUrl + video.key.replace('-muted', ''), tmpChunk.name)
+                        } else {
+                            await module.exports.downloadChunk(baseUrl + video.key, tmpChunk.name)
+                        }
 
-                    isDone = true
-                } catch(error) {
-                    errorCount++
-                    
-                    const err = JSON.parse(error.message)
-                    if(err.status && err.status === 403) {
-                        tryUnmute = false
-                    } else {
-                        await new Promise(res => setTimeout(res, 5000))
+                        isDone = true
+                    } catch(error) {
+                        errorCount++
+                        
+                        const err = JSON.parse(error.message)
+                        if(err.status && err.status === 403) {
+                            tryUnmute = false
+                        } else {
+                            await new Promise(res => setTimeout(res, 5000))
+                        }
                     }
                 }
-            }
 
-            if(!isDone) {
-                tmpChunk.removeCallback()
-                throw new TwitchError('Échec du téléchargement de la VOD')
-            } else {
-                tmpChunks.push(tmpChunk)
-            }
-        }
+                if(!isDone) {
+                    limit.clearQueue()
+                    tmpChunk.removeCallback()
+                    throw new TwitchError('Échec du téléchargement de la VOD')
+                } else {
+                    return tmpChunk
+                }
+            })
+        }))
 
         const outputTmp = tmp.fileSync({ name: `${videoId}-output.ts` })
         const outputStream = fs.createWriteStream(outputTmp.name)
-        for(const tmpChunk of tmpChunks) {
-            if(fs.existsSync(tmpChunk.name)) {
+        for(const video of videoList) {
+            const fileName = video.key.includes('?') ? video.key.split('?')[0] : video.key
+            const tmpChunk = tmpChunks.find(c => path.basename(c.name) === `${videoId}-${fileName}`)
+            if(tmpChunk && fs.existsSync(tmpChunk.name)) {
                 const inputStream = fs.createReadStream(tmpChunk.name)
                 await new Promise(resolve => {
                     inputStream.pipe(outputStream, { end: false })
