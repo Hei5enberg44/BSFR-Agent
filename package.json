@@ -1,7 +1,7 @@
 {
   "name": "bsfr-agent",
   "displayName": "BSFR Agent",
-  "version": "2.8.0",
+  "version": "2.8.1",
   "description": "Admin agent bot for BSFR",
   "main": "bot.js",
   "scripts": {
@@ -24,6 +24,7 @@
     "mariadb": "^3.0.0",
     "nextcloud-node-client": "^1.8.1",
     "node-fetch": "^2.6.7",
+    "p-limit": "^3.1.0",
     "sequelize": "^6.20.1",
     "tmp": "^0.2.1",
     "twit": "^2.2.11"
