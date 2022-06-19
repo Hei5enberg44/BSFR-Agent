@@ -18,7 +18,7 @@ module.exports = {
 				Logger.log('Rules', 'INFO', `${user.tag} a accepté les règles. Le rôle @Membre lui a été attribué.`)
 				await member.roles.add(role)
 			}
-		} else if(reaction.emoji.name === '☑️') {
+		} else if(reaction.emoji.name === '☑') {
 			const role = guild.roles.cache.find(r => r.id === config.guild.roles["Not French Boi"])
 			if(role) {
 				Logger.log('Rules', 'INFO', `${user.tag} a accepté les règles. Le rôle @Not French Boi lui a été attribué.`)
@@ -42,7 +42,7 @@ module.exports = {
 				Logger.log('Rules', 'INFO', `${user.tag} a refusé les règles. Le rôle @Membre lui a été retiré.`)
 				await member.roles.remove(role)
 			}
-		} else if(reaction.emoji.name === '☑️') {
+		} else if(reaction.emoji.name === '☑') {
 			const role = guild.roles.cache.find(r => r.id === config.guild.roles["Not French Boi"])
 			if(role) {
 				Logger.log('Rules', 'INFO', `${user.tag} a refusé les règles. Le rôle @Not French Boi lui a été retiré.`)
