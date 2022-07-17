@@ -70,7 +70,7 @@ module.exports = {
 
                 Logger.log('BirthdayWish', 'INFO', `Joyeux anniversaire ${member.user.tag} !`)
 
-                happyBirthdayChannel.send(message + ' ' + userMention(member.user.id))
+                await happyBirthdayChannel.send(message + ' ' + userMention(member.user.id))
             }
         }
     }
