@@ -1,4 +1,4 @@
-const { CommandInteraction } = require('discord.js')
+const { CommandInteraction, ApplicationCommandOptionType } = require('discord.js')
 const Embed = require('../utils/embed')
 const { CommandError, CommandInteractionError } = require('../utils/error')
 const bannedWords = require('../controllers/bannedWords')
@@ -12,7 +12,7 @@ module.exports = {
 		description: 'Ajouts divers',
         options: [
             {
-                type: 'STRING',
+                type: ApplicationCommandOptionType.String,
                 name: 'sujet',
                 description: 'Sujet',
                 choices: [
@@ -32,7 +32,7 @@ module.exports = {
                 required: true
             },
             {
-                type: 'STRING',
+                type: ApplicationCommandOptionType.String,
                 name: 'texte',
                 description: '/!\\ (Mots bannis uniquement) Si il y a plusieurs mots, merci de les séparer par un point virgule /!\\',
                 required: true
@@ -55,7 +55,7 @@ module.exports = {
             let embed = new Embed()
                 .setColor('#2ECC71')
                 .setThumbnail(interaction.user.displayAvatarURL({ dynamic: true }))
-                .addField('Membre', interaction.user.tag)
+                .addFields({ name: 'Membre', value: interaction.user.tag })
 
             switch(subject) {
                 case 'bannedWords':
@@ -67,7 +67,7 @@ module.exports = {
 
                     for(const [action, words] of Object.entries(wordsList)) {
                         if(words.length > 0) {
-                            embed.addField(action === 'new' ? 'Ajouté' : 'Déjà ajouté', words.join(', '))
+                            embed.addFields({ name: action === 'new' ? 'Ajouté' : 'Déjà ajouté', value: words.join(', ') })
                         }
                     }
 
@@ -81,7 +81,7 @@ module.exports = {
 
                     for(const [action, message] of Object.entries(messagesList)) {
                         if(message !== '') {
-                            embed.addField(action === 'new' ? 'Ajouté' : 'Déjà ajouté', message)
+                            embed.addFields({ name: action === 'new' ? 'Ajouté' : 'Déjà ajouté', value: message })
                         }
                     }
 
@@ -95,7 +95,7 @@ module.exports = {
 
                     for(const [action, url] of Object.entries(urlsList)) {
                         if(url !== '') {
-                            embed.addField(action === 'new' ? 'Ajouté' : 'Déjà ajouté', url)
+                            embed.addFields({ name: action === 'new' ? 'Ajouté' : 'Déjà ajouté', value: url })
                         }
                     }
 

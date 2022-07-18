@@ -1,5 +1,4 @@
-const { GuildMember, Message, MessageReaction, User } = require("discord.js")
-const { userMention, roleMention, hyperlink } = require("@discordjs/builders")
+const { GuildMember, Message, MessageReaction, User, userMention, roleMention, hyperlink } = require("discord.js")
 const Embed = require('../utils/embed')
 const { BannedWordsError } = require('../utils/error')
 const { BannedWords, Reactions } = require('./database')
@@ -81,9 +80,11 @@ module.exports = {
                     .setColor('#E74C3C')
                     .setTitle('⛔ Usage de mots bannis')
                     .setThumbnail(message.author.displayAvatarURL({ dynamic: true }))
-                    .addField('Le vilain', userMention(message.author.id))
-                    .addField('Les mots interdits utilisés', usedBannedWords.join(', '))
-                    .addField('Message', hyperlink('Lien', message.url))
+                    .addFields(
+                        { name: 'Le vilain', value: userMention(message.author.id) },
+                        { name: 'Les mots interdits utilisés', value: usedBannedWords.join(', ') },
+                        { name: 'Message', value: hyperlink('Lien', message.url) }
+                    )
                 
                 await logsChannel.send({ content: roleMention(config.guild.roles['Modérateur']), embeds: [embed] })
             }
@@ -152,7 +153,7 @@ module.exports = {
     confirmRemove: async function(reaction, user, r) {
         const embed = new Embed()
 			.setThumbnail(user.displayAvatarURL({ dynamic: true }))
-			.addField('Membre', user.tag)
+			.addFields({ name: 'Membre', value: user.tag })
 
 		if(reaction.emoji.name === '✅') {
 			const ids = r.data.map(word => word.id)
@@ -163,7 +164,7 @@ module.exports = {
 
 			embed.setColor('#2ECC71')
 				.setTitle('🗑️ Suppression de mots bannis')
-				.addField('Mots bannis supprimés', r.data.map(word => word.word).join('\n'))
+				.addFields({ name: 'Mots bannis supprimés', value: r.data.map(word => word.word).join('\n') })
 
 			await reaction.message.reactions.removeAll()
 			await reaction.message.edit({ embeds: [embed] })
@@ -172,7 +173,7 @@ module.exports = {
 
 			embed.setColor('#E74C3C')
 				.setTitle('🗑️ Refus de suppression de mots bannis')
-				.addField('Mots bannis non supprimés', r.data.map(word => word.word).join('\n'))
+				.addFields({ name: 'Mots bannis non supprimés', value: r.data.map(word => word.word).join('\n') })
 
 			await reaction.message.reactions.removeAll()
 			await reaction.message.edit({ embeds: [embed] })

@@ -1,5 +1,4 @@
-const { Message } = require('discord.js')
-const { userMention } = require('@discordjs/builders')
+const { Message, userMention } = require('discord.js')
 const crypto = require('crypto')
 const bannedWords = require('../controllers/bannedWords')
 const maliciousURL = require('../controllers/maliciousURL')

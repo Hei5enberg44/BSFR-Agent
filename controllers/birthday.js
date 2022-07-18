@@ -1,5 +1,4 @@
-const { Client } = require('discord.js')
-const { userMention } = require('@discordjs/builders')
+const { Client, userMention } = require('discord.js')
 const { Birthdays, BirthdayMessages } = require('./database')
 const { Sequelize } = require('sequelize')
 const crypto = require('crypto')

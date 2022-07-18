@@ -1,4 +1,4 @@
-const { CommandInteraction } = require('discord.js')
+const { CommandInteraction, ApplicationCommandOptionType } = require('discord.js')
 const { CommandError, CommandInteractionError } = require('../utils/error')
 const twitch = require('../controllers/twitch')
 const Logger = require('../utils/logger')
@@ -9,12 +9,12 @@ module.exports = {
 		description: 'Lie votre compte Twitch afin d\'activer les notifications lorsque vous êtes en live',
         options: [
             {
-                type: 'SUB_COMMAND',
+                type: ApplicationCommandOptionType.Subcommand,
                 name: 'link',
                 description: 'Lie votre compte Twitch',
                 options: [
                     {
-                        type: 'STRING',
+                        type: ApplicationCommandOptionType.String,
                         name: 'chaine',
                         description: 'Nom de votre chaîne Twitch',
                         required: true
@@ -22,7 +22,7 @@ module.exports = {
                 ]
             },
             {
-                type: 'SUB_COMMAND',
+                type: ApplicationCommandOptionType.Subcommand,
                 name: 'unlink',
                 description: 'Délie votre compte Twitch'
             }

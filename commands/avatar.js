@@ -1,4 +1,4 @@
-const { CommandInteraction } = require('discord.js')
+const { CommandInteraction, ApplicationCommandOptionType } = require('discord.js')
 const { CommandError, CommandInteractionError } = require('../utils/error')
 
 module.exports = {
@@ -7,7 +7,7 @@ module.exports = {
 		description: 'Récupère l\'avatar d\'un membre',
         options: [
             {
-                type: 'USER',
+                type: ApplicationCommandOptionType.User,
                 name: 'membre',
                 description: 'Membre pour lequel récupérer l\'avatar',
                 required: false

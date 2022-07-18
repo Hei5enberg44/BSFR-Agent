@@ -1,4 +1,4 @@
-const { MessageAttachment, CommandInteraction } = require('discord.js')
+const { MessageAttachment, CommandInteraction, ApplicationCommandOptionType } = require('discord.js')
 const { CommandError, CommandInteractionError } = require('../utils/error')
 const fs = require('fs')
 
@@ -8,7 +8,7 @@ module.exports = {
 		description: 'Récupère un fichier de log',
         options: [
             {
-                type: 'STRING',
+                type: ApplicationCommandOptionType.String,
                 name: 'date',
                 description: 'Date du fichier de log demandé au format JJ/MM/AAAA (ex: 19/12/2021)',
                 required: false

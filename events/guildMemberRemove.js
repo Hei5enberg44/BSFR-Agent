@@ -1,5 +1,4 @@
-const { GuildMember } = require('discord.js')
-const { userMention } = require('@discordjs/builders')
+const { GuildMember, userMention } = require('discord.js')
 const Embed = require('../utils/embed')
 const { Birthdays, Cities, Twitch } = require('../controllers/database')
 const threads = require('../controllers/threads')
@@ -30,7 +29,7 @@ module.exports = {
             .setColor('#E74C3C')
             .setTitle('📤 Départ de ' + member.user.username)
             .setThumbnail(member.user.displayAvatarURL({ dynamic: true }))
-            .addField('Orevouar', userMention(member.user.id))
+            .addFields({ name: 'Orevouar', value: userMention(member.user.id) })
         
         await logsChannel.send({ embeds: [embed] })
 

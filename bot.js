@@ -14,7 +14,7 @@ try {
     if(!fs.existsSync('./config.json')) throw Error('Le fichier de configuration "config.json" est manquant')
     const config = require('./config.json')
 
-    const { Client, Intents } = require('discord.js')
+    const { Client, GatewayIntentBits, Partials } = require('discord.js')
     const Commands = require('./controllers/commands')
     const Events = require('./controllers/events')
     const crons = require('./controllers/crons')
@@ -24,18 +24,22 @@ try {
     try {
         const client = new Client({
             intents: [
-                Intents.FLAGS.DIRECT_MESSAGES,
-                Intents.FLAGS.DIRECT_MESSAGE_REACTIONS,
-                Intents.FLAGS.GUILDS,
-                Intents.FLAGS.GUILD_BANS,
-                Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS,
-                Intents.FLAGS.GUILD_MEMBERS,
-                Intents.FLAGS.GUILD_MESSAGES,
-                Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
-                Intents.FLAGS.GUILD_PRESENCES,
-                Intents.FLAGS.GUILD_VOICE_STATES
+                GatewayIntentBits.DirectMessages,
+                GatewayIntentBits.DirectMessageReactions,
+                GatewayIntentBits.Guilds,
+                GatewayIntentBits.GuildBans,
+                GatewayIntentBits.GuildEmojisAndStickers,
+                GatewayIntentBits.GuildMembers,
+                GatewayIntentBits.GuildMessages,
+                GatewayIntentBits.GuildMessageReactions,
+                GatewayIntentBits.GuildPresences,
+                GatewayIntentBits.GuildVoiceStates
             ],
-            partials: [ 'MESSAGE', 'CHANNEL', 'REACTION' ]
+            partials: [
+                Partials.Message,
+                Partials.Channel,
+                Partials.Reaction
+            ]
         })
 
         client.once('ready', async () => {

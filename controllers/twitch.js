@@ -1,6 +1,5 @@
-const { Client, Message, MessageAttachment } = require('discord.js')
+const { Client, Message, MessageAttachment, hyperlink } = require('discord.js')
 const Embed = require('../utils/embed')
-const { hyperlink } = require('@discordjs/builders')
 const { TwitchError, NextcloudError } = require('../utils/error')
 const { Twitch } = require('./database')
 const fetch = require('node-fetch')
@@ -607,7 +606,7 @@ module.exports = {
                                 Logger.log('Twitch', 'INFO', `${member.user.tag} est en live !`)
                             } else {
                                 if(streamer.messageId !== '') {
-                                    const message = await twitchChannel.messages.fetch(streamer.messageId)
+                                    const message = await twitchChannel.messages.fetch({ message: streamer.messageId })
                                     await message.edit({ embeds: [embed] })
                                 }
                             }

@@ -1,5 +1,4 @@
-const { Message } = require('discord.js')
-const { bold, inlineCode, userMention, roleMention } = require('@discordjs/builders')
+const { Message, bold, inlineCode, userMention, roleMention } = require('discord.js')
 const Embed = require('../utils/embed')
 const { AntivirusError } = require('../utils/error')
 const fetch = require('node-fetch')
@@ -110,8 +109,10 @@ module.exports = {
                             .setColor('#E74C3C')
                             .setTitle('❗ Fichier infecté')
                             .setThumbnail(message.author.displayAvatarURL({ dynamic: true }))
-                            .addField('Le méchant', userMention(message.author.id), true)
-                            .addField('Nom du fichier', attachment.name, true))
+                            .addFields(
+                                { name: 'Le méchant', value: userMention(message.author.id), inline: true },
+                                { name: 'Nom du fichier', value: attachment.name, inline: true }
+                            ))
 
                         try {
                             await message.author.send({ content: `${bold('[BSFR]')}\n\nLe fichier que tu as uploadé ${inlineCode(attachment.name)} est infecté.\nIl a été supprimé et tu as été mute.\nUn membre du staff te contactera rapidement.` })

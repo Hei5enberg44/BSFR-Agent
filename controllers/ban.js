@@ -1,5 +1,4 @@
-const { Client, MessageReaction, User } = require('discord.js')
-const { userMention, roleMention, bold, inlineCode } = require('@discordjs/builders')
+const { Client, MessageReaction, User, userMention, roleMention, bold, inlineCode } = require('discord.js')
 const Embed = require('../utils/embed')
 const { Bans, Reactions } = require('../controllers/database')
 const { Op } = require('sequelize')
@@ -171,15 +170,19 @@ module.exports = {
 
 		const embed = new Embed()
 			.setThumbnail(member.displayAvatarURL({ dynamic: true }))
-			.addField('Le vilain', userMention(banInfos.memberId))
-			.addField('La sanction a été demandée par', userMention(banInfos.bannedBy))
+			.addFields(
+                { name: 'Le vilain', value: userMention(banInfos.memberId) },
+                { name: 'La sanction a été demandée par', value: userMention(banInfos.bannedBy) }
+            )
 
 		if(reaction.emoji.name === '✅') {
 			embeds.push(embed.setColor('#2ECC71')
 				.setTitle('🔨 [ACCEPTÉ] Demande de ban de ' + member.user.username)
-				.addField('La demande a été acceptée par', userMention(user.id), true)
-				.addField('Raison', banInfos.reason)
-				.addField('Date de débannissement', new Date(banInfos.unbanDate * 1000).toLocaleString('fr-FR', { timeZone: 'Europe/Paris' })))
+				.addFields(
+                    { name: 'La demande a été acceptée par', value: userMention(user.id), inline: true },
+                    { name: 'Raison', value: banInfos.reason },
+                    { name: 'Date de débannissement', value: new Date(banInfos.unbanDate * 1000).toLocaleString('fr-FR', { timeZone: 'Europe/Paris' }) }
+                ))
 
 			await module.exports.approve(banId, user.id)
 			await Reactions.destroy({ where: { id: r.id } })
@@ -203,9 +206,11 @@ module.exports = {
 		} else if(reaction.emoji.name === '❌') {
 			embeds.push(embed.setColor('#2ECC71')
 				.setTitle('🔨 [REFUSÉ] Demande de ban de ' + member.user.username)
-				.addField('La demande a été refusée par', userMention(user.id), true)
-				.addField('Raison', banInfos.reason)
-				.addField('Date de débannissement', new Date(banInfos.unbanDate * 1000).toLocaleString('fr-FR', { timeZone: 'Europe/Paris' })))
+				.addFields(
+                    { name: 'La demande a été refusée par', value: userMention(user.id), inline: true },
+                    { name: 'Raison', value: banInfos.reason },
+                    { name: 'Date de débannissement', value: new Date(banInfos.unbanDate * 1000).toLocaleString('fr-FR', { timeZone: 'Europe/Paris' }) },
+                ))
 
 			await member.roles.remove(muteRole)
 

@@ -1,5 +1,4 @@
-const { GuildBan } = require('discord.js')
-const { userMention } = require('@discordjs/builders')
+const { GuildBan, userMention } = require('discord.js')
 const Embed = require('../utils/embed')
 const config = require('../config.json')
 
@@ -14,9 +13,9 @@ module.exports = {
 
         const embed = new Embed()
             .setColor('#2ECC71')
-            .setTitle("🔨 Déban de " + ban.user.username)
+            .setTitle('🔨 Déban de ' + ban.user.username)
             .setThumbnail(ban.user.displayAvatarURL({ dynamic: true }))
-            .addField("Utilisateur", userMention(ban.user.id))
+            .addFields({ name: 'Utilisateur', value: userMention(ban.user.id) })
 
         await logsChannel.send({ embeds: [embed] })
 	}

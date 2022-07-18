@@ -1,5 +1,4 @@
-const { CommandInteraction } = require('discord.js')
-const { roleMention, bold } = require('@discordjs/builders')
+const { CommandInteraction, ApplicationCommandOptionType, roleMention, bold } = require('discord.js')
 const Embed = require('../utils/embed')
 const { CommandError, CommandInteractionError } = require('../utils/error')
 const roles = require('../roles.json')
@@ -12,23 +11,23 @@ module.exports = {
 		description: 'Assignation auto de rôles',
         options: [
             {
-                type: 'SUB_COMMAND',
+                type: ApplicationCommandOptionType.Subcommand,
                 name: 'list',
                 description: 'Liste vos rôles'
             },
             {
-                type: 'SUB_COMMAND_GROUP',
+                type: ApplicationCommandOptionType.SubcommandGroup,
                 name: 'add',
                 description: 'Ajoute un rôle',
                 options: roles.map((g, i) => {
                     roles[i].id = g.category.toLowerCase().replace(/\s/g, '')
                     return {
-                        type: 'SUB_COMMAND',
+                        type: ApplicationCommandOptionType.Subcommand,
                         name: g.id,
                         description: `Ajoute un rôle de ${g.category.toLowerCase()}`,
                         options: [
                             {
-                                type: 'STRING',
+                                type: ApplicationCommandOptionType.String,
                                 name: 'role',
                                 description: `Rôle de ${g.category.toLowerCase()} à ajouter`,
                                 choices: g.roles.map(r => {
@@ -41,18 +40,18 @@ module.exports = {
                 })
             },
             {
-                type: 'SUB_COMMAND_GROUP',
+                type: ApplicationCommandOptionType.SubcommandGroup,
                 name: 'remove',
                 description: 'Supprime un rôle',
                 options: roles.map((g, i) => {
                     roles[i].id = g.category.toLowerCase().replace(/\s/g, '')
                     return {
-                        type: 'SUB_COMMAND',
+                        type: ApplicationCommandOptionType.Subcommand,
                         name: g.id,
                         description: `Supprime un rôle de ${g.category.toLowerCase()}`,
                         options: [
                             {
-                                type: 'STRING',
+                                type: ApplicationCommandOptionType.String,
                                 name: 'role',
                                 description: `Rôle de ${g.category.toLowerCase()} à supprimer`,
                                 choices: g.roles.map(r => {
@@ -104,7 +103,7 @@ module.exports = {
 
                     if(Object.keys(rolesList).length > 0) {
                         for(const [group, roles] of Object.entries(rolesList)) {
-                            embed.addField(group, roles.join('\n'), true)
+                            embed.addFields({ name: group, value: roles.join('\n'), inline: true })
                         }
                     } else {
                         embed.setDescription('Vous n\'avez aucun rôle')

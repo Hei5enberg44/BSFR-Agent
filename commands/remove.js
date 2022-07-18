@@ -1,4 +1,4 @@
-const { CommandInteraction } = require('discord.js')
+const { CommandInteraction, ApplicationCommandOptionType } = require('discord.js')
 const Embed = require('../utils/embed')
 const { CommandError, CommandInteractionError } = require('../utils/error')
 const bannedWords = require('../controllers/bannedWords')
@@ -11,7 +11,7 @@ module.exports = {
 		description: 'Suppressions diverses',
         options: [
             {
-                type: 'STRING',
+                type: ApplicationCommandOptionType.String,
                 name: 'sujet',
                 description: 'Sujet',
                 choices: [
@@ -31,7 +31,7 @@ module.exports = {
                 required: true
             },
             {
-                type: 'STRING',
+                type: ApplicationCommandOptionType.String,
                 name: 'ids',
                 description: '/!\\ Si il y a plusieurs IDs, merci de les séparer par un point virgule /!\\',
                 required: true
@@ -54,7 +54,7 @@ module.exports = {
             let embed = new Embed()
                 .setColor('#9B59B6')
                 .setThumbnail(interaction.user.displayAvatarURL({ dynamic: true }))
-                .addField('Membre', interaction.user.tag)
+                .addFields({ name: 'Membre', value: interaction.user.tag })
             
             let reply
 
@@ -67,7 +67,7 @@ module.exports = {
 
                     embed.setTitle('🗑️ Confirmation de la suppression de mots bannis')
                     embed.setDescription('Êtes-vous sûr de vouloir supprimer les mots à bannir suivants ?')
-                    embed.addField('Mots à bannir', wordsList.map(word => word.word).join('\n'))
+                    embed.addFields({ name: 'Mots à bannir', value: wordsList.map(word => word.word).join('\n') })
 
                     reply = await interaction.reply({ embeds: [embed], fetchReply: true })
 
@@ -82,7 +82,7 @@ module.exports = {
 
                     embed.setTitle('🗑️ Confirmation de la suppression de messages d\'anniversaire')
                     embed.setDescription('Êtes-vous sûr de vouloir supprimer les messages d\'anniversaire suivants ?')
-                    embed.addField('Messages d\'anniversaire', messagesList.map(message => message.message).join('\n'))
+                    embed.addFields({ name: 'Messages d\'anniversaire', value: messagesList.map(message => message.message).join('\n') })
 
                     reply = await interaction.reply({ embeds: [embed], fetchReply: true })
 
@@ -97,7 +97,7 @@ module.exports = {
 
                     embed.setTitle('🗑️ Confirmation de la suppression d\'URL malveillant')
                     embed.setDescription('Êtes-vous sûr de vouloir supprimer les URLs malveillants suivants ?')
-                    embed.addField('URLs malveillants', urlsList.map(url => url.url).join('\n'))
+                    embed.addFields({ name: 'URLs malveillants', value: urlsList.map(url => url.url).join('\n') })
 
                     reply = await interaction.reply({ embeds: [embed], fetchReply: true })
 

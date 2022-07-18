@@ -1,5 +1,5 @@
+const { ApplicationCommandOptionType, userMention } = require('discord.js')
 const { CommandError, CommandInteractionError } = require('../utils/error')
-const { userMention } = require('@discordjs/builders')
 const threads = require('../controllers/threads')
 const Logger = require('../utils/logger')
 const { CommandInteraction } = require('discord.js')
@@ -10,7 +10,7 @@ module.exports = {
 		description: 'Répond à un message privé',
         options: [
             {
-                type: 'STRING',
+                type: ApplicationCommandOptionType.String,
                 name: 'message',
                 description: 'Message',
                 required: true

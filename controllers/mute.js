@@ -1,5 +1,4 @@
-const { Client, GuildMember } = require('discord.js')
-const { userMention, bold } = require('@discordjs/builders')
+const { Client, GuildMember, userMention, bold } = require('discord.js')
 const Embed = require('../utils/embed')
 const { Mutes } = require('../controllers/database')
 const { Op } = require('sequelize')
@@ -108,10 +107,12 @@ module.exports = {
                 .setColor('#2ECC71')
                 .setTitle('🔇 Re mute de ' + member.user.username)
                 .setThumbnail(member.displayAvatarURL({ dynamic: true }))
-                .addField('Le vilain', userMention(isMuted.memberId))
-                .addField('La sanction a été prononcée par', userMention(isMuted.mutedBy))
-                .addField('Raison', isMuted.reason)
-                .addField('Date de démute', new Date(isMuted.unmuteDate * 1000).toLocaleString('fr-FR', { timeZone: 'Europe/Paris' }))
+                .addFields(
+                    { name: 'Le vilain', value: userMention(isMuted.memberId) },
+                    { name: 'La sanction a été prononcée par', value: userMention(isMuted.mutedBy) },
+                    { name: 'Raison', value: isMuted.reason },
+                    { name: 'Date de démute', value: new Date(isMuted.unmuteDate * 1000).toLocaleString('fr-FR', { timeZone: 'Europe/Paris' }) }
+                )
 
             await member.roles.add(muteRole)
             await logsChannel.send({ embeds: [embed] })
@@ -148,9 +149,11 @@ module.exports = {
                     .setColor('#2ECC71')
                     .setTitle('🔇 Unmute de ' + memberToUnmute.user.username)
                     .setThumbnail(memberToUnmute.displayAvatarURL({ dynamic: true }))
-                    .addField('Le vilain', userMention(mutedMember.memberId), true)
-                    .addField('Prononcée par', userMention(mutedMember.mutedBy), true)
-                    .addField('Raison', mutedMember.reason))
+                    .addFields(
+                        { name: 'Le vilain', value: userMention(mutedMember.memberId), inline: true },
+                        { name: 'Prononcée par', value: userMention(mutedMember.mutedBy), inline: true },
+                        { name: 'Raison', value: mutedMember.reason }
+                    ))
     
                 await memberToUnmute.roles.remove(muteRole)
     
@@ -168,9 +171,11 @@ module.exports = {
                     .setColor('#E74C3C')
                     .setTitle('🔇 Unmute de ' + mutedMember.memberId)
                     .setDescription('Le membre n\'est plus présent sur le discord')
-                    .addField('Le vilain', userMention(mutedMember.memberId), true)
-                    .addField('La sanction avait été prononcée par', userMention(mutedMember.mutedBy))
-                    .addField('Raison', mutedMember.reason))
+                    .addFields(
+                        { name: 'Le vilain', value: userMention(mutedMember.memberId), inline: true },
+                        { name: 'La sanction avait été prononcée par', value: userMention(mutedMember.mutedBy), inline: true },
+                        { name: 'Raison', value: mutedMember.reason }
+                    ))
 
                 Logger.log('UnmuteCommand', 'INFO', `Le membre "${mutedMember.memberId}" n'a pas été unmute car celui-ci n'est plus présent sur le serveur`)
             }

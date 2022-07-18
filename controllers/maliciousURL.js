@@ -1,5 +1,4 @@
-const { GuildMember, Message, MessageReaction, User } = require("discord.js")
-const { userMention, roleMention } = require("@discordjs/builders")
+const { GuildMember, Message, MessageReaction, User, userMention, roleMention } = require("discord.js")
 const Embed = require('../utils/embed')
 const { MaliciousURLError } = require('../utils/error')
 const { MaliciousURL, Reactions } = require('./database')
@@ -79,8 +78,10 @@ module.exports = {
                     .setColor('#E74C3C')
                     .setTitle('⛔ Envoi d\'URL malveillant')
                     .setThumbnail(message.author.displayAvatarURL({ dynamic: true }))
-                    .addField('Le vilain', userMention(message.author.id))
-                    .addField('Contenu du message', message.content)
+                    .addFields(
+                        { name: 'Le vilain', value: userMention(message.author.id) },
+                        { name: 'Contenu du message', value: message.content }
+                    )
                 
                 await message.delete()
                 
@@ -153,7 +154,7 @@ module.exports = {
     confirmRemove: async function(reaction, user, r) {
         const embed = new Embed()
 			.setThumbnail(user.displayAvatarURL({ dynamic: true }))
-			.addField('Membre', user.tag)
+			.addFields({ name: 'Membre', value: user.tag })
 
 		if(reaction.emoji.name === '✅') {
 			const ids = r.data.map(url => url.id)
@@ -164,7 +165,7 @@ module.exports = {
 
 			embed.setColor('#2ECC71')
 				.setTitle('🗑️ Suppression d\'URL malveillants')
-				.addField('URL malveillants supprimés', r.data.map(url => url.url).join('\n'))
+				.addFields({ name: 'URL malveillants supprimés', value: r.data.map(url => url.url).join('\n') })
 
 			await reaction.message.reactions.removeAll()
 			await reaction.message.edit({ embeds: [embed] })
@@ -173,7 +174,7 @@ module.exports = {
 
 			embed.setColor('#E74C3C')
 				.setTitle('🗑️ Refus de suppression d\'URL malveillants')
-				.addField('URL malveillants non supprimés', r.data.map(url => url.url).join('\n'))
+				.addFields({ name: 'URL malveillants non supprimés', value: r.data.map(url => url.url).join('\n') })
 
 			await reaction.message.reactions.removeAll()
 			await reaction.message.edit({ embeds: [embed] })

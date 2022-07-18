@@ -1,5 +1,4 @@
-const { CommandInteraction } = require('discord.js')
-const { hyperlink, userMention, channelMention } = require('@discordjs/builders')
+const { CommandInteraction, ApplicationCommandOptionType, hyperlink, userMention, channelMention } = require('discord.js')
 const Embed = require('../utils/embed')
 const { CommandError, CommandInteractionError } = require('../utils/error')
 const Logger = require('../utils/logger')
@@ -11,13 +10,13 @@ module.exports = {
 		description: 'Envoie un message dans un channel',
         options: [
             {
-                type: 'CHANNEL',
+                type: ApplicationCommandOptionType.Channel,
                 name: 'channel',
                 description: 'Channel',
                 required: true
             },
             {
-                type: 'STRING',
+                type: ApplicationCommandOptionType.String,
                 name: 'message',
                 description: 'Message',
                 required: true
@@ -47,9 +46,11 @@ module.exports = {
                 .setColor('#2ECC71')
                 .setTitle('✍️ Envoi de message')
                 .setThumbnail(interaction.user.displayAvatarURL({ dynamic: true }))
-                .addField('Par', userMention(interaction.user.id), true)
-                .addField('Channel', channelMention(channel.id), true)
-                .addField('Message', hyperlink('Lien', sentMessage.url) + ' - ' + message)
+                .addFields(
+                    { name: 'Par', value: userMention(interaction.user.id), inline: true },
+                    { name: 'Channel', value: channelMention(channel.id), inline: true },
+                    { name: 'Message', value: hyperlink('Lien', sentMessage.url) + ' - ' + message }
+                )
             
             await logsChannel.send({ embeds: [embed] })
 

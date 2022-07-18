@@ -1,4 +1,4 @@
-const { CommandInteraction } = require('discord.js')
+const { CommandInteraction, ApplicationCommandOptionType } = require('discord.js')
 const Embed = require('../utils/embed')
 const { CommandError, CommandInteractionError, BannedWordsError, BirthdayMessagesError } = require('../utils/error')
 const bannedWords = require('../controllers/bannedWords')
@@ -11,7 +11,7 @@ module.exports = {
 		description: 'Listes diverses',
         options: [
             {
-                type: 'STRING',
+                type: ApplicationCommandOptionType.String,
                 name: 'sujet',
                 description: 'Sujet',
                 choices: [
@@ -31,7 +31,7 @@ module.exports = {
                 required: true
             },
             {
-                type: 'INTEGER',
+                type: ApplicationCommandOptionType.Integer,
                 name: 'page',
                 description: 'Page à afficher',
                 required: false
@@ -58,24 +58,18 @@ module.exports = {
             switch(subject) {
                 case 'bannedWords':
                     const wordsList = await bannedWords.list(page)
-
                     embed.setTitle('📒 Liste des mots bannis')
-                    embed.addField('Messages', wordsList)
-
+                    embed.addFields({ name: 'Messages', value: wordsList })
                     break
                 case 'birthdayMessages':
                     const messagesList = await birthdayMessages.list(page)
-
                     embed.setTitle('📒 Liste des messages d\'anniversaire')
-                    embed.addField('Messages', messagesList)
-
+                    embed.addFields({ name: 'Messages', value: messagesList })
                     break
                 case 'maliciousURL':
                     const urlsList = await maliciousURL.list(page)
-
                     embed.setTitle('📒 Liste des URLs malveillants')
-                    embed.addField('URLs', urlsList)
-
+                    embed.addFields({ name: 'URLs', value: urlsList })
                     break
             }
 

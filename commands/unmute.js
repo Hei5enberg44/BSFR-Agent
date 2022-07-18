@@ -1,5 +1,4 @@
-const { CommandInteraction } = require('discord.js')
-const { bold, userMention } = require('@discordjs/builders')
+const { CommandInteraction, ApplicationCommandOptionType, bold, userMention } = require('discord.js')
 const Embed = require('../utils/embed')
 const { CommandError, CommandInteractionError } = require('../utils/error')
 const mute = require('../controllers/mute')
@@ -12,13 +11,13 @@ module.exports = {
 		description: 'Démute un membre',
         options: [
             {
-                type: 'USER',
+                type: ApplicationCommandOptionType.User,
                 name: 'membre',
                 description: 'Membre',
                 required: true
             },
             {
-                type: 'STRING',
+                type: ApplicationCommandOptionType.String,
                 name: 'raison',
                 description: 'Raison',
                 required: true
@@ -51,11 +50,13 @@ module.exports = {
                 .setColor('#2ECC71')
                 .setTitle('🔇 Unmute manuel de ' + member.username)
                 .setThumbnail(member.displayAvatarURL({ dynamic: true }))
-                .addField('Le vilain', userMention(member.id), true)
-                .addField('Prononcée par', userMention(isMuted.mutedBy), true)
-                .addField('Levée par', userMention(interaction.user.id), true)
-                .addField('Raison unmute', reason, true)
-                .addField('Date de démute initiale', new Date(isMuted.unmuteDate * 1000).toLocaleString('fr-FR', { timeZone: 'Europe/Paris' })))
+                .addFields(
+                    { name: 'Le vilain', value: userMention(member.id), inline: true },
+                    { name: 'Prononcée par', value: userMention(isMuted.mutedBy), inline: true },
+                    { name: 'Levée par', value: userMention(interaction.user.id), inline: true },
+                    { name: 'Raison unmute', value: reason, inline: true },
+                    { name: 'Date de démute initiale', value: new Date(isMuted.unmuteDate * 1000).toLocaleString('fr-FR', { timeZone: 'Europe/Paris' }) },
+                ))
 
             const guildMember = interaction.guild.members.cache.get(member.id)
             await guildMember.roles.remove(muteRole)

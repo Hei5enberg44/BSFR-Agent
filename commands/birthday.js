@@ -1,4 +1,4 @@
-const { CommandInteraction } = require('discord.js')
+const { CommandInteraction, ApplicationCommandOptionType } = require('discord.js')
 const { CommandError, CommandInteractionError } = require('../utils/error')
 const birthday = require('../controllers/birthday')
 const Logger = require('../utils/logger')
@@ -9,12 +9,12 @@ module.exports = {
 		description: 'Ajoute/Supprime une date d\'anniversaire',
         options: [
             {
-                type: 'SUB_COMMAND',
+                type: ApplicationCommandOptionType.Subcommand,
                 name: 'set',
                 description: 'Ajoute une date d\'anniversaire',
                 options: [
                     {
-                        type: 'STRING',
+                        type: ApplicationCommandOptionType.String,
                         name: 'date',
                         description: 'Ta date d\'anniversaire au format JJ/MM/AAAA (ex: 11/06/2000)',
                         required: true
@@ -22,7 +22,7 @@ module.exports = {
                 ]
             },
             {
-                type: 'SUB_COMMAND',
+                type: ApplicationCommandOptionType.Subcommand,
                 name: 'unset',
                 description: 'Supprime une date d\'anniversaire'
             }

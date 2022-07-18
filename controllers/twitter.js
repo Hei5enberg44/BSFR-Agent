@@ -1,5 +1,4 @@
-const { MessageReaction, User } = require('discord.js')
-const { userMention } = require('@discordjs/builders')
+const { MessageReaction, User, userMention } = require('discord.js')
 const Embed = require('../utils/embed')
 const Twit = require('twit')
 const { Tweets, Reactions } = require('./database')
@@ -61,8 +60,10 @@ module.exports = {
 
         if(reaction.emoji.name === '✅') {
 			const embed = new Embed()
-				.addField('Par', userMention(user.id))
-				.addField('Tweet', tweetInfos.tweet)
+				.addFields(
+                    { name: 'Par', value: userMention(user.id) },
+                    { name: 'Tweet', value: tweetInfos.tweet }
+                )
 
 			await Reactions.destroy({ where: { id: r.id } })
 
@@ -82,8 +83,10 @@ module.exports = {
 			const embed = new Embed()
                 .setColor('#E74C3C')
                 .setTitle('✉️ Refus d\'envoi d\'un tweet')
-				.addField('Par', userMention(user.id))
-				.addField('Tweet', tweetInfos.tweet)
+				.addFields(
+                    { name: 'Par', value: userMention(user.id) },
+                    { name: 'Tweet', value: tweetInfos.tweet }
+                )
 
             await Reactions.destroy({ where: { id: r.id } })
 

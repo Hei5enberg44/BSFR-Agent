@@ -1,4 +1,4 @@
-const { CommandInteraction, MessageActionRow, MessageButton } = require('discord.js')
+const { CommandInteraction, ActionRowBuilder, ButtonBuilder, ButtonStyle, ApplicationCommandOptionType } = require('discord.js')
 const { CommandError, CommandInteractionError } = require('../utils/error')
 const city = require('../controllers/city')
 const Logger = require('../utils/logger')
@@ -9,12 +9,12 @@ module.exports = {
 		description: 'Ajoute/Supprime une ville d\'origine',
         options: [
             {
-                type: 'SUB_COMMAND',
+                type: ApplicationCommandOptionType.Subcommand,
                 name: 'set',
                 description: 'Ajoute une ville d\'origine',
                 options: [
                     {
-                        type: 'INTEGER',
+                        type: ApplicationCommandOptionType.Integer,
                         name: 'code_postal',
                         description: 'Code postal',
                         required: true
@@ -22,7 +22,7 @@ module.exports = {
                 ]
             },
             {
-                type: 'SUB_COMMAND',
+                type: ApplicationCommandOptionType.Subcommand,
                 name: 'unset',
                 description: 'Supprime une ville d\'origine'
             }
@@ -56,31 +56,31 @@ module.exports = {
 
                             const _cities = cities.slice(page * maxRows * maxItemsPerRow, (page * maxRows * maxItemsPerRow) + (maxRows * maxItemsPerRow))
                             for(let row = 0; row < Math.ceil(_cities.length / 5); row++) {
-                                const citiesButtons = new MessageActionRow()
+                                const citiesButtons = new ActionRowBuilder()
                                 const citiesRow = _cities.slice(row * maxItemsPerRow, (row * maxItemsPerRow) + maxItemsPerRow)
     
                                 for(const c of citiesRow) {
                                     citiesButtons.addComponents(
-                                        new MessageButton()
+                                        new ButtonBuilder()
                                             .setCustomId(`${c.code_postal}_${c.nom_de_la_commune}_${customId}`)
                                             .setLabel(c.nom_de_la_commune)
-                                            .setStyle('SECONDARY')
+                                            .setStyle(ButtonStyle.Secondary)
                                     )
                                 }
                                 components.push(citiesButtons)
                             }
 
-                            const citiesButtons = new MessageActionRow()
+                            const citiesButtons = new ActionRowBuilder()
                             citiesButtons.addComponents(
-                                new MessageButton()
+                                new ButtonBuilder()
                                     .setCustomId(`previous_${customId}`)
                                     .setLabel('Précédent')
-                                    .setStyle('PRIMARY')
+                                    .setStyle(ButtonStyle.Primary)
                                     .setDisabled(page > 0 ? false : true),
-                                new MessageButton()
+                                new ButtonBuilder()
                                     .setCustomId(`next_${customId}`)
                                     .setLabel('Suivant')
-                                    .setStyle('PRIMARY')
+                                    .setStyle(ButtonStyle.Primary)
                                     .setDisabled(page < pageCount - 1 ? false : true)
                             )
                             components.push(citiesButtons)

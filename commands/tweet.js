@@ -1,5 +1,4 @@
-const { CommandInteraction } = require('discord.js')
-const { userMention } = require('@discordjs/builders')
+const { CommandInteraction, ApplicationCommandOptionType, userMention } = require('discord.js')
 const Embed = require('../utils/embed')
 const { CommandError, CommandInteractionError } = require('../utils/error')
 const twitter = require('../controllers/twitter')
@@ -11,7 +10,7 @@ module.exports = {
 		description: 'Tweete sur le compte @BeatSaberFR',
         options: [
             {
-                type: 'STRING',
+                type: ApplicationCommandOptionType.String,
                 name: 'texte',
                 description: '280 caractères max.',
                 required: true
@@ -36,8 +35,10 @@ module.exports = {
                 .setColor('#9B59B6')
                 .setTitle('✉️ Confirmation de l\'envoi de tweet')
                 .setThumbnail(interaction.user.displayAvatarURL({ dynamic: true }))
-                .addField('Par', userMention(interaction.user.id))
-                .addField('Tweet', text)
+                .addFields(
+                    { name: 'Par', value: userMention(interaction.user.id) },
+                    { name: 'Tweet', value: text }
+                )
             
             const reply = await interaction.reply({ embeds: [embed], fetchReply: true })
 

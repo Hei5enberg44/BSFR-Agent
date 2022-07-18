@@ -1,5 +1,4 @@
-const { CommandInteraction } = require('discord.js')
-const { bold, inlineCode, userMention, roleMention } = require('@discordjs/builders')
+const { CommandInteraction, ApplicationCommandOptionType, bold, inlineCode, userMention, roleMention } = require('discord.js')
 const Embed = require('../utils/embed')
 const { CommandError, CommandInteractionError } = require('../utils/error')
 const ban = require('../controllers/ban')
@@ -12,19 +11,19 @@ module.exports = {
 		description: 'Bannit un utilisateur sur une période donnée',
         options: [
             {
-                type: 'USER',
+                type: ApplicationCommandOptionType.User,
                 name: 'membre',
                 description: 'Membre',
                 required: true
             },
             {
-                type: 'STRING',
+                type: ApplicationCommandOptionType.String,
                 name: 'raison',
                 description: 'Raison',
                 required: true
             },
             {
-                type: 'STRING',
+                type: ApplicationCommandOptionType.String,
                 name: 'durée',
                 description: 'Durée (s = secondes / i = minutes / h = heures / d = jours / w = semaines / m = mois / y = année)',
                 required: true
@@ -64,10 +63,12 @@ module.exports = {
                     .setColor('#9B59B6')
                     .setTitle('🔨 Demande de ban de ' + member.username)
                     .setThumbnail(member.displayAvatarURL({ dynamic: true }))
-                    .addField('Le vilain', userMention(member.id), true)
-                    .addField('La sanction a été demandée par', userMention(interaction.user.id, true))
-                    .addField('Raison', reason)
-                    .addField('Date de débannissement', new Date(date * 1000).toLocaleString('fr-FR', { timeZone: 'Europe/Paris' })))
+                    .addFields(
+                        { name: 'Le vilain', value: userMention(member.id), inline: true },
+                        { name: 'La sanction a été demandée par', value: userMention(interaction.user.id), inline: true },
+                        { name: 'Raison', value: reason },
+                        { name: 'Date de débannissement', value: new Date(date * 1000).toLocaleString('fr-FR', { timeZone: 'Europe/Paris' }) }
+                    ))
 
                 const guildMember = interaction.guild.members.cache.get(member.id)
                 await guildMember.roles.add(muteRole)
@@ -96,10 +97,12 @@ module.exports = {
                     .setColor('#2ECC71')
                     .setTitle('🔨 Ban de ' + member.username)
                     .setThumbnail(member.displayAvatarURL({ dynamic: true }))
-                    .addField('Le vilain', userMention(member.id), true)
-                    .addField('La sanction a été prononcée par', userMention(interaction.user.id), true)
-                    .addField('Raison', reason)
-                    .addField('Date de débannissement', new Date(date * 1000).toLocaleString('fr-FR', { timeZone: 'Europe/Paris' })))
+                    .addFields(
+                        { name: 'Le vilain', value: userMention(member.id), inline: true },
+                        { name: 'La sanction a été demandée par', value: userMention(interaction.user.id), inline: true },
+                        { name: 'Raison', value: reason },
+                        { name: 'Date de débannissement', value: new Date(date * 1000).toLocaleString('fr-FR', { timeZone: 'Europe/Paris' }) }
+                    ))
 
                 await ban.add(member.id, interaction.user.id, interaction.user.id, reason, date)
 

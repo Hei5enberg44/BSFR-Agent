@@ -1,5 +1,4 @@
-const { GuildMember } = require('discord.js')
-const { userMention } = require('@discordjs/builders')
+const { GuildMember, userMention } = require('discord.js')
 const Embed = require('../utils/embed')
 const mute = require('../controllers/mute')
 const Logger = require('../utils/logger')
@@ -26,8 +25,10 @@ module.exports = {
             .setColor('#2ECC71')
             .setTitle('📥 Arrivée de ' + member.user.username)
             .setThumbnail(member.user.displayAvatarURL({ dynamic: true }))
-            .addField('Koukou twa', userMention(member.user.id))
-            .addField('Compte créé le', `${(new Date(member.user.createdTimestamp)).toLocaleString()}`)
+            .addFields(
+                { name: 'Koukou twa', value: userMention(member.user.id) },
+                { name: 'Compte créé le', value: `${(new Date(member.user.createdTimestamp)).toLocaleString()}` }
+            )
 
         await logsChannel.send({ embeds: [embed] })
 

@@ -114,7 +114,7 @@ module.exports = {
     confirmRemove: async function(reaction, user, r) {
         const embed = new Embed()
 			.setThumbnail(user.displayAvatarURL({ dynamic: true }))
-			.addField('Membre', user.tag)
+			.addFields({ name: 'Membre', value: user.tag })
 
 		if(reaction.emoji.name === '✅') {
 			const ids = r.data.map(message => message.id)
@@ -125,7 +125,7 @@ module.exports = {
 
 			embed.setColor('#2ECC71')
 				.setTitle('🗑️ Suppression de messages d\'anniversaire')
-				.addField('Messages d\'anniversaire supprimés', r.data.map(message => message.message).join('\n'))
+				.addFields({ name: 'Messages d\'anniversaire supprimés', value: r.data.map(message => message.message).join('\n') })
 
 			await reaction.message.reactions.removeAll()
 			await reaction.message.edit({ embeds: [embed] })
@@ -134,7 +134,7 @@ module.exports = {
 
 			embed.setColor('#E74C3C')
 				.setTitle('🗑️ Refus de suppression de messages d\'anniversaire')
-				.addField('Messages d\'anniversaire non supprimés', r.data.map(message => message.message).join('\n'))
+				.addFields({ name: 'Messages d\'anniversaire non supprimés', value: r.data.map(message => message.message).join('\n') })
 
 			await reaction.message.reactions.removeAll()
 			await reaction.message.edit({ embeds: [embed] })
