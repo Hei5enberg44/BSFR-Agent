@@ -33,7 +33,8 @@ try {
                 GatewayIntentBits.GuildMessages,
                 GatewayIntentBits.GuildMessageReactions,
                 GatewayIntentBits.GuildPresences,
-                GatewayIntentBits.GuildVoiceStates
+                GatewayIntentBits.GuildVoiceStates,
+                GatewayIntentBits.MessageContent
             ],
             partials: [
                 Partials.Message,
