@@ -63,7 +63,7 @@ module.exports = {
             const logsChannel = message.guild.channels.cache.get(config.guild.channels.logs)
             const muteRole = message.guild.roles.cache.get(config.guild.roles['Muted'])
 
-            const urlsToTest = message.content.toLowerCase().split(' ').filter(w => w.match(/https?:\/\//))
+            const urlsToTest = message.content.toLowerCase().replace('\n', ' ').split(' ').filter(w => w.match(/https?:\/\//))
 
             let usedMaliciousURL = []
             for(const url of urlsToTest) {
