@@ -63,11 +63,13 @@ module.exports = {
             const logsChannel = message.guild.channels.cache.get(config.guild.channels.logs)
             const muteRole = message.guild.roles.cache.get(config.guild.roles['Muted'])
 
+            const urlsToTest = message.content.toLowerCase().split(' ').filter(w => w.match(/https?:\/\//))
+
             let usedMaliciousURL = []
-            for(const url of urlsList) {
-                const regex = new RegExp(`https?:\/\/${url.url.toLowerCase()}`, 'i')
-                if(regex.test(message.content.toLowerCase()) && usedMaliciousURL.indexOf(url.url) === -1) {
-                    usedMaliciousURL.push(url.url)
+            for(const url of urlsToTest) {
+                const domain = url.replace(/^(?:https?:\/\/)?(?:[^@\/\n]+@)?(?:www\.)?([^:\/\n]+).*$/, '$1')
+                if(urlsList.find(ul => ul.url === domain) && usedMaliciousURL.indexOf(url) === -1) {
+                    usedMaliciousURL.push(url)
                 }
             }
 
