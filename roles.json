@@ -33,8 +33,8 @@
             { "name": "Valve Index", "multiple": false },
             { "name": "Oculus Rift", "multiple": false },
             { "name": "Oculus Rift S", "multiple": false },
-            { "name": "Oculus Quest", "multiple": false },
-            { "name": "Oculus Quest 2", "multiple": false },
+            { "name": "Meta Quest (Natif)", "multiple": false },
+            { "name": "Meta Quest (Link)", "multiple": false },
             { "name": "Windows Mixed Reality", "multiple": false },
             { "name": "PSVR", "multiple": false }
         ]
