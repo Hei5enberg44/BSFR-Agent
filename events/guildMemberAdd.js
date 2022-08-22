@@ -26,7 +26,7 @@ module.exports = {
             .setTitle('📥 Arrivée de ' + member.user.username)
             .setThumbnail(member.user.displayAvatarURL({ dynamic: true }))
             .addFields(
-                { name: 'Koukou twa', value: userMention(member.user.id) },
+                { name: 'Membre', value: userMention(member.user.id) },
                 { name: 'Compte créé le', value: `${(new Date(member.user.createdTimestamp)).toLocaleString()}` }
             )
 

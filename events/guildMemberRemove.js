@@ -29,7 +29,7 @@ module.exports = {
             .setColor('#E74C3C')
             .setTitle('📤 Départ de ' + member.user.username)
             .setThumbnail(member.user.displayAvatarURL({ dynamic: true }))
-            .addFields({ name: 'Orevouar', value: userMention(member.user.id) })
+            .addFields({ name: 'Membre', value: userMention(member.user.id) })
         
         await logsChannel.send({ embeds: [embed] })
 
