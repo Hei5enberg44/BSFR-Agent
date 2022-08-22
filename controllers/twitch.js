@@ -1,4 +1,4 @@
-const { Client, Message, MessageAttachment, hyperlink } = require('discord.js')
+const { Client, Message, MessageAttachment, userMention, hyperlink } = require('discord.js')
 const Embed = require('../utils/embed')
 const { TwitchError, NextcloudError } = require('../utils/error')
 const { Twitch } = require('./database')
@@ -90,7 +90,7 @@ module.exports = {
                 const embed = new Embed()
                     .setColor('#2ECC71')
                     .setTitle('🎬 Nouveau(x) clip(s) uploadé(s) !')
-                    .setDescription(`${message.author.tag} a uploadé ${uploadedClipsCount} clip(s)`)
+                    .setDescription(`${userMention(message.author.id)} a uploadé ${uploadedClipsCount} clip(s) – ${hyperlink('Voir', message.url)}`)
                 await logsChannel.send({ embeds: [embed] })
 
                 Logger.log('Clips', 'INFO', `${uploadedClipsCount} clip(s) uploadé(s)`)
