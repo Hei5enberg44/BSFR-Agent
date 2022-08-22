@@ -43,6 +43,8 @@ module.exports = {
                 case 'link':
                     const channelName = interaction.options.getString('chaine')
 
+                    if(channelName.match(/^https?:\/\//)) throw new CommandInteractionError('Merci de renseigner le nom de votre chaîne Twitch et non son URL')
+
                     await twitch.link(interaction.user.id, channelName)
 
                     Logger.log('TwitchCommand', 'INFO', `${interaction.user.tag} a lié son compte Twitch`)
