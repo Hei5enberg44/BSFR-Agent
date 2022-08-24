@@ -152,44 +152,44 @@ module.exports = {
     },
 
     /**
-	 * Ban d'un membre
-	 * @param {MessageReaction} reaction The reaction object
-	 * @param {User} user The user that applied the guild or reaction emoji
-	 * @param {{id: Number, type: String, data: {banId: Number}, memberId: String, channelId: String, messageId: String, date: Date}} r données concernant la réaction
-	 */
+     * Ban d'un membre
+     * @param {MessageReaction} reaction The reaction object
+     * @param {User} user The user that applied the guild or reaction emoji
+     * @param {{id: Number, type: String, data: {banId: Number}, memberId: String, channelId: String, messageId: String, date: Date}} r données concernant la réaction
+     */
     ban: async function(reaction, user, r) {
-		const banId = r.data.banId
-		const banInfos = await module.exports.get(banId)
+        const banId = r.data.banId
+        const banInfos = await module.exports.get(banId)
 
-		const guild = reaction.client.guilds.cache.get(config.guild.id)
-		const logsChannel = guild.channels.cache.get(config.guild.channels.logs)
-		const muteRole = guild.roles.cache.get(config.guild.roles['Muted'])
-		const member = guild.members.cache.get(banInfos.memberId)
+        const guild = reaction.client.guilds.cache.get(config.guild.id)
+        const logsChannel = guild.channels.cache.get(config.guild.channels.logs)
+        const muteRole = guild.roles.cache.get(config.guild.roles['Muted'])
+        const member = guild.members.cache.get(banInfos.memberId)
 
-		const embeds = []
+        const embeds = []
 
-		const embed = new Embed()
-			.setThumbnail(member.displayAvatarURL({ dynamic: true }))
-			.addFields(
+        const embed = new Embed()
+            .setThumbnail(member.displayAvatarURL({ dynamic: true }))
+            .addFields(
                 { name: 'Le vilain', value: userMention(banInfos.memberId) },
                 { name: 'La sanction a été demandée par', value: userMention(banInfos.bannedBy) }
             )
 
-		if(reaction.emoji.name === '✅') {
-			embeds.push(embed.setColor('#2ECC71')
-				.setTitle('🔨 [ACCEPTÉ] Demande de ban de ' + member.user.username)
-				.addFields(
+        if(reaction.emoji.name === '✅') {
+            embeds.push(embed.setColor('#2ECC71')
+                .setTitle('🔨 [ACCEPTÉ] Demande de ban de ' + member.user.username)
+                .addFields(
                     { name: 'La demande a été acceptée par', value: userMention(user.id), inline: true },
                     { name: 'Raison', value: banInfos.reason },
                     { name: 'Date de débannissement', value: new Date(banInfos.unbanDate * 1000).toLocaleString('fr-FR', { timeZone: 'Europe/Paris' }) }
                 ))
 
-			await module.exports.approve(banId, user.id)
-			await Reactions.destroy({ where: { id: r.id } })
+            await module.exports.approve(banId, user.id)
+            await Reactions.destroy({ where: { id: r.id } })
 
-			await logsChannel.send({ embeds: embeds })
+            await logsChannel.send({ embeds: embeds })
 
-			try {
+            try {
                 await member.send({ content: `${bold('[BSFR]')}\n\nTu as été banni pour la raison suivante :\n${inlineCode(banInfos.reason)}\n\nLorsque ton ban sera levé, tu recevras un message ici ou de la part du staff.` })
             } catch(error) {
                 embeds.push(new Embed()
@@ -197,29 +197,29 @@ module.exports = {
                     .setDescription('Le message n\'a pas pu être envoyé au membre'))
             }
 
-			await member.ban({ days: 0, reason: banInfos.reason })
+            await member.ban({ days: 0, reason: banInfos.reason })
 
-			await reaction.message.reactions.removeAll()
-			await reaction.message.edit({ embeds: embeds })
+            await reaction.message.reactions.removeAll()
+            await reaction.message.edit({ embeds: embeds })
 
-			Logger.log('BanCommand', 'INFO', `La demande de ban de ${member.user.tag} a été acceptée par ${user.tag}`)
-		} else if(reaction.emoji.name === '❌') {
-			embeds.push(embed.setColor('#2ECC71')
-				.setTitle('🔨 [REFUSÉ] Demande de ban de ' + member.user.username)
-				.addFields(
+            Logger.log('BanCommand', 'INFO', `La demande de ban de ${member.user.tag} a été acceptée par ${user.tag}`)
+        } else if(reaction.emoji.name === '❌') {
+            embeds.push(embed.setColor('#2ECC71')
+                .setTitle('🔨 [REFUSÉ] Demande de ban de ' + member.user.username)
+                .addFields(
                     { name: 'La demande a été refusée par', value: userMention(user.id), inline: true },
                     { name: 'Raison', value: banInfos.reason },
                     { name: 'Date de débannissement', value: new Date(banInfos.unbanDate * 1000).toLocaleString('fr-FR', { timeZone: 'Europe/Paris' }) },
                 ))
 
-			await member.roles.remove(muteRole)
+            await member.roles.remove(muteRole)
 
-			await module.exports.remove(banId)
-			await Reactions.destroy({ where: { id: r.id } })
+            await module.exports.remove(banId)
+            await Reactions.destroy({ where: { id: r.id } })
 
-			await logsChannel.send({ embeds: embeds })
+            await logsChannel.send({ embeds: embeds })
 
-			try {
+            try {
                 await member.send({ content: `${bold('[BSFR]')}\n\nLa demande de bannissement n'a pas été approuvée.\nTu es désormais unmute.` })
             } catch(error) {
                 embeds.push(new Embed()
@@ -227,12 +227,12 @@ module.exports = {
                     .setDescription('Le message n\'a pas pu être envoyé au membre'))
             }
 
-			await reaction.message.reactions.removeAll()
-			await reaction.message.edit({ embeds: embeds })
+            await reaction.message.reactions.removeAll()
+            await reaction.message.edit({ embeds: embeds })
 
-			Logger.log('BanCommand', 'INFO', `La demande de ban de ${member.user.tag} a été refusée par ${user.tag}`)
-		}
-	},
+            Logger.log('BanCommand', 'INFO', `La demande de ban de ${member.user.tag} a été refusée par ${user.tag}`)
+        }
+    },
 
     /**
      * Deban les membres pour qui la date de fin de ban est passée

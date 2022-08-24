@@ -5,9 +5,9 @@ const Logger = require('../utils/logger')
 const { CommandInteraction } = require('discord.js')
 
 module.exports = {
-	data: {
-		name: 'r',
-		description: 'Répond à un message privé',
+    data: {
+        name: 'r',
+        description: 'Répond à un message privé',
         options: [
             {
                 type: ApplicationCommandOptionType.String,
@@ -24,7 +24,7 @@ module.exports = {
      * Exécution de la commande
      * @param {CommandInteraction} interaction intéraction Discord
      */
-	async execute(interaction) {
+    async execute(interaction) {
         try {
             const message = interaction.options.getString('message')
             const thread = await threads.get('dm', interaction.channelId, null)
@@ -53,5 +53,5 @@ module.exports = {
                 throw Error(error.message)
             }
         }
-	}
+    }
 }

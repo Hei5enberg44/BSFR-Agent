@@ -4,9 +4,9 @@ const twitch = require('../controllers/twitch')
 const Logger = require('../utils/logger')
 
 module.exports = {
-	data: {
-		name: 'twitch',
-		description: 'Lie votre compte Twitch afin d\'activer les notifications lorsque vous êtes en live',
+    data: {
+        name: 'twitch',
+        description: 'Lie votre compte Twitch afin d\'activer les notifications lorsque vous êtes en live',
         options: [
             {
                 type: ApplicationCommandOptionType.Subcommand,
@@ -35,7 +35,7 @@ module.exports = {
      * Exécution de la commande
      * @param {CommandInteraction} interaction intéraction Discord
      */
-	async execute(interaction) {
+    async execute(interaction) {
         try {
             const action = interaction.options.getSubcommand()
 
@@ -66,5 +66,5 @@ module.exports = {
                 throw Error(error.message)
             }
         }
-	}
+    }
 }

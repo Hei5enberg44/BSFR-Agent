@@ -6,9 +6,9 @@ const { CommandInteraction } = require('discord.js')
 const config = require('../config.json')
 
 module.exports = {
-	data: {
-		name: 'dm',
-		description: 'Envoie un message privé à un membre',
+    data: {
+        name: 'dm',
+        description: 'Envoie un message privé à un membre',
         options: [
             {
                 type: ApplicationCommandOptionType.User,
@@ -32,7 +32,7 @@ module.exports = {
      * Exécution de la commande
      * @param {CommandInteraction} interaction intéraction Discord
      */
-	async execute(interaction) {
+    async execute(interaction) {
         try {
             const member = interaction.options.getUser('membre')
             const message = interaction.options.getString('message')
@@ -100,5 +100,5 @@ module.exports = {
                 throw Error(error.message)
             }
         }
-	}
+    }
 }

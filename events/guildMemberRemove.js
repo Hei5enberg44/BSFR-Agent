@@ -6,17 +6,17 @@ const Logger = require('../utils/logger')
 const config = require('../config.json')
 
 module.exports = {
-	/**
-	 * Emitted whenever a member leaves a guild, or is kicked
-	 * @param {GuildMember} member The member that has left/been kicked from the guild
-	 */
-	async execute(member) {
-		await module.exports.bye(member)
+    /**
+     * Emitted whenever a member leaves a guild, or is kicked
+     * @param {GuildMember} member The member that has left/been kicked from the guild
+     */
+    async execute(member) {
+        await module.exports.bye(member)
         await module.exports.removeBirthday(member)
         await module.exports.removeCity(member)
         await module.exports.removeTwitch(member)
         await module.exports.updateThreads(member)
-	},
+    },
 
     /**
      * On log le départ du membre dans le channel logs
@@ -79,9 +79,9 @@ module.exports = {
     },
 
     /**
-	 * Supprime un membre des threads de messages privés si celui-ci quitte le serveur
-	 * @param {GuildMember} member The member that has left/been kicked from the guild
-	 */
+     * Supprime un membre des threads de messages privés si celui-ci quitte le serveur
+     * @param {GuildMember} member The member that has left/been kicked from the guild
+     */
     async updateThreads(member) {
         const isInStaff = member.roles.cache.find(r => [ config.guild.roles['Admin'], config.guild.roles['Modérateur'] ].includes(r.id))
 

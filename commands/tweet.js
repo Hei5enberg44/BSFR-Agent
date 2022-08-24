@@ -5,9 +5,9 @@ const twitter = require('../controllers/twitter')
 const Logger = require('../utils/logger')
 
 module.exports = {
-	data: {
-		name: 'tweet',
-		description: 'Tweete sur le compte @BeatSaberFR',
+    data: {
+        name: 'tweet',
+        description: 'Tweete sur le compte @BeatSaberFR',
         options: [
             {
                 type: ApplicationCommandOptionType.String,
@@ -25,7 +25,7 @@ module.exports = {
      * Exécution de la commande
      * @param {CommandInteraction} interaction intéraction Discord
      */
-	async execute(interaction) {
+    async execute(interaction) {
         try {
             const text = interaction.options.getString('texte')
 
@@ -55,5 +55,5 @@ module.exports = {
                 throw Error(error.message)
             }
         }
-	}
+    }
 }

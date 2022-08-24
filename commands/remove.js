@@ -6,9 +6,9 @@ const birthdayMessages = require('../controllers/birthdayMessages')
 const maliciousURL = require('../controllers/maliciousURL')
 
 module.exports = {
-	data: {
-		name: 'remove',
-		description: 'Suppressions diverses',
+    data: {
+        name: 'remove',
+        description: 'Suppressions diverses',
         options: [
             {
                 type: ApplicationCommandOptionType.String,
@@ -46,7 +46,7 @@ module.exports = {
      * Exécution de la commande
      * @param {CommandInteraction} interaction intéraction Discord
      */
-	async execute(interaction) {
+    async execute(interaction) {
         try {
             const subject = interaction.options.getString('sujet')
             const ids = interaction.options.getString('ids')
@@ -115,5 +115,5 @@ module.exports = {
                 throw Error(error.message)
             }
         }
-	}
+    }
 }

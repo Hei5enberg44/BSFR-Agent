@@ -147,36 +147,36 @@ module.exports = {
     /**
      * Confirmation de la suppression des mots bannis
      * @param {MessageReaction} reaction The reaction object
-	 * @param {User} user The user that applied the guild or reaction emoji
-	 * @param {{id: Number, type: String, data: Array.<{id: Number, word: String, memberId: String, date: Date}>, memberId: String, channelId: String, messageId: String, date: Date}} r données concernant la réaction
+     * @param {User} user The user that applied the guild or reaction emoji
+     * @param {{id: Number, type: String, data: Array.<{id: Number, word: String, memberId: String, date: Date}>, memberId: String, channelId: String, messageId: String, date: Date}} r données concernant la réaction
      */
     confirmRemove: async function(reaction, user, r) {
         const embed = new Embed()
-			.setThumbnail(user.displayAvatarURL({ dynamic: true }))
-			.addFields({ name: 'Membre', value: user.tag })
+            .setThumbnail(user.displayAvatarURL({ dynamic: true }))
+            .addFields({ name: 'Membre', value: user.tag })
 
-		if(reaction.emoji.name === '✅') {
-			const ids = r.data.map(word => word.id)
-			await BannedWords.destroy({ where: { id: ids } })
-			await Reactions.destroy({ where: { id: r.id } })
+        if(reaction.emoji.name === '✅') {
+            const ids = r.data.map(word => word.id)
+            await BannedWords.destroy({ where: { id: ids } })
+            await Reactions.destroy({ where: { id: r.id } })
 
-			Logger.log('BannedWords', 'INFO', `${user.tag} a supprimé les mots bannis suivants : ${r.data.map(word => word.word).join(', ')}`)
+            Logger.log('BannedWords', 'INFO', `${user.tag} a supprimé les mots bannis suivants : ${r.data.map(word => word.word).join(', ')}`)
 
-			embed.setColor('#2ECC71')
-				.setTitle('🗑️ Suppression de mots bannis')
-				.addFields({ name: 'Mots bannis supprimés', value: r.data.map(word => word.word).join('\n') })
+            embed.setColor('#2ECC71')
+                .setTitle('🗑️ Suppression de mots bannis')
+                .addFields({ name: 'Mots bannis supprimés', value: r.data.map(word => word.word).join('\n') })
 
-			await reaction.message.reactions.removeAll()
-			await reaction.message.edit({ embeds: [embed] })
-		} else if(reaction.emoji.name === '❌') {
-			await Reactions.destroy({ where: { id: r.id } })
+            await reaction.message.reactions.removeAll()
+            await reaction.message.edit({ embeds: [embed] })
+        } else if(reaction.emoji.name === '❌') {
+            await Reactions.destroy({ where: { id: r.id } })
 
-			embed.setColor('#E74C3C')
-				.setTitle('🗑️ Refus de suppression de mots bannis')
-				.addFields({ name: 'Mots bannis non supprimés', value: r.data.map(word => word.word).join('\n') })
+            embed.setColor('#E74C3C')
+                .setTitle('🗑️ Refus de suppression de mots bannis')
+                .addFields({ name: 'Mots bannis non supprimés', value: r.data.map(word => word.word).join('\n') })
 
-			await reaction.message.reactions.removeAll()
-			await reaction.message.edit({ embeds: [embed] })
-		}
+            await reaction.message.reactions.removeAll()
+            await reaction.message.edit({ embeds: [embed] })
+        }
     }
 }

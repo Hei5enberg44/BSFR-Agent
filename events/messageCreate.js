@@ -9,11 +9,11 @@ const Logger = require('../utils/logger')
 const config = require('../config.json')
 
 module.exports = {
-	/**
-	 * Emitted whenever a message is created
-	 * @param {Message} message The created message
-	 */
-	async execute(message) {
+    /**
+     * Emitted whenever a message is created
+     * @param {Message} message The created message
+     */
+    async execute(message) {
         if(message) {
             if(message.guildId) {
                 // Si ce n'est pas un dm
@@ -47,7 +47,7 @@ module.exports = {
                 }
             }
         }
-	},
+    },
 
     /**
      * Répond "feur" si "quoi" est détécté en fin de phrase

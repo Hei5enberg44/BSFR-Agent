@@ -3,9 +3,9 @@ const { CommandError, CommandInteractionError } = require('../utils/error')
 const fs = require('fs')
 
 module.exports = {
-	data: {
-		name: 'log',
-		description: 'Récupère un fichier de log',
+    data: {
+        name: 'log',
+        description: 'Récupère un fichier de log',
         options: [
             {
                 type: ApplicationCommandOptionType.String,
@@ -23,7 +23,7 @@ module.exports = {
      * Exécution de la commande
      * @param {CommandInteraction} interaction intéraction Discord
      */
-	async execute(interaction) {
+    async execute(interaction) {
         try {
             const rawDate = new Date()
             let date = interaction.options.getString('date') ?? ('0' + rawDate.getDate()).slice(-2) + '/' + ('0' + (rawDate.getUTCMonth() + 1)).slice(-2) + '/' + rawDate.getFullYear()
@@ -48,5 +48,5 @@ module.exports = {
                 throw Error(error.message)
             }
         }
-	}
+    }
 }

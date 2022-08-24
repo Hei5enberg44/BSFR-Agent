@@ -5,9 +5,9 @@ const Logger = require('../utils/logger')
 const config = require('../config.json')
 
 module.exports = {
-	data: {
-		name: 'send',
-		description: 'Envoie un message dans un channel',
+    data: {
+        name: 'send',
+        description: 'Envoie un message dans un channel',
         options: [
             {
                 type: ApplicationCommandOptionType.Channel,
@@ -30,7 +30,7 @@ module.exports = {
      * Exécution de la commande
      * @param {CommandInteraction} interaction intéraction Discord
      */
-	async execute(interaction) {
+    async execute(interaction) {
         try {
             const channel = interaction.options.getChannel('channel')
             const message = interaction.options.getString('message')
@@ -64,5 +64,5 @@ module.exports = {
                 throw Error(error.message)
             }
         }
-	}
+    }
 }

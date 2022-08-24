@@ -148,38 +148,38 @@ module.exports = {
     },
 
     /**
-	 * Supression d'URL malveillant
-	 * @param {MessageReaction} reaction The reaction object
-	 * @param {User} user The user that applied the guild or reaction emoji
-	 * @param {{id: Number, type: String, data: Array.<{id: Number, url: String, memberId: String, date: Date}>, memberId: String, channelId: String, messageId: String, date: Date}} r données concernant la réaction
-	 */
+     * Supression d'URL malveillant
+     * @param {MessageReaction} reaction The reaction object
+     * @param {User} user The user that applied the guild or reaction emoji
+     * @param {{id: Number, type: String, data: Array.<{id: Number, url: String, memberId: String, date: Date}>, memberId: String, channelId: String, messageId: String, date: Date}} r données concernant la réaction
+     */
     confirmRemove: async function(reaction, user, r) {
         const embed = new Embed()
-			.setThumbnail(user.displayAvatarURL({ dynamic: true }))
-			.addFields({ name: 'Membre', value: user.tag })
+            .setThumbnail(user.displayAvatarURL({ dynamic: true }))
+            .addFields({ name: 'Membre', value: user.tag })
 
-		if(reaction.emoji.name === '✅') {
-			const ids = r.data.map(url => url.id)
-			await MaliciousURL.destroy({ where: { id: ids } })
-			await Reactions.destroy({ where: { id: r.id } })
+        if(reaction.emoji.name === '✅') {
+            const ids = r.data.map(url => url.id)
+            await MaliciousURL.destroy({ where: { id: ids } })
+            await Reactions.destroy({ where: { id: r.id } })
 
-			Logger.log('MaliciousURL', 'INFO', `${user.tag} a supprimé les URL malveillants suivants : ${r.data.map(url => url.url).join(', ')}`)
+            Logger.log('MaliciousURL', 'INFO', `${user.tag} a supprimé les URL malveillants suivants : ${r.data.map(url => url.url).join(', ')}`)
 
-			embed.setColor('#2ECC71')
-				.setTitle('🗑️ Suppression d\'URL malveillants')
-				.addFields({ name: 'URL malveillants supprimés', value: r.data.map(url => url.url).join('\n') })
+            embed.setColor('#2ECC71')
+                .setTitle('🗑️ Suppression d\'URL malveillants')
+                .addFields({ name: 'URL malveillants supprimés', value: r.data.map(url => url.url).join('\n') })
 
-			await reaction.message.reactions.removeAll()
-			await reaction.message.edit({ embeds: [embed] })
-		} else if(reaction.emoji.name === '❌') {
-			await Reactions.destroy({ where: { id: r.id } })
+            await reaction.message.reactions.removeAll()
+            await reaction.message.edit({ embeds: [embed] })
+        } else if(reaction.emoji.name === '❌') {
+            await Reactions.destroy({ where: { id: r.id } })
 
-			embed.setColor('#E74C3C')
-				.setTitle('🗑️ Refus de suppression d\'URL malveillants')
-				.addFields({ name: 'URL malveillants non supprimés', value: r.data.map(url => url.url).join('\n') })
+            embed.setColor('#E74C3C')
+                .setTitle('🗑️ Refus de suppression d\'URL malveillants')
+                .addFields({ name: 'URL malveillants non supprimés', value: r.data.map(url => url.url).join('\n') })
 
-			await reaction.message.reactions.removeAll()
-			await reaction.message.edit({ embeds: [embed] })
-		}
+            await reaction.message.reactions.removeAll()
+            await reaction.message.edit({ embeds: [embed] })
+        }
     }
 }

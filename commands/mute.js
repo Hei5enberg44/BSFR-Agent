@@ -6,9 +6,9 @@ const Logger = require('../utils/logger')
 const config = require('../config.json')
 
 module.exports = {
-	data: {
-		name: 'mute',
-		description: 'Mute un membre sur une période définie',
+    data: {
+        name: 'mute',
+        description: 'Mute un membre sur une période définie',
         options: [
             {
                 type: ApplicationCommandOptionType.User,
@@ -37,7 +37,7 @@ module.exports = {
      * Exécution de la commande
      * @param {CommandInteraction} interaction intéraction Discord
      */
-	async execute(interaction) {
+    async execute(interaction) {
         try {
             const member = interaction.options.getUser('membre')
             const reason = interaction.options.getString('raison')
@@ -91,5 +91,5 @@ module.exports = {
                 throw Error(error.message)
             }
         }
-	}
+    }
 }

@@ -7,9 +7,9 @@ const maliciousURL = require('../controllers/maliciousURL')
 const Logger = require('../utils/logger')
 
 module.exports = {
-	data: {
-		name: 'add',
-		description: 'Ajouts divers',
+    data: {
+        name: 'add',
+        description: 'Ajouts divers',
         options: [
             {
                 type: ApplicationCommandOptionType.String,
@@ -47,7 +47,7 @@ module.exports = {
      * Exécution de la commande
      * @param {CommandInteraction} interaction intéraction Discord
      */
-	async execute(interaction) {
+    async execute(interaction) {
         try {
             const subject = interaction.options.getString('sujet')
             const text = interaction.options.getString('texte')
@@ -110,5 +110,5 @@ module.exports = {
                 throw Error(error.message)
             }
         }
-	}
+    }
 }

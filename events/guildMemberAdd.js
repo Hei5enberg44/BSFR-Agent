@@ -6,15 +6,15 @@ const Logger = require('../utils/logger')
 const config = require('../config.json')
 
 module.exports = {
-	/**
-	 * Emitted whenever a user joins a guild
-	 * @param {GuildMember} member The member that has joined a guild
-	 */
-	async execute(member) {
-		await module.exports.welcome(member)
+    /**
+     * Emitted whenever a user joins a guild
+     * @param {GuildMember} member The member that has joined a guild
+     */
+    async execute(member) {
+        await module.exports.welcome(member)
         await module.exports.removeRulesReactions(member)
         await mute.remute(member)
-	},
+    },
 
     /**
      * On log l'arrivée du membre dans le channel logs
@@ -38,9 +38,9 @@ module.exports = {
     },
 
     /**
-	 * Supprime les réactions d'un membre sur le message des règles du serveur Discord
-	 * @param {GuildMember} member The member that has left/been kicked from the guild
-	 */
+     * Supprime les réactions d'un membre sur le message des règles du serveur Discord
+     * @param {GuildMember} member The member that has left/been kicked from the guild
+     */
     async removeRulesReactions(member) {
         const rulesReaction = await Reactions.findOne({ where: { type: 'rules' } })
 

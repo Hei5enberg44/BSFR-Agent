@@ -4,9 +4,9 @@ const birthday = require('../controllers/birthday')
 const Logger = require('../utils/logger')
 
 module.exports = {
-	data: {
-		name: 'birthday',
-		description: 'Ajoute/Supprime une date d\'anniversaire',
+    data: {
+        name: 'birthday',
+        description: 'Ajoute/Supprime une date d\'anniversaire',
         options: [
             {
                 type: ApplicationCommandOptionType.Subcommand,
@@ -35,7 +35,7 @@ module.exports = {
      * Exécution de la commande
      * @param {CommandInteraction} interaction intéraction Discord
      */
-	async execute(interaction) {
+    async execute(interaction) {
         try {
             const action = interaction.options.getSubcommand()
 
@@ -72,5 +72,5 @@ module.exports = {
                 throw Error(error.message)
             }
         }
-	}
+    }
 }

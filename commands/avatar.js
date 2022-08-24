@@ -2,9 +2,9 @@ const { CommandInteraction, ApplicationCommandOptionType } = require('discord.js
 const { CommandError, CommandInteractionError } = require('../utils/error')
 
 module.exports = {
-	data: {
-		name: 'avatar',
-		description: 'Récupère l\'avatar d\'un membre',
+    data: {
+        name: 'avatar',
+        description: 'Récupère l\'avatar d\'un membre',
         options: [
             {
                 type: ApplicationCommandOptionType.User,
@@ -20,7 +20,7 @@ module.exports = {
      * Exécution de la commande
      * @param {CommandInteraction} interaction intéraction Discord
      */
-	async execute(interaction) {
+    async execute(interaction) {
         try {
             const member = interaction.options.getUser('membre') ?? interaction.user
 
@@ -34,5 +34,5 @@ module.exports = {
                 throw Error(error.message)
             }
         }
-	}
+    }
 }

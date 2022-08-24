@@ -6,9 +6,9 @@ const Logger = require('../utils/logger')
 const config = require('../config.json')
 
 module.exports = {
-	data: {
-		name: 'roles',
-		description: 'Assignation auto de rôles',
+    data: {
+        name: 'roles',
+        description: 'Assignation auto de rôles',
         options: [
             {
                 type: ApplicationCommandOptionType.Subcommand,
@@ -72,7 +72,7 @@ module.exports = {
      * Exécution de la commande
      * @param {CommandInteraction} interaction intéraction Discord
      */
-	async execute(interaction) {
+    async execute(interaction) {
         try {
             const subCommand = interaction.options.getSubcommand(false)
             const subCommandGroup = interaction.options.getSubcommandGroup(false)
@@ -176,5 +176,5 @@ module.exports = {
                 throw Error(error.message)
             }
         }
-	}
+    }
 }

@@ -3,9 +3,9 @@ const { CommandError, CommandInteractionError } = require('../utils/error')
 const Logger = require('../utils/logger')
 
 module.exports = {
-	data: {
-		name: 'ping',
-		description: 'Test si le bot fonctionne',
+    data: {
+        name: 'ping',
+        description: 'Test si le bot fonctionne',
         default_member_permissions: '0'
     },
 
@@ -13,7 +13,7 @@ module.exports = {
      * Exécution de la commande
      * @param {CommandInteraction} interaction intéraction Discord
      */
-	async execute(interaction) {
+    async execute(interaction) {
         try {
             Logger.log('PingCommand', 'INFO', 'Ping... Pong!')
             await interaction.reply({ content: 'Pong! 🏓', ephemeral: true })
@@ -24,5 +24,5 @@ module.exports = {
                 throw Error(error.message)
             }
         }
-	}
+    }
 }
