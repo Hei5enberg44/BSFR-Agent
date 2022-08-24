@@ -13,13 +13,13 @@ module.exports = {
 		const member = guild.members.cache.get(user.id)
 
         if(reaction.emoji.name === '✅') {
-			const role = guild.roles.cache.find(r => r.id === config.guild.roles["Membre"])
+			const role = guild.roles.cache.get(config.guild.roles["Membre"])
 			if(role) {
 				Logger.log('Rules', 'INFO', `${user.tag} a accepté les règles. Le rôle @Membre lui a été attribué.`)
 				await member.roles.add(role)
 			}
-		} else if(reaction.emoji.name === '☑') {
-			const role = guild.roles.cache.find(r => r.id === config.guild.roles["Not French Boi"])
+		} else if(reaction.emoji.name === '☑' || reaction.emoji.name === '☑️') {
+			const role = guild.roles.cache.get(config.guild.roles["Not French Boi"])
 			if(role) {
 				Logger.log('Rules', 'INFO', `${user.tag} a accepté les règles. Le rôle @Not French Boi lui a été attribué.`)
 				await member.roles.add(role)
@@ -37,13 +37,13 @@ module.exports = {
 		const member = guild.members.cache.get(user.id)
 
         if(reaction.emoji.name === '✅') {
-			const role = guild.roles.cache.find(r => r.id === config.guild.roles["Membre"])
+			const role = guild.roles.cache.get(config.guild.roles["Membre"])
 			if(role) {
 				Logger.log('Rules', 'INFO', `${user.tag} a refusé les règles. Le rôle @Membre lui a été retiré.`)
 				await member.roles.remove(role)
 			}
-		} else if(reaction.emoji.name === '☑') {
-			const role = guild.roles.cache.find(r => r.id === config.guild.roles["Not French Boi"])
+		} else if(reaction.emoji.name === '☑' || reaction.emoji.name === '☑️') {
+			const role = guild.roles.cache.get(config.guild.roles["Not French Boi"])
 			if(role) {
 				Logger.log('Rules', 'INFO', `${user.tag} a refusé les règles. Le rôle @Not French Boi lui a été retiré.`)
 				await member.roles.remove(role)
