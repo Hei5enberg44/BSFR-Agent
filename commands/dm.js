@@ -37,7 +37,7 @@ module.exports = {
             const member = interaction.options.getUser('membre')
             const message = interaction.options.getString('message')
             const createdThread = await threads.get('dm', null, member.id)
-            const agentDmChannel = interaction.guild.channels.cache.find(c => c.id === config.guild.channels.agentDm)
+            const agentDmChannel = interaction.guild.channels.cache.get(config.guild.channels.agentDm)
 
             let thread
             if(!createdThread) {

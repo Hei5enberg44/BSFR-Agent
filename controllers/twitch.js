@@ -57,7 +57,7 @@ module.exports = {
                 if(result) {
                     uploadedClipsCount++
                 } else {
-                    const logsChannel = message.guild.channels.cache.find(c => c.id === config.guild.channels.logs)
+                    const logsChannel = message.guild.channels.cache.get(config.guild.channels.logs)
                     const embed = new Embed()
                         .setColor('#E74C3C')
                         .setTitle('🎬 Échec de l\'upload d\'un clip')
@@ -75,7 +75,7 @@ module.exports = {
                     if(result) {
                         uploadedClipsCount++
                     } else {
-                        const logsChannel = message.guild.channels.cache.find(c => c.id === config.guild.channels.logs)
+                        const logsChannel = message.guild.channels.cache.get(config.guild.channels.logs)
                         const embed = new Embed()
                             .setColor('#E74C3C')
                             .setTitle('🎬 Échec de l\'upload d\'un clip')
@@ -86,7 +86,7 @@ module.exports = {
             }
 
             if(uploadedClipsCount > 0) {
-                const logsChannel = message.guild.channels.cache.find(c => c.id === config.guild.channels.logs)
+                const logsChannel = message.guild.channels.cache.get(config.guild.channels.logs)
                 const embed = new Embed()
                     .setColor('#2ECC71')
                     .setTitle('🎬 Nouveau(x) clip(s) uploadé(s) !')
@@ -582,7 +582,7 @@ module.exports = {
 
                             const guild = client.guilds.cache.find(g => g.id === config.guild.id)
                             const member = guild.members.cache.find(m => m.id === streamer.memberId)
-                            const twitchChannel = guild.channels.cache.find(c => c.id === config.guild.channels.twitch)
+                            const twitchChannel = guild.channels.cache.get(config.guild.channels.twitch)
 
                             const embed = new Embed()
                                 .setColor('#6441A5')

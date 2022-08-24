@@ -68,7 +68,7 @@ module.exports = {
      */
     async dm(message) {
         if(message.author.id !== config.clientId) {
-            const guild = message.client.guilds.cache.find(g => g.id === config.guild.id)
+            const guild = message.client.guilds.cache.get(config.guild.id)
             const agentDmChannel = guild.channels.cache.get(config.guild.channels.agentDm)
 
             const createdThread = await threads.get('dm', null, message.author.id)

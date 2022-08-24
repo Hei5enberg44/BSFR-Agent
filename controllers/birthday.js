@@ -54,7 +54,7 @@ module.exports = {
         const birthdays = await module.exports.get()
         const bdMessages = await BirthdayMessages.findAll()
 
-        const guild = client.guilds.cache.find(g => g.id === config.guild.id)
+        const guild = client.guilds.cache.get(config.guild.id)
         const happyBirthdayChannel = guild.channels.cache.get(config.guild.channels.happyBirthday)
 
         for(const birthday of birthdays) {

@@ -126,7 +126,7 @@ module.exports = {
      * @param {Client} client client Discord
      */
     unmute: async function(client) {
-        const guild = client.guilds.cache.find(g => g.id === config.guild.id)
+        const guild = client.guilds.cache.get(config.guild.id)
         const logsChannel = guild.channels.cache.get(config.guild.channels.logs)
         const muteRole = guild.roles.cache.get(config.guild.roles.Muted)
 
