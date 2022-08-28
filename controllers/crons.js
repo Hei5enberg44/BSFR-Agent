@@ -7,6 +7,10 @@ const twitch = require('../controllers/twitch')
 const Logger = require('../utils/logger')
 
 module.exports = {
+    /**
+     * Souhaite l'anniversaire aux membres pour qui c'est l'anniversaire ce jour
+     * @param {Client} client client Discord
+     */
     birthdayWish: async function(client) {
         new CronJob('0 0 * * *', async function () {
             await birthday.wish(client)
@@ -15,6 +19,10 @@ module.exports = {
         Logger.log('CronManager', 'INFO', 'Tâche "birthdayWish" chargée')
     },
 
+    /**
+     * Démute les membres pour qui la date de démute est passée
+     * @param {Client} client client Discord
+     */
     unmute: async function(client) {
         new CronJob('* * * * *', async function () {
             await mute.unmute(client)
@@ -23,6 +31,10 @@ module.exports = {
         Logger.log('CronManager', 'INFO', 'Tâche "unmute" chargée')
     },
 
+    /**
+     * Déban les membres pour qui la date d'unban est passée
+     * @param {Client} client client Discord
+     */
     unban: async function(client) {
         new CronJob('* * * * *', async function () {
             await ban.unban(client)
@@ -31,6 +43,11 @@ module.exports = {
         Logger.log('CronManager', 'INFO', 'Tâche "unban" chargée')
     },
 
+    /**
+     * Publication des nouvelles vidéos de la chaîne YouTube Beat Saber FR
+     * dans le channel #youtube
+     * @param {Client} client client Discord
+     */
     publish: async function(client) {
         new CronJob('5 19-23 * * *', async function () {
             await youtube.publish(client)
@@ -39,6 +56,10 @@ module.exports = {
         Logger.log('CronManager', 'INFO', 'Tâche "unban" chargée')
     },
 
+    /**
+     * Recherche les membres en live sur Twitch et envoie une notification dans le channel #twitch-youtube
+     * @param {Client} client client Discord
+     */
     live: async function(client) {
         new CronJob('*/5 * * * *', async function () {
             await twitch.live(client)

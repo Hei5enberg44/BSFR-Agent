@@ -12,9 +12,19 @@ const wait = (s) => new Promise((res) => setTimeout(res, s * 1000))
 
 module.exports = {
     /**
+     * @typedef {Object} ScanStats
+     * @property {number} failure
+     * @property {number} harmless
+     * @property {number} malicious
+     * @property {number} suspicious
+     * @property {number} timeout
+     * @property {number} undetected
+     */
+
+    /**
      * Scan antivirus d'un fichier
-     * @param {String} url lien vers le fichier
-     * @returns {Promise<Object>} résultat de l'analyse
+     * @param {string} url lien vers le fichier
+     * @returns {Promise<{data:{attributes:{stats:ScanStats}}}>} résultat de l'analyse
      */
     scan: async function(url) {
         try {
@@ -151,7 +161,7 @@ module.exports = {
 
     /**
      * Téléchargement du fichier
-     * @param {String} url lien vers le fichier
+     * @param {string} url lien vers le fichier
      * @returns {Promise<tmp.FileResult>} fichier temporaire téléchargé
      */
     download: async function(url) {

@@ -17,7 +17,7 @@ module.exports = {
 
     /**
      * Récupère les dernières vidéos publiques sur la chaîne YouTube
-     * @returns {Promise<Array.<{videoId: String, publishedAt: String, title: String}>>} liste des vidéos
+     * @returns {Promise<Array<{videoId: string, publishedAt: string, title: string}>>} liste des vidéos
      */
     getYoutubeLatestPublicsVideos: async function() {
         const latestPublicsVideos = []

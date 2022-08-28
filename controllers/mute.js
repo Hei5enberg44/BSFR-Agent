@@ -8,10 +8,10 @@ const config = require('../config.json')
 module.exports = {
     /**
      * Ajoute un mute dans la base de données
-     * @param {String} memberId identifiant du membre
-     * @param {String} mutedBy identifiant du membre réalisant la demante de mute
-     * @param {String} reason raison du mute
-     * @param {Number} date date d'unmute
+     * @param {string} memberId identifiant du membre
+     * @param {string} mutedBy identifiant du membre réalisant la demante de mute
+     * @param {string} reason raison du mute
+     * @param {number} date date d'unmute
      */
     add: async function(memberId, mutedBy, reason, date) {
         await Mutes.create({
@@ -24,7 +24,7 @@ module.exports = {
 
     /**
      * Supprime un mute de la base de donnée
-     * @param {String} memberId identifiant du membre
+     * @param {string} memberId identifiant du membre
      */
     remove: async function(memberId) {
         await Mutes.destroy({
@@ -36,8 +36,8 @@ module.exports = {
 
     /**
      * Test si un membre est muted
-     * @param {String} memberId identifiant du membre
-     * @returns {Promise<{id: Number, memberId: String, mutedBy: String, reason: String, unmuteDate: Number}|null>} données concernant le mute
+     * @param {string} memberId identifiant du membre
+     * @returns {Promise<{id: number, memberId: string, mutedBy: string, reason: string, unmuteDate: Number}|null>} données concernant le mute
      */
     isMuted: async function(memberId) {
         const muted = await Mutes.findOne({
@@ -51,8 +51,8 @@ module.exports = {
 
     /**
      * Détermine la date d'unmute en fonction du choix réalisé par l'Administrateur ou le Modérateur
-     * @param {String} duration durée du mute
-     * @returns {Number} date de d'unmute au format timestamp
+     * @param {string} duration durée du mute
+     * @returns {number} date de d'unmute au format timestamp
      */
     getUnmuteDate: function(duration) {
         const unit = duration.charAt(duration.length - 1).toUpperCase()

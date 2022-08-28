@@ -8,9 +8,9 @@ const config = require('../config.json')
 module.exports = {
     /**
      * Ajoute un URL malveillant dans la base de données
-     * @param {String} url URL malveillant
+     * @param {string} url URL malveillant
      * @param {GuildMember} member membre réalisant la demande d'ajout
-     * @returns {Promise<{new: String, old: String}>} liste des URL malveillants
+     * @returns {Promise<{new: string, old: string}>} liste des URL malveillants
      */
     add: async function(url, member) {
         url = url.trim()
@@ -38,8 +38,8 @@ module.exports = {
 
     /**
      * Récupère une liste d'URL malveillants par rapport à un ou plusieurs ids
-     * @param {String} ids identifiant(s) des URL malveillants à récupérer
-     * @returns {Promise<Array.<{id: Number, url: String, memberId: String, date: Date}>>} liste des URL malveillants
+     * @param {string} ids identifiant(s) des URL malveillants à récupérer
+     * @returns {Promise<Array<{id: number, url: string, memberId: string, date: Date}>>} liste des URL malveillants
      */
     get: async function(ids) {
         ids = ids.split(';').map(id => id.trim())
@@ -96,8 +96,8 @@ module.exports = {
 
     /**
      * Retourne la liste des URL malveillants depuis la base de données
-     * @param {Number} page page à retourner
-     * @returns {Promise<String>} liste des URL malveillants
+     * @param {number} page page à retourner
+     * @returns {Promise<string>} liste des URL malveillants
      */
     list: async function(page) {
         const itemsPerPage = 10
@@ -133,9 +133,9 @@ module.exports = {
     /**
      * Ajout d'une requête de suppression d'URL malveillants dans la base de données
      * @param {Object} urlsList liste des URL malveillants à supprimer
-     * @param {String} memberId identifiant du membre ayant effectué la demande de suppression
-     * @param {String} channelId identifiant du salon dans lequel la demande de suppression a été effectuée
-     * @param {String} messageId identifiant du message de confirmation de suppression
+     * @param {string} memberId identifiant du membre ayant effectué la demande de suppression
+     * @param {string} channelId identifiant du salon dans lequel la demande de suppression a été effectuée
+     * @param {string} messageId identifiant du message de confirmation de suppression
      */
     remove: async function(urlsList, memberId, channelId, messageId) {
         await Reactions.create({
@@ -148,10 +148,21 @@ module.exports = {
     },
 
     /**
+     * @typedef {Object} Reaction
+     * @property {number} id
+     * @property {string} type
+     * @property {{id: number, url: string, memberId: string, date: Date}} data
+     * @property {string} memberId
+     * @property {string} channelId
+     * @property {string} messageId
+     * @property {Date} date
+     */
+
+    /**
      * Supression d'URL malveillant
      * @param {MessageReaction} reaction The reaction object
      * @param {User} user The user that applied the guild or reaction emoji
-     * @param {{id: Number, type: String, data: Array.<{id: Number, url: String, memberId: String, date: Date}>, memberId: String, channelId: String, messageId: String, date: Date}} r données concernant la réaction
+     * @param {Reaction} r données concernant la réaction
      */
     confirmRemove: async function(reaction, user, r) {
         const embed = new Embed()

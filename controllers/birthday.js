@@ -8,8 +8,8 @@ const config = require('../config.json')
 module.exports = {
     /**
      * Ajoute une date d'anniversaire dans la base de données
-     * @param {String} memberId identifiant du membre
-     * @param {Number} date date de naissance au format timestamp
+     * @param {string} memberId identifiant du membre
+     * @param {number} date date de naissance au format timestamp
      */
     set: async function(memberId, date) {
         const bd = await Birthdays.findOne({ where: { memberId: memberId } })
@@ -24,7 +24,7 @@ module.exports = {
 
     /**
      * Supprime une date d'anniversaire de la base de données
-     * @param {String} memberId identifiant du membre
+     * @param {string} memberId identifiant du membre
      */
     unset: async function(memberId) {
         await Birthdays.destroy({
@@ -34,7 +34,7 @@ module.exports = {
 
     /**
      * Récupère la liste des anniversaire pour les membres dont c'est l'anniversaire ce jour
-     * @returns {Promise<Array.<{id: Number, memberId: String, date: Date}>>} liste des anniversaires
+     * @returns {Promise<Array<{id: number, memberId: string, date: Date}>>} liste des anniversaires
      */
     get: async function() {
         const date = ((new Date()).toLocaleDateString('fr-FR', { timeZone: 'Europe/Paris' })).substr(0, 5)

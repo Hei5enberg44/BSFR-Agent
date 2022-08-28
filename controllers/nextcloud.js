@@ -23,8 +23,8 @@ module.exports = {
 
     /**
      * Upload un fichier dans le Drive
-     * @param {String} source chemin du fichier source
-     * @param {String} destination chemin du fichier cible
+     * @param {string} source chemin du fichier source
+     * @param {string} destination chemin du fichier cible
      */
     uploadFile: async function(source, destination) {
         try {
@@ -49,7 +49,7 @@ module.exports = {
 
     /**
      * Créer un dossier dans le Drive
-     * @param {String} folderName chemin du dossier à créer
+     * @param {string} folderName chemin du dossier à créer
      * @returns {Promise<Folder>} dossier créé ou dossier déjà existant
      */
     createFolder: async function(folderName) {

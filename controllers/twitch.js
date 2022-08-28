@@ -18,7 +18,7 @@ const twitchGqlClientId = 'kimne78kx3ncx6brgo4mv6wki5h1ko'
 module.exports = {
     /**
      * Retourne l'Access Token de Twitch API
-     * @returns {Promise<String>} Access Token
+     * @returns {Promise<string>} Access Token
      */
     getToken: async function() {
         const params = new URLSearchParams({
@@ -102,8 +102,8 @@ module.exports = {
 
     /**
      * Récupération d'un clip depuis un lien de clip Twitch
-     * @param {String} url lien vers le clip Twitch
-     * @returns {Promise<Boolean>}
+     * @param {string} url lien vers le clip Twitch
+     * @returns {Promise<boolean>}
      */
     getClipByUrl: async function(url) {
         try {
@@ -152,8 +152,8 @@ module.exports = {
     /**
      * Récupération d'un clip depuis une pièce jointe à un message Discord
      * @param {MessageAttachment} attachment pièce jointe d'un message Discord
-     * @param {String} memberId identifiant du membre Discord ayant uploadé le clip
-     * @returns {Promise<Boolean>}
+     * @param {string} memberId identifiant du membre Discord ayant uploadé le clip
+     * @returns {Promise<boolean>}
      */
     getClipByAttachment: async function(attachment, memberId) {
         try {
@@ -187,8 +187,8 @@ module.exports = {
 
     /**
      * Récupération des informations d'un clip
-     * @param {String} ClipSlug identifiant du clip
-     * @returns {Promise<Object>} informations du clip
+     * @param {string} ClipSlug identifiant du clip
+     * @returns {Promise<{data:{clip:{title: string, createdAt: string, broadcaster:{id: string, displayName: string}}}}>} informations du clip
      */
     getClipInfos: async function(ClipSlug) {
         const clipInfosRequest = await fetch('https://gql.twitch.tv/gql', {
@@ -214,8 +214,8 @@ module.exports = {
 
     /**
      * Récupère le lien de téléchargement d'un clip
-     * @param {String} clipSlug identifiant du clip
-     * @returns {Promise<String>} lien de téléchargement du clip
+     * @param {string} clipSlug identifiant du clip
+     * @returns {Promise<string>} lien de téléchargement du clip
      */
     getClipDownloadUrl: async function(clipSlug) {
         const clipLinksRequest = await fetch('https://gql.twitch.tv/gql', {
@@ -242,7 +242,7 @@ module.exports = {
 
     /**
      * Télécharge un clip vers un fichier temporaire
-     * @param {String} url url du fichier à télécharger
+     * @param {string} url url du fichier à télécharger
      * @returns {Promise<tmp.FileResult>} fichier temporaire téléchargé
      */
     downloadClip: async function(url) {
@@ -268,8 +268,8 @@ module.exports = {
 
     /**
      * Récupération du token d'une VOD
-     * @param {String} videoId identifiant de la VOD
-     * @returns {Promise<Object>} token de la VOD
+     * @param {string} videoId identifiant de la VOD
+     * @returns {Promise<{data:{videoPlaybackAccessToken:{value: string, signature: string}}}>} token de la VOD
      */
     getVideoToken: async function(videoId) {
         const videoTokenRequest = await fetch('https://gql.twitch.tv/gql', {
@@ -286,10 +286,10 @@ module.exports = {
 
     /**
      * Récupération de la liste des chunks constituants une VOD
-     * @param {String} videoId identifiant de la VOD
-     * @param {String} token token de la VOD
-     * @param {String} sig signature de la VOD
-     * @returns {Promise<String>} liste des chunks constituants la VOD
+     * @param {string} videoId identifiant de la VOD
+     * @param {string} token token de la VOD
+     * @param {string} sig signature de la VOD
+     * @returns {Promise<string>} liste des chunks constituants la VOD
      */
     getVideoPlaylist: async function(videoId, token, sig) {
         const params = new URLSearchParams({
@@ -320,8 +320,8 @@ module.exports = {
 
     /**
      * Récupération d'un fichier playlist contenant la liste des chunks constituants une VOD
-     * @param {String} videoId identifiant de la VOD
-     * @returns {Promise<String>} URL du fichier playlist
+     * @param {string} videoId identifiant de la VOD
+     * @returns {Promise<string>} URL du fichier playlist
      */
     getRestrictedVideoPlaylist: async function(videoId) {
         const videoInfosRequest = await fetch(`https://api.twitch.tv/kraken/videos/${videoId}`, {
@@ -344,8 +344,8 @@ module.exports = {
 
     /**
      * Récupération des informations d'une VOD
-     * @param {String} videoId identifiant de la VOD
-     * @returns {Promise<Object>} informations de la VOD
+     * @param {string} videoId identifiant de la VOD
+     * @returns {Promise<{data:{video:{createdAt: string, creator:{login: string}}}}>} informations de la VOD
      */
     getVideoInfos: async function(videoId) {
         const clipInfosRequest = await fetch('https://gql.twitch.tv/gql', {
@@ -371,8 +371,8 @@ module.exports = {
 
     /**
      * Téléchargement d'un chunk d'une VOD
-     * @param {String} url URL de téléchargement du chunk
-     * @param {String} path chemin vers le fichier de destination
+     * @param {string} url URL de téléchargement du chunk
+     * @param {string} path chemin vers le fichier de destination
      */
     downloadChunk: async function(url, path) {
         const downloadRequest = await fetch(url, {
@@ -396,7 +396,7 @@ module.exports = {
 
     /**
      * Téléchargement d'une VOD
-     * @param {String} videoId identifiant de la VOD à télécharger
+     * @param {string} videoId identifiant de la VOD à télécharger
      * @returns {Promise<tmp.FileResult>} fichier téléchargé
      */
     downloadVideo: async function(videoId) {
@@ -633,8 +633,8 @@ module.exports = {
 
     /**
      * Lie un compte Twitch à un membre Discord
-     * @param {String} memberId identifiant du membre Discord auquel lier à un compte Twitch
-     * @param {String} channelName nom de la chaîne Twitch à lier au membre Discord
+     * @param {string} memberId identifiant du membre Discord auquel lier à un compte Twitch
+     * @param {string} channelName nom de la chaîne Twitch à lier au membre Discord
      */
     link: async function(memberId, channelName) {
         const streamer = await Twitch.findOne({ where: { memberId: memberId } })
@@ -656,7 +656,7 @@ module.exports = {
 
     /**
      * Délie un compte Twitch d'un membre Discord
-     * @param {String} memberId identifiant du membre Discord pour lequel délier un compte Twitch
+     * @param {string} memberId identifiant du membre Discord pour lequel délier un compte Twitch
      */
     unlink: async function(memberId) {
         await Twitch.destroy({ where: { memberId: memberId } })
@@ -665,7 +665,7 @@ module.exports = {
     /**
      * Convertit une date au format yyyy-mm-dd hh:ii
      * @param {Date} date date à convertir
-     * @returns {String} date convertie
+     * @returns {string} date convertie
      */
     convertDate: function(date) {
         const year = date.getFullYear()

@@ -3,9 +3,9 @@ const { Cities, FranceCities } = require('./database')
 module.exports = {
     /**
      * Ajoute une ville d'origine dans la base de données
-     * @param {String} memberId identifiant du membre
-     * @param {String} postalCode nom de la ville
-     * @param {String} cityName nom de la ville
+     * @param {string} memberId identifiant du membre
+     * @param {string} postalCode nom de la ville
+     * @param {string} cityName nom de la ville
      */
     set: async function(memberId, postalCode, cityName) {
         const c = await Cities.findOne({ where: { memberId: memberId } })
@@ -30,7 +30,7 @@ module.exports = {
 
     /**
      * Supprime une ville d'origine de la base de données
-     * @param {String} memberId identifiant du membre
+     * @param {string} memberId identifiant du membre
      */
     unset: async function(memberId) {
         await Cities.destroy({
@@ -39,9 +39,19 @@ module.exports = {
     },
 
     /**
+     * @typedef {Object} City
+     * @property {string} code_commune_insee
+     * @property {string} nom_de_la_commune
+     * @property {number} code_postal
+     * @property {string} ligne_5
+     * @property {string} libelle_d_acheminement
+     * @property {string} coordonnees_gps
+     */
+
+    /**
      * Récupère des villes par rapport à un code postal
-     * @param {Number} postalCode code postal de la ville
-     * @returns {Promise<Array.<{code_commune_insee: String, nom_de_la_commune: String, code_postal: Number, ligne_5: String, libelle_d_acheminement: String, coordonnees_gps: String}>>} liste des villes
+     * @param {number} postalCode code postal de la ville
+     * @returns {Promise<Array<City>>} liste des villes
      */
     getCitiesByPostalCode: async function(postalCode) {
         const cities = await FranceCities.findAll({

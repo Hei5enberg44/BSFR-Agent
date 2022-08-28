@@ -8,10 +8,10 @@ const config = require('../config.json')
 module.exports = {
     /**
      * Ajoute un tweet dans la base de données
-     * @param {String} memberId identifiant du membre réalisant la demande d'envoi de tweet
-     * @param {String} tweet tweet à envoyer
-     * @param {String} channelId identifiant du channel depuis lequel a été exécuté la commande de tweet
-     * @param {String} messageId identifiant du message de confirmation d'envoi de tweet
+     * @param {string} memberId identifiant du membre réalisant la demande d'envoi de tweet
+     * @param {string} tweet tweet à envoyer
+     * @param {string} channelId identifiant du channel depuis lequel a été exécuté la commande de tweet
+     * @param {string} messageId identifiant du message de confirmation d'envoi de tweet
      */
     add: async function(memberId, tweet, channelId, messageId) {
         const t = await Tweets.create({
@@ -32,8 +32,8 @@ module.exports = {
 
     /**
      * Récupère les informations d'un tweet par rapport à son identifiant
-     * @param {Number} tweetId identifiant du tweet
-     * @returns {Promise<{id: Number, memberId: String, tweet: String}>} informations du tweet
+     * @param {number} tweetId identifiant du tweet
+     * @returns {Promise<{id: number, memberId: string, tweet: string}>} informations du tweet
      */
      get: async function(tweetId) {
         const tweet = await Tweets.findOne({
@@ -46,10 +46,21 @@ module.exports = {
     },
 
     /**
+     * @typedef {Object} Reaction
+     * @property {number} id
+     * @property {string} type
+     * @property {{tweetId: number}} data
+     * @property {string} memberId
+     * @property {string} channelId
+     * @property {string} messageId
+     * @property {Date} date
+     */
+
+    /**
      * Confirmation de l'envoi d'un tweet
      * @param {MessageReaction} reaction The reaction object
      * @param {User} user The user that applied the guild or reaction emoji
-     * @param {{id: Number, type: String, data: {tweetId: Number}, memberId: String, channelId: String, messageId: String, date: Date}} r données concernant la réaction
+     * @param {Reaction} r données concernant la réaction
      */
     confirm: async function(reaction, user, r) {
         const tweetId = r.data.tweetId
@@ -98,7 +109,7 @@ module.exports = {
 
     /**
      * Envoi d'un tweet
-     * @param {String} tweet tweet à envoyer
+     * @param {string} tweet tweet à envoyer
      */
     send: async function(tweet) {
         const T = new Twit({

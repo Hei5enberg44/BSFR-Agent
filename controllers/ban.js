@@ -8,13 +8,13 @@ const config = require('../config.json')
 module.exports = {
     /**
      * Ajoute un ban dans la base de données
-     * @param {String} memberId identifiant du membre
-     * @param {String} bannedBy identifiant du membre réalisant la demante de ban
-     * @param {String} approvedBy identifiant du membre approuvant la demante de ban
-     * @param {String} reason raison du ban
-     * @param {String|null} channelId channel où a été effectuée la demande de ban (facultatif)
-     * @param {String|null} messageId identifiant du message correspondant à la demande de ban (facultatif)
-     * @param {Number} date date d'unban
+     * @param {string} memberId identifiant du membre
+     * @param {string} bannedBy identifiant du membre réalisant la demante de ban
+     * @param {string} approvedBy identifiant du membre approuvant la demante de ban
+     * @param {string} reason raison du ban
+     * @param {string|null} channelId channel où a été effectuée la demande de ban (facultatif)
+     * @param {string|null} messageId identifiant du message correspondant à la demande de ban (facultatif)
+     * @param {number} date date d'unban
      */
     add: async function(memberId, bannedBy, approvedBy, reason, date, channelId = null, messageId = null) {
         const ban = await Bans.create({
@@ -40,8 +40,8 @@ module.exports = {
 
     /**
      * Approuve une demande de ban
-     * @param {Number} banId identifiant du ban
-     * @param {String} approvedBy identifiant du membre approuvant la demande de ban
+     * @param {number} banId identifiant du ban
+     * @param {string} approvedBy identifiant du membre approuvant la demande de ban
      */
     approve: async function(banId, approvedBy) {
         await Bans.update({
@@ -52,9 +52,19 @@ module.exports = {
     },
 
     /**
+     * @typedef {object} MemberBan
+     * @property {number} id
+     * @property {string} memberId
+     * @property {string} bannedBy
+     * @property {string} approvedBy
+     * @property {string} reason
+     * @property {number} unbanDate
+     */
+
+    /**
      * Récupère les informations d'un ban par rapport à son identifiant
-     * @param {Number} banId identifiant du ban
-     * @returns {Promise<{id: Number, memberId: String, bannedBy: String, approvedBy: String, reason: String, unbanDate: Number}>} informations du ban
+     * @param {number} banId identifiant du ban
+     * @returns {Promise<MemberBan>} informations du ban
      */
     get: async function(banId) {
         const ban = await Bans.findOne({
@@ -68,7 +78,7 @@ module.exports = {
 
     /**
      * Récupère la liste des membres bannis
-     * @returns {Promise<{id: Number, memberId: String, bannedBy: String, approvedBy: String, reason: String, unbanDate: Number}>} liste des membres bannis
+     * @returns {Promise<Array<MemberBan>>} liste des membres bannis
      */
     list: async function() {
         const bans = await Bans.findAll({
@@ -84,7 +94,7 @@ module.exports = {
 
     /**
      * Supprime un ban de la base de donnée
-     * @param {String} banId identifiant du ban
+     * @param {string} banId identifiant du ban
      */
     remove: async function(banId) {
         await Bans.destroy({
@@ -96,8 +106,8 @@ module.exports = {
 
     /**
      * Test si un membre est banni
-     * @param {String} memberId identifiant du membre
-     * @returns {Promise<{id: Number, memberId: String, bannedBy: String, approvedBy: String, reason: String, unbanDate: Number}|null>} données concernant le ban
+     * @param {string} memberId identifiant du membre
+     * @returns {Promise<MemberBan|null>} données concernant le ban
      */
     isBanned: async function(memberId) {
         const banned = await Bans.findOne({
@@ -111,8 +121,8 @@ module.exports = {
 
     /**
      * Détermine la date d'unban en fonction du choix réalisé par l'Administrateur ou le Modérateur
-     * @param {String} duration durée du ban
-     * @returns {Number} date de d'unban au format timestamp
+     * @param {string} duration durée du ban
+     * @returns {number} date de d'unban au format timestamp
      */
     getUnbanDate: function(duration) {
         const unit = duration.charAt(duration.length - 1).toUpperCase()
@@ -152,10 +162,21 @@ module.exports = {
     },
 
     /**
+     * @typedef {Object} Reaction
+     * @property {number} id
+     * @property {string} type
+     * @property {{banId: number}} data
+     * @property {string} memberId
+     * @property {string} channelId
+     * @property {string} messageId
+     * @property {Date} date
+     */
+
+    /**
      * Ban d'un membre
      * @param {MessageReaction} reaction The reaction object
      * @param {User} user The user that applied the guild or reaction emoji
-     * @param {{id: Number, type: String, data: {banId: Number}, memberId: String, channelId: String, messageId: String, date: Date}} r données concernant la réaction
+     * @param {Reaction} r données concernant la réaction
      */
     ban: async function(reaction, user, r) {
         const banId = r.data.banId

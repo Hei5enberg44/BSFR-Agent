@@ -7,9 +7,9 @@ const Logger = require('../utils/logger')
 module.exports = {
     /**
      * Ajoute un message d'anniversaire dans la base de données
-     * @param {String} message message d'anniversaire
+     * @param {string} message message d'anniversaire
      * @param {GuildMember} member membre réalisant la demande d'ajout
-     * @returns {Promise<{new: String, old: String}>} liste des messages d'anniversaire
+     * @returns {Promise<{new: string, old: string}>} liste des messages d'anniversaire
      */
     add: async function(message, member) {
         message = message.trim()
@@ -37,8 +37,8 @@ module.exports = {
 
     /**
      * Récupère une liste de messages d'anniversaire par rapport à un ou plusieurs ids
-     * @param {String} ids identifiant(s) des messages d'anniversaire à récupérer
-     * @returns {Promise<Array.<{id: Number, message: String, memberId: String, date: Date}>>} liste des messages d'anniversaire
+     * @param {string} ids identifiant(s) des messages d'anniversaire à récupérer
+     * @returns {Promise<Array<{id: number, message: string, memberId: string, date: Date}>>} liste des messages d'anniversaire
      */
     get: async function(ids) {
         ids = ids.split(';').map(id => id.trim())
@@ -54,8 +54,8 @@ module.exports = {
 
     /**
      * Retourne la liste des messages d'anniversaire depuis la base de données
-     * @param {Number} page page à retourner
-     * @returns {Promise<String>} liste des messages d'anniversaire
+     * @param {number} page page à retourner
+     * @returns {Promise<string>} liste des messages d'anniversaire
      */
     list: async function(page) {
         const itemsPerPage = 10
@@ -91,9 +91,9 @@ module.exports = {
     /**
      * Ajout d'une requête de suppression de messages d'anniversaire dans la base de données
      * @param {Object} messagesList liste des messages d'anniversaire à supprimer
-     * @param {String} memberId identifiant du membre ayant effectué la demande de suppression
-     * @param {String} channelId identifiant du salon dans lequel la demande de suppression a été effectuée
-     * @param {String} messageId identifiant du message de confirmation de suppression
+     * @param {string} memberId identifiant du membre ayant effectué la demande de suppression
+     * @param {string} channelId identifiant du salon dans lequel la demande de suppression a été effectuée
+     * @param {string} messageId identifiant du message de confirmation de suppression
      */
     remove: async function(messagesList, memberId, channelId, messageId) {
         await Reactions.create({
@@ -106,10 +106,21 @@ module.exports = {
     },
 
     /**
+     * @typedef {Object} Reaction
+     * @property {number} id
+     * @property {string} type
+     * @property {{id: number, message: string, memberId: string, date: Date}} data
+     * @property {string} memberId
+     * @property {string} channelId
+     * @property {string} messageId
+     * @property {Date} date
+     */
+
+    /**
      * Supression de messages d'anniversaire
      * @param {MessageReaction} reaction The reaction object
      * @param {User} user The user that applied the guild or reaction emoji
-     * @param {{id: Number, type: String, data: Array.<{id: Number, message: String, memberId: String, date: Date}>, memberId: String, channelId: String, messageId: String, date: Date}} r données concernant la réaction
+     * @param {Reaction} r données concernant la réaction
      */
     confirmRemove: async function(reaction, user, r) {
         const embed = new Embed()
