@@ -16,7 +16,6 @@
 - FFMPEG (pour le téléchargement des clips/vidéos Twitch)
 - Serveur NextCloud (pour l'hébergement des clips Twitch)
 - Clé d'API Twitch (pour le téléchargement des clips Twitch postés dans le channel #clips)
-- Clé d'API Twitter (pour l'envoi de Tweets via le bot)
 - Clé d'API Google (pour la publication des nouvelles vidéos sur la chaîne YouTube BSFR)
 - Clé d'API VirusTotal (pour le scan antivirus des fichiers uploadés sur le serveur)
 
@@ -228,24 +227,6 @@ __Exemples :__
 
 ```
 /send channel:#général message:Coucou !
-```
-
-***
-
-- ### /tweet : Envoie un Tweet
-
-Permet de Tweeter sur le compte [@BeatSaberFR](https://twitter.com/BeatSaberFR).
-
-__Paramètres :__
-
-|    Nom    | Obligatoire | Contenu |
-| --------- |:-----------:| ------- |
-| **texte** | ☑ | Message du Tweet |
-
-__Exemples :__
-
-```
-/tweet texte:Salut Twitter !
 ```
 
 ***

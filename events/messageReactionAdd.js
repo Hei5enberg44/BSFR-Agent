@@ -6,7 +6,6 @@ const bannedWords = require('../controllers/bannedWords')
 const birthdayMessages = require('../controllers/birthdayMessages')
 const maliciousURL = require('../controllers/maliciousURL')
 const ban = require('../controllers/ban')
-const twitter = require('../controllers/twitter')
 
 module.exports = {
     /**
@@ -50,12 +49,6 @@ module.exports = {
                 // Confirmation de bannissement d'un membre
                 case 'banRequest':
                     await ban.ban(reaction, user, r)
-                    break
-                // Confirmation d'envoi de tweet
-                case 'tweetRequest':
-                    if(user.id === r.memberId) {
-                        await twitter.confirm(reaction, user, r)
-                    }
                     break
             }
         }

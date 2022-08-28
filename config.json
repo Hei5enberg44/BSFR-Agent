@@ -30,12 +30,6 @@
             "Not French Boi": ""
         }
     },
-    "twitter": {
-        "appKey": "",
-        "appSecret": "",
-        "accessToken": "",
-        "accessSecret": ""
-    },
     "google": {
         "clientId": "",
         "clientSecret": "",

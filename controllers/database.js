@@ -135,19 +135,6 @@ const Threads = sequelize.define('threads', {
     freezeTableName: true
 })
 
-const Tweets = sequelize.define('tweets', {
-    id: {
-        type: DataTypes.INTEGER,
-        autoIncrement: true,
-        primaryKey: true
-    },
-    memberId: DataTypes.STRING(255),
-    tweet: DataTypes.TEXT
-}, {
-    timestamps: false,
-    freezeTableName: true
-})
-
 const YoutubeVideos = sequelize.define('youtube_videos', {
     id: {
         type: DataTypes.INTEGER,
@@ -210,5 +197,5 @@ const Twitch = sequelize.define('twitch', {
 })
 
 module.exports = {
-    test, BannedWords, BirthdayMessages, MaliciousURL, Reactions, Birthdays, Mutes, Bans, Threads, Tweets, YoutubeVideos, FranceCities, Cities, Twitch
+    test, BannedWords, BirthdayMessages, MaliciousURL, Reactions, Birthdays, Mutes, Bans, Threads, YoutubeVideos, FranceCities, Cities, Twitch
 }
