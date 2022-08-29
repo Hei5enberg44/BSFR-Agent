@@ -1,4 +1,4 @@
-const { MessageAttachment, CommandInteraction, ApplicationCommandOptionType } = require('discord.js')
+const { AttachmentBuilder, CommandInteraction, ApplicationCommandOptionType } = require('discord.js')
 const { CommandError, CommandInteractionError } = require('../utils/error')
 const fs = require('fs')
 
@@ -34,11 +34,11 @@ module.exports = {
             const splitedDate = date.split("/")
             date = splitedDate[2] + "-" + splitedDate[1] + "-" + splitedDate[0]
 
-            const path = `logs/${date}.log`
+            const path = `./logs/${date}.log`
 
             if(!fs.existsSync(path)) throw new CommandInteractionError('Le fichier demandé n\'existe pas.')
 
-            const attachment = new MessageAttachment(path, `${date}.log`)
+            const attachment = new AttachmentBuilder(path, { name: `${date}.log` })
 
             await interaction.reply({ files: [attachment] })
         } catch(error) {
