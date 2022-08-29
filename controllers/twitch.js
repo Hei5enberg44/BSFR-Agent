@@ -1,4 +1,4 @@
-const { Client, Message, MessageAttachment, userMention, hyperlink } = require('discord.js')
+const { Client, Message, Attachment, userMention, hyperlink } = require('discord.js')
 const Embed = require('../utils/embed')
 const { TwitchError, NextcloudError } = require('../utils/error')
 const { Twitch } = require('./database')
@@ -151,7 +151,7 @@ module.exports = {
 
     /**
      * Récupération d'un clip depuis une pièce jointe à un message Discord
-     * @param {MessageAttachment} attachment pièce jointe d'un message Discord
+     * @param {Attachment} attachment pièce jointe d'un message Discord
      * @param {string} memberId identifiant du membre Discord ayant uploadé le clip
      * @returns {Promise<boolean>}
      */
