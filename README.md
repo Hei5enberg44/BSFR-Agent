@@ -1,6 +1,6 @@
 <h1>bsfr-agent</h1>
 <p>
-  <img alt="Version" src="https://img.shields.io/badge/version-2.11.0-blue.svg?cacheSeconds=2592000" />
+  <img alt="Version" src="https://img.shields.io/badge/version-2.11.1-blue.svg?cacheSeconds=2592000" />
   <a href="#" target="_blank">
     <img alt="License: ISC" src="https://img.shields.io/badge/License-ISC-yellow.svg" />
   </a>
@@ -113,12 +113,16 @@ Permet d'afficher votre avatar ou celui d'un membre.
 |    Nom    | Obligatoire | Contenu |
 | --------- |:-----------:| ------- |
 | **membre** |   | Membre de la guild |
+| **extension** |   | Extension de l'image |
+| **taille** |   | Taille de l'image |
+| **statique** |   | Force l'affichage statique de l'image |
 
 __Exemples :__
 
 ```
 /avatar
-/avatar membre:@Hei5enberg#6969
+/avatar extension:png taille:512
+/avatar membre:@Hei5enberg#6969 statique:True
 ```
 
 ***
