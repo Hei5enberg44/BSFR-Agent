@@ -14,15 +14,18 @@ module.exports = {
      * @param {string} reason raison du ban
      * @param {string|null} channelId channel où a été effectuée la demande de ban (facultatif)
      * @param {string|null} messageId identifiant du message correspondant à la demande de ban (facultatif)
-     * @param {number} date date d'unban
+     * @param {number} unbanDate date de déban
      */
-    add: async function(memberId, bannedBy, approvedBy, reason, date, channelId = null, messageId = null) {
+    add: async function(memberId, bannedBy, approvedBy, reason, unbanDate, channelId = null, messageId = null) {
+        const banDate = bannedBy === approvedBy ? Math.floor(Date.now() / 1000) : null
+
         const ban = await Bans.create({
             memberId: memberId,
             bannedBy: bannedBy,
             approvedBy: approvedBy,
             reason: reason,
-            unbanDate: date
+            banDate: banDate,
+            unbanDate: unbanDate
         })
 
         if(!approvedBy) {
@@ -44,8 +47,11 @@ module.exports = {
      * @param {string} approvedBy identifiant du membre approuvant la demande de ban
      */
     approve: async function(banId, approvedBy) {
+        const banDate = Math.floor(Date.now() / 1000)
+
         await Bans.update({
-            approvedBy: approvedBy
+            approvedBy: approvedBy,
+            banDate: banDate
         }, {
             where: { id: banId }
         })
@@ -58,6 +64,7 @@ module.exports = {
      * @property {string} bannedBy
      * @property {string} approvedBy
      * @property {string} reason
+     * @property {number} banDate
      * @property {number} unbanDate
      */
 
@@ -120,9 +127,9 @@ module.exports = {
     },
 
     /**
-     * Détermine la date d'unban en fonction du choix réalisé par l'Administrateur ou le Modérateur
+     * Détermine la date de déban en fonction du choix réalisé par l'Administrateur ou le Modérateur
      * @param {string} duration durée du ban
-     * @returns {number} date de d'unban au format timestamp
+     * @returns {number} date de de déban au format timestamp
      */
     getUnbanDate: function(duration) {
         const unit = duration.charAt(duration.length - 1).toUpperCase()

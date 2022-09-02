@@ -11,14 +11,17 @@ module.exports = {
      * @param {string} memberId identifiant du membre
      * @param {string} mutedBy identifiant du membre réalisant la demante de mute
      * @param {string} reason raison du mute
-     * @param {number} date date d'unmute
+     * @param {number} unmuteDate date d'unmute
      */
-    add: async function(memberId, mutedBy, reason, date) {
+    add: async function(memberId, mutedBy, reason, unmuteDate) {
+        const muteDate = Math.floor(Date.now() / 1000)
+
         await Mutes.create({
             memberId: memberId,
             mutedBy: mutedBy,
             reason: reason,
-            unmuteDate: date
+            muteDate: muteDate,
+            unmuteDate: unmuteDate
         })
     },
 
@@ -37,7 +40,7 @@ module.exports = {
     /**
      * Test si un membre est muted
      * @param {string} memberId identifiant du membre
-     * @returns {Promise<{id: number, memberId: string, mutedBy: string, reason: string, unmuteDate: Number}|null>} données concernant le mute
+     * @returns {Promise<{id: number, memberId: string, mutedBy: string, reason: string, muteDate: number, unmuteDate: number}|null>} données concernant le mute
      */
     isMuted: async function(memberId) {
         const muted = await Mutes.findOne({
