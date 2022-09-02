@@ -25,6 +25,11 @@ module.exports = {
                     await maliciousURL.test(message)
                 }
 
+                // Récéption d'un webhook dans le channel #vote-run-bsfr
+                if(message.channel.id === config.guild.channels.voteRun && message.webhookId) {
+                    await module.exports.voteRunReactions(message)
+                }
+
                 // Récupération des clips Twitch
                 if(message.channel.id === config.guild.channels.clips) {
                     try {
@@ -47,6 +52,15 @@ module.exports = {
                 }
             }
         }
+    },
+
+    /**
+     * Ajout des réactions ✅ et ❎ à l'embed d'une soumission de run
+     * @param {Message} message message Discord
+     */
+    async voteRunReactions(message) {
+        await message.react('✅')
+        await message.react('❎')
     },
 
     /**
