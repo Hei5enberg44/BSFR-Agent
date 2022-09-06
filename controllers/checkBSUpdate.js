@@ -86,16 +86,18 @@ module.exports = {
 
             await browser.close()
 
-            const newUpdate = await BSUpdates.findOne({
-                where: {
-                    title: updateInfos.title
-                }
-            })
+            if(updateInfos?.title) {
+                const newUpdate = await BSUpdates.findOne({
+                    where: {
+                        title: updateInfos.title
+                    }
+                })
 
-            if(!newUpdate) {
-                Logger.log('BSUpdate', 'INFO', 'Nouvelle mise à jour de Beat Saber')
-                await BSUpdates.create(updateInfos)
-                return updateInfos
+                if(!newUpdate) {
+                    Logger.log('BSUpdate', 'INFO', 'Nouvelle mise à jour de Beat Saber')
+                    await BSUpdates.create(updateInfos)
+                    return updateInfos
+                }
             }
 
             return false
