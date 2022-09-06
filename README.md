@@ -1,6 +1,6 @@
 <h1>bsfr-agent</h1>
 <p>
-  <img alt="Version" src="https://img.shields.io/badge/version-2.13.0-blue.svg?cacheSeconds=2592000" />
+  <img alt="Version" src="https://img.shields.io/badge/version-2.13.1-blue.svg?cacheSeconds=2592000" />
   <a href="#" target="_blank">
     <img alt="License: ISC" src="https://img.shields.io/badge/License-ISC-yellow.svg" />
   </a>
@@ -410,11 +410,13 @@ __Paramètres :__
 | **titre** | ☑ | Titre du sondage |
 | **liste** | ☑ | Liste des propositions séparées par un point virgule |
 | **date_fin** | ☑ | Date de fin du sondage au format JJ/MM/AAAA HH:II (ex: 07/09/2022 15:30) |
+| **emojis** |   | Emojis personnalisés séparés par un point virgule (doit correspondre au nombre de propositions) |
 
 __Exemples :__
 
 ```
 /poll titre:Sondage de test liste:Proposition 1;Proposition 2;Proposition 3 date_fin:06/09/2022 20:00
+/poll titre:Sondage de test liste:Proposition 1;Proposition 2;Proposition 3 date_fin:07/09/2022 15:30 emojis:💀;💩;😂
 ```
 
 ## Auteur
