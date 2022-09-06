@@ -1,6 +1,6 @@
 <h1>bsfr-agent</h1>
 <p>
-  <img alt="Version" src="https://img.shields.io/badge/version-2.12.0-blue.svg?cacheSeconds=2592000" />
+  <img alt="Version" src="https://img.shields.io/badge/version-2.13.0-blue.svg?cacheSeconds=2592000" />
   <a href="#" target="_blank">
     <img alt="License: ISC" src="https://img.shields.io/badge/License-ISC-yellow.svg" />
   </a>
@@ -395,6 +395,26 @@ __Exemples :__
 
 ```
 /twitch unlink
+```
+
+***
+
+- ### /poll : Créer un sondage
+
+Permet de créer un sondage et d'afficher les résultats en temps réel.
+
+__Paramètres :__
+
+|    Nom    | Obligatoire | Contenu |
+| --------- |:-----------:| ------- |
+| **titre** | ☑ | Titre du sondage |
+| **propositions** | ☑ | Liste des propositions séparées par un point virgule |
+| **date_fin** | ☑ | Date de fin du sondage au format JJ/MM/AAAA HH:II (ex: 07/09/2022 15:30) |
+
+__Exemples :__
+
+```
+/poll titre:Sondage de test liste:Proposition 1;Proposition 2;Proposition 3 date_fin:06/09/2022 20:00
 ```
 
 ## Auteur
