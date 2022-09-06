@@ -114,12 +114,13 @@ module.exports = {
         const guild = client.guilds.cache.get(config.guild.id)
         const updateChannel = guild.channels.cache.get(config.guild.channels.bsUpdates)
 
+        if(update.title && update.content) await updateChannel.send({ content: roleMention(config.guild.roles['Beat Saber Update']) })
+
         if(update.image) await updateChannel.send({ content: update.image })
         if(update.title) await updateChannel.send({ content: update.title })
         if(update.content) {
             let message = []
             const content = update.content.split('\n')
-            await updateChannel.send({ content: roleMention(config.guild.roles['Beat Saber Update']) })
             for(let i = 0; i < content.length; i++) {
                 message.push(content[i])
                 if(message.join('\n').length + content[i].length >= 1500 || i === content.length - 1) {
