@@ -57,7 +57,7 @@ module.exports = {
      */
     vote: async function(reaction, user, r) {
         const pollId = r.data.pollId
-        const emoji = reaction.emoji.id ? `<:${reaction.emoji.name}:${reaction.emoji.id}>` : reaction.emoji.name
+        const emoji = reaction.emoji.id ? `<${reaction.emoji.animated ? 'a' : ''}:${reaction.emoji.name}:${reaction.emoji.id}>` : reaction.emoji.name
 
         const poll = await Polls.findOne({
             where: {
