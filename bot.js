@@ -79,6 +79,7 @@ try {
             await crons.publish(client)
             await crons.live(client)
             await crons.checkBSUpdate(client)
+            await crons.finishPolls(client)
         
             Logger.log('Application', 'INFO', 'Le bot est prêt !')
         })

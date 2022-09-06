@@ -5,6 +5,7 @@ const ban = require('../controllers/ban')
 const youtube = require('../controllers/youtube')
 const twitch = require('../controllers/twitch')
 const checkBSUpdate = require('../controllers/checkBSUpdate')
+const poll = require('../controllers/poll')
 const Logger = require('../utils/logger')
 
 module.exports = {
@@ -80,5 +81,17 @@ module.exports = {
         }, null, true, 'Europe/Paris')
 
         Logger.log('CronManager', 'INFO', 'Tâche "checkBSUpdate" chargée')
+    },
+
+    /**
+     * Supprime les réactions pour les sondages terminés
+     * @param {Client} client client Discord
+     */
+    finishPolls: async function(client) {
+        new CronJob('* * * * *', async function () {
+            await poll.finish(client)
+        }, null, true, 'Europe/Paris')
+
+        Logger.log('CronManager', 'INFO', 'Tâche "finishPolls" chargée')
     }
 }

@@ -212,6 +212,37 @@ const BSUpdates = sequelize.define('bs_updates', {
     freezeTableName: true
 })
 
+const Polls = sequelize.define('polls', {
+    id: {
+        type: DataTypes.INTEGER,
+        autoIncrement: true,
+        primaryKey: true
+    },
+    title: DataTypes.STRING(255),
+    propositions: DataTypes.JSON,
+    dateEnd: DataTypes.INTEGER,
+    createdBy: DataTypes.STRING(255),
+    channelId: DataTypes.STRING(255),
+    messageId: DataTypes.STRING(255)
+}, {
+    timestamps: false,
+    freezeTableName: true
+})
+
+const PollsVotes = sequelize.define('polls_votes', {
+    id: {
+        type: DataTypes.INTEGER,
+        autoIncrement: true,
+        primaryKey: true
+    },
+    pollId: DataTypes.INTEGER,
+    memberId: DataTypes.STRING(255),
+    vote: DataTypes.STRING(20)
+}, {
+    timestamps: false,
+    freezeTableName: true
+})
+
 module.exports = {
-    test, BannedWords, BirthdayMessages, MaliciousURL, Reactions, Birthdays, Mutes, Bans, Threads, YoutubeVideos, FranceCities, Cities, Twitch, BSUpdates
+    test, BannedWords, BirthdayMessages, MaliciousURL, Reactions, Birthdays, Mutes, Bans, Threads, YoutubeVideos, FranceCities, Cities, Twitch, BSUpdates, Polls, PollsVotes
 }

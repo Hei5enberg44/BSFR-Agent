@@ -6,6 +6,7 @@ const bannedWords = require('../controllers/bannedWords')
 const birthdayMessages = require('../controllers/birthdayMessages')
 const maliciousURL = require('../controllers/maliciousURL')
 const ban = require('../controllers/ban')
+const poll = require('../controllers/poll')
 
 module.exports = {
     /**
@@ -49,6 +50,10 @@ module.exports = {
                 // Confirmation de bannissement d'un membre
                 case 'banRequest':
                     await ban.ban(reaction, user, r)
+                    break
+                // Vote sur un sondage
+                case 'pollVote':
+                    await poll.vote(reaction, user, r)
                     break
             }
         }
