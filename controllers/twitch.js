@@ -580,8 +580,8 @@ module.exports = {
                             const viewerCount = user.viewer_count.toString()
                             const thumbnailUrl = user.thumbnail_url.replace('{width}', 1280).replace('{height}', 720) + '?c=' + (new Date()).getTime()
 
-                            const guild = client.guilds.cache.find(g => g.id === config.guild.id)
-                            const member = guild.members.cache.find(m => m.id === streamer.memberId)
+                            const guild = client.guilds.cache.get(config.guild.id)
+                            const member = guild.members.get(streamer.memberId)
                             const twitchChannel = guild.channels.cache.get(config.guild.channels.twitch)
 
                             const embed = new Embed()
