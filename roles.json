@@ -43,7 +43,8 @@
         "category": "Notification",
         "roles": [
             { "name": "Annonce", "multiple": true },
-            { "name": "YouTube", "multiple": true }
+            { "name": "YouTube", "multiple": true },
+            { "name": "Beat Saber Update", "multiple": true }
         ]
     },
     {
