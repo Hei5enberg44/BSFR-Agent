@@ -25,6 +25,12 @@ module.exports = {
                 name: 'date_fin',
                 description: 'Date de fin du sondage au format JJ/MM/AAAA HH:II (ex: 07/09/2022 15:30)',
                 required: true
+            },
+            {
+                type: ApplicationCommandOptionType.String,
+                name: 'emojis',
+                description: 'Emojis personnalisés séparés par un point virgule (doit correspondre au nombre de propositions)',
+                required: false
             }
         ],
         default_member_permissions: '0'
@@ -39,10 +45,15 @@ module.exports = {
         try {
             const title = interaction.options.getString('titre')
             const list = interaction.options.getString('liste')
+            const emojiList = interaction.options.getString('emojis')
             const date = interaction.options.getString('date_fin')
 
             const propositions = list.split(';')
             if(propositions.length > 8) throw new CommandInteractionError('Le nombre de propositions doit être inférieur ou égal à 8.')
+
+            const defaultEmojis = [ '🇦', '🇧', '🇨', '🇩', '🇪', '🇫', '🇬', '🇭' ]
+            const emojis = emojiList ? emojiList.split(';').map(e => e.trim()) : defaultEmojis.slice(0, propositions.length)
+            if(emojis.length !== propositions.length) throw new CommandInteractionError('Le nombre d\'emojis personnalisés doit correspondre au nombre de propositions')
 
             if(!date.match(/^(0?[1-9]|[12][0-9]|3[01])\/(0?[1-9]|1[0-2])\/\d{4}\s([0-1][0-9]|2[0-3]):[0-5][0-9]$/))
                 throw new CommandInteractionError('Date invalide. La date doit être au format JJ/MM/AAAA HH:II.')
@@ -58,15 +69,15 @@ module.exports = {
                 .setColor('#F1C40F')
                 .setTitle(title)
                 .setDescription(propositions.map((p, i) => {
-                    return `${poll.reactions[i]} : ${p} (0% - 0 vote)`
+                    return `${emojis[i]} : ${p} (0% - 0 vote)`
                 }).join('\n') + `\n\nDate de fin: ${time(new Date(dateEnd))}`)
 
             const message = await interaction.reply({ embeds: [embed], fetchReply: true })
 
-            await poll.create(title, propositions, dateEnd, interaction.user.id, interaction.channel.id, message.id)
+            await poll.create(title, propositions, emojis, dateEnd, interaction.user.id, interaction.channel.id, message.id)
             
-            for(let i = 0; i < propositions.length; i++) {
-                await message.react(poll.reactions[i])
+            for(const emoji of emojis) {
+                await message.react(emoji)
             }
         } catch(error) {
             if(error instanceof CommandInteractionError) {

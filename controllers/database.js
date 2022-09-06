@@ -220,6 +220,7 @@ const Polls = sequelize.define('polls', {
     },
     title: DataTypes.STRING(255),
     propositions: DataTypes.JSON,
+    emojis: DataTypes.JSON,
     dateEnd: DataTypes.INTEGER,
     createdBy: DataTypes.STRING(255),
     channelId: DataTypes.STRING(255),
@@ -237,7 +238,7 @@ const PollsVotes = sequelize.define('polls_votes', {
     },
     pollId: DataTypes.INTEGER,
     memberId: DataTypes.STRING(255),
-    vote: DataTypes.STRING(20)
+    vote: DataTypes.STRING(255)
 }, {
     timestamps: false,
     freezeTableName: true

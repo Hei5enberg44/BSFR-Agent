@@ -6,21 +6,21 @@ const Logger = require('../utils/logger')
 const config = require('../config.json')
 
 module.exports = {
-    reactions: [ '🇦', '🇧', '🇨', '🇩', '🇪', '🇫', '🇬', '🇭' ],
-
     /**
      * Créer un sondage
      * @param {string} title titre du sondage
-     * @param {Array} propositions liste des propositions
+     * @param {string[]} propositions liste des propositions
+     * @param {string[]|null} customEmojis liste des emojis personnalisés
      * @param {number} dateEnd date de fin du sondage
      * @param {string} memberId membre à l'origine de la création du sondage
      * @param {string} channelId identifiant du channel où a été envoyé le sondage
      * @param {string} messageId identifiant du message contenant le sondage
      */
-    create: async function(title, propositions, dateEnd, memberId, channelId, messageId) {
+    create: async function(title, propositions, customEmojis, dateEnd, memberId, channelId, messageId) {
         const poll = await Polls.create({
             title: title,
             propositions: propositions,
+            emojis: customEmojis || defaultEmojis.splice(propositions.length),
             dateEnd: Math.floor(dateEnd / 1000),
             createdBy: memberId,
             channelId: channelId,
@@ -57,16 +57,16 @@ module.exports = {
      */
     vote: async function(reaction, user, r) {
         const pollId = r.data.pollId
-        const emoji = reaction.emoji.name
+        const emoji = reaction.emoji.id ? `<:${reaction.emoji.name}:${reaction.emoji.id}>` : reaction.emoji.name
 
-        if(module.exports.reactions.find(r => r === emoji)) {
-            const poll = await Polls.findOne({
-                where: {
-                    id: pollId
-                }
-            })
+        const poll = await Polls.findOne({
+            where: {
+                id: pollId
+            }
+        })
 
-            if(poll) {
+        if(poll) {
+            if(poll.emojis.find(e => e === emoji)) {
                 const votes = await PollsVotes.findAll({
                     where: {
                         pollId: pollId
@@ -86,9 +86,9 @@ module.exports = {
                         .setColor('#F1C40F')
                         .setTitle(poll.title)
                         .setDescription(poll.propositions.map((p, i) => {
-                            const nbVotes = votes.filter(v => v.vote === module.exports.reactions[i]).length
+                            const nbVotes = votes.filter(v => v.vote === poll.emojis[i]).length
                             const percent = Math.round(nbVotes * 100 / votes.length)
-                            return `${module.exports.reactions[i]} : ${p} (${percent}% - ${nbVotes} ${nbVotes > 1 ? 'votes' : 'vote'})`
+                            return `${poll.emojis[i]} : ${p} (${percent}% - ${nbVotes} ${nbVotes > 1 ? 'votes' : 'vote'})`
                         }).join('\n') + `\n\nDate de fin: ${time(new Date(poll.dateEnd * 1000))}`)
 
                     await reaction.message.edit({ embeds: [embed] })
@@ -143,9 +143,9 @@ module.exports = {
                 .setColor('#F1C40F')
                 .setTitle(poll.title)
                 .setDescription(poll.propositions.map((p, i) => {
-                    const nbVotes = votes.filter(v => v.vote === module.exports.reactions[i]).length
+                    const nbVotes = votes.filter(v => v.vote === poll.emojis[i]).length
                     const percent = Math.round(nbVotes * 100 / votes.length)
-                    return `${module.exports.reactions[i]} : ${p} (${percent}% - ${nbVotes} ${nbVotes > 1 ? 'votes' : 'vote'})`
+                    return `${poll.emojis[i]} : ${p} (${percent}% - ${nbVotes} ${nbVotes > 1 ? 'votes' : 'vote'})`
                 }).join('\n'))
 
             await logChannel.send({ content: 'Un sondage vient de se terminer, voici les résultats :', embeds: [embed] })
