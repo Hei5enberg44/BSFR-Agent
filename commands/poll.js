@@ -1,7 +1,9 @@
-const { CommandInteraction, ApplicationCommandOptionType, time } = require('discord.js')
+const { CommandInteraction, ApplicationCommandOptionType, time, TimestampStyles, userMention, hyperlink } = require('discord.js')
 const Embed = require('../utils/embed')
 const { CommandError, CommandInteractionError } = require('../utils/error')
 const poll = require('../controllers/poll')
+const Logger = require('../utils/logger')
+const config = require('../config.json')
 
 module.exports = {
     data: {
@@ -67,18 +69,33 @@ module.exports = {
         
             const embed = new Embed()
                 .setColor('#F1C40F')
-                .setTitle(title)
+                .setTitle(`🗳️ ${title}`)
                 .setDescription(propositions.map((p, i) => {
                     return `${emojis[i]} : ${p} (0% - 0 vote)`
-                }).join('\n') + `\n\nDate de fin: ${time(new Date(dateEnd))}`)
+                }).join('\n') + `\n\nFin ${time(new Date(dateEnd), TimestampStyles.RelativeTime)}`)
 
             const message = await interaction.reply({ embeds: [embed], fetchReply: true })
 
-            await poll.create(title, propositions, emojis, dateEnd, interaction.user.id, interaction.channel.id, message.id)
+            const pollId = await poll.create(title, propositions, emojis, dateEnd, interaction.user.id, interaction.channel.id, message.id)
             
-            for(const emoji of emojis) {
-                await message.react(emoji)
+            try {
+                for(const emoji of emojis) {
+                    await message.react(emoji)
+                }
+            } catch(error) {
+                await message.reactions.removeAll()
+                await poll.delete(pollId)
+                throw new CommandInteractionError('Un des emojis utilisés ne provient pas du serveur.')
             }
+
+            const logsChannel = message.guild.channels.cache.get(config.guild.channels.logs)
+            const logEmbed = new Embed()
+                .setColor('#F1C40F')
+                .setTitle('🗳️ Nouveau sondage !')
+                .setDescription(`${userMention(interaction.user.id)} a créé un sondage – ${hyperlink('Voir', message.url)}`)
+            await logsChannel.send({ embeds: [logEmbed] })
+
+            Logger.log('Poll', 'INFO', `${interaction.user.username}#${interaction.user.discriminator} a créé un sondage`)
         } catch(error) {
             if(error instanceof CommandInteractionError) {
                 throw new CommandError(error.message, interaction.commandName)

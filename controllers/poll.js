@@ -1,4 +1,4 @@
-const { Client, MessageReaction, User, time } = require('discord.js')
+const { Client, MessageReaction, User, time, TimestampStyles, userMention, bold } = require('discord.js')
 const Embed = require('../utils/embed')
 const { Reactions, Polls, PollsVotes } = require('./database')
 const { Op } = require('sequelize')
@@ -15,6 +15,7 @@ module.exports = {
      * @param {string} memberId membre à l'origine de la création du sondage
      * @param {string} channelId identifiant du channel où a été envoyé le sondage
      * @param {string} messageId identifiant du message contenant le sondage
+     * @returns {Promise<number>} identifiant du sondage créé
      */
     create: async function(title, propositions, customEmojis, dateEnd, memberId, channelId, messageId) {
         const poll = await Polls.create({
@@ -36,6 +37,8 @@ module.exports = {
             channelId: channelId,
             messageId: messageId
         })
+
+        return poll.id
     },
 
     /**
@@ -84,12 +87,12 @@ module.exports = {
 
                     const embed = new Embed()
                         .setColor('#F1C40F')
-                        .setTitle(poll.title)
+                        .setTitle(`🗳️ ${poll.title}`)
                         .setDescription(poll.propositions.map((p, i) => {
                             const nbVotes = votes.filter(v => v.vote === poll.emojis[i]).length
                             const percent = Math.round(nbVotes * 100 / votes.length)
                             return `${poll.emojis[i]} : ${p} (${percent}% - ${nbVotes} ${nbVotes > 1 ? 'votes' : 'vote'})`
-                        }).join('\n') + `\n\nDate de fin: ${time(new Date(poll.dateEnd * 1000))}`)
+                        }).join('\n') + `\n\nFin ${time(new Date(poll.dateEnd * 1000), TimestampStyles.RelativeTime)}`)
 
                     await reaction.message.edit({ embeds: [embed] })
                 }
@@ -115,17 +118,13 @@ module.exports = {
         })
 
         for(const poll of polls) {
+            const member = guild.members.cache.get(poll.createdBy)
+
             const votes = await PollsVotes.findAll({
                 where: { pollId: poll.id }
             })
 
-            await Reactions.destroy({
-                where: { 'data.pollId': poll.id }
-            })
-            await PollsVotes.destroy({
-                where: { pollId: poll.id }
-            })
-            await poll.destroy()
+            await module.exports.delete(poll.id)
 
             const pollChannel = guild.channels.cache.get(poll.channelId)
             if(pollChannel) {
@@ -137,18 +136,36 @@ module.exports = {
                 }
             }
 
-            const logChannel = guild.channels.cache.get(config.guild.channels.logs)
+            const logsChannel = guild.channels.cache.get(config.guild.channels.logs)
 
             const embed = new Embed()
                 .setColor('#F1C40F')
-                .setTitle(poll.title)
+                .setTitle(`🗳️ ${poll.title}`)
                 .setDescription(poll.propositions.map((p, i) => {
                     const nbVotes = votes.filter(v => v.vote === poll.emojis[i]).length
                     const percent = Math.round(nbVotes * 100 / votes.length)
                     return `${poll.emojis[i]} : ${p} (${percent}% - ${nbVotes} ${nbVotes > 1 ? 'votes' : 'vote'})`
                 }).join('\n'))
 
-            await logChannel.send({ content: 'Un sondage vient de se terminer, voici les résultats :', embeds: [embed] })
+            await logsChannel.send({ content: `Le sondage créé par ${userMention(member.id)} vient de se terminer avec ${bold(`${votes.length} ${votes.length > 1 ? 'votes' : 'vote'}`)} :`, embeds: [embed], allowedMentions: { repliedUser: false } })
+
+            Logger.log('Poll', 'INFO', `Le sondage créé par ${member.user.username}#${member.user.discriminator} vient de se terminer avec ${votes.length} ${votes.length > 1 ? 'votes' : 'vote'}`)
         }
+    },
+
+    /**
+     * Supprime un sondage de la base de données
+     * @param {number} pollId identifiant du sondage
+     */
+    delete: async function(pollId) {
+        await Reactions.destroy({
+            where: { 'data.pollId': pollId }
+        })
+        await PollsVotes.destroy({
+            where: { pollId: pollId }
+        })
+        await Polls.destroy({
+            where: { id: pollId }
+        })
     }
 }
