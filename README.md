@@ -408,7 +408,7 @@ __Paramètres :__
 |    Nom    | Obligatoire | Contenu |
 | --------- |:-----------:| ------- |
 | **titre** | ☑ | Titre du sondage |
-| **propositions** | ☑ | Liste des propositions séparées par un point virgule |
+| **liste** | ☑ | Liste des propositions séparées par un point virgule |
 | **date_fin** | ☑ | Date de fin du sondage au format JJ/MM/AAAA HH:II (ex: 07/09/2022 15:30) |
 
 __Exemples :__
