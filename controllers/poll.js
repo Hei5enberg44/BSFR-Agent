@@ -115,6 +115,10 @@ module.exports = {
         })
 
         for(const poll of polls) {
+            const votes = await PollsVotes.findAll({
+                where: { pollId: poll.id }
+            })
+
             await Reactions.destroy({
                 where: { 'data.pollId': poll.id }
             })
@@ -132,6 +136,19 @@ module.exports = {
                     Logger.log('Poll', 'ERROR', 'Impossible de supprimer les réactions sur le message du sondage')
                 }
             }
+
+            const logChannel = guild.channels.cache.get(config.guild.channels.logs)
+
+            const embed = new Embed()
+                .setColor('#F1C40F')
+                .setTitle(poll.title)
+                .setDescription(poll.propositions.map((p, i) => {
+                    const nbVotes = votes.filter(v => v.vote === module.exports.reactions[i]).length
+                    const percent = Math.round(nbVotes * 100 / votes.length)
+                    return `${module.exports.reactions[i]} : ${p} (${percent}% - ${nbVotes} ${nbVotes > 1 ? 'votes' : 'vote'})`
+                }).join('\n'))
+
+            await logChannel.send({ content: 'Un sondage vient de se terminer, voici les résultats :', embeds: [embed] })
         }
     }
 }
