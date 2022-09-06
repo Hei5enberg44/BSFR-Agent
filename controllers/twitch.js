@@ -606,7 +606,7 @@ module.exports = {
                                 Logger.log('Twitch', 'INFO', `${member.user.tag} est en live !`)
                             } else {
                                 if(streamer.messageId !== '') {
-                                    const message = await twitchChannel.messages.fetch({ message: streamer.messageId })
+                                    const message = await twitchChannel.messages.fetch(streamer.messageId)
                                     await message.edit({ embeds: [embed] })
                                 }
                             }
