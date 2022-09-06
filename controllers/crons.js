@@ -4,6 +4,7 @@ const mute = require('../controllers/mute')
 const ban = require('../controllers/ban')
 const youtube = require('../controllers/youtube')
 const twitch = require('../controllers/twitch')
+const checkBSUpdate = require('../controllers/checkBSUpdate')
 const Logger = require('../utils/logger')
 
 module.exports = {
@@ -66,5 +67,18 @@ module.exports = {
         }, null, true, 'Europe/Paris')
 
         Logger.log('CronManager', 'INFO', 'Tâche "live" chargée')
+    },
+
+    /**
+     * Vérifie la présence d'une nouvelle mise à jour de Beat Saber et publie son contenu dans le channel #bs-updates
+     * @param {Client} client client Discord
+     */
+    checkBSUpdate: async function(client) {
+        new CronJob('*/30 * * * *', async function () {
+            const update = await checkBSUpdate.getLastUpdate()
+            if(update) await checkBSUpdate.postUpdate(client, update)
+        }, null, true, 'Europe/Paris')
+
+        Logger.log('CronManager', 'INFO', 'Tâche "checkBSUpdate" chargée')
     }
 }

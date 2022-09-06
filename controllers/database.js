@@ -198,6 +198,20 @@ const Twitch = sequelize.define('twitch', {
     freezeTableName: true
 })
 
+const BSUpdates = sequelize.define('bs_updates', {
+    id: {
+        type: DataTypes.INTEGER,
+        autoIncrement: true,
+        primaryKey: true
+    },
+    image: DataTypes.TEXT,
+    title: DataTypes.TEXT,
+    content: DataTypes.TEXT
+}, {
+    timestamps: false,
+    freezeTableName: true
+})
+
 module.exports = {
-    test, BannedWords, BirthdayMessages, MaliciousURL, Reactions, Birthdays, Mutes, Bans, Threads, YoutubeVideos, FranceCities, Cities, Twitch
+    test, BannedWords, BirthdayMessages, MaliciousURL, Reactions, Birthdays, Mutes, Bans, Threads, YoutubeVideos, FranceCities, Cities, Twitch, BSUpdates
 }

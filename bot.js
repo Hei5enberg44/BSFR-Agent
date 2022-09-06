@@ -78,6 +78,7 @@ try {
             await crons.unban(client)
             await crons.publish(client)
             await crons.live(client)
+            await crons.checkBSUpdate(client)
         
             Logger.log('Application', 'INFO', 'Le bot est prêt !')
         })
