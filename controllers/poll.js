@@ -11,7 +11,7 @@ module.exports = {
      * @param {string} title titre du sondage
      * @param {string[]} propositions liste des propositions
      * @param {string[]|null} customEmojis liste des emojis personnalisés
-     * @param {number} dateEnd date de fin du sondage
+     * @param {Date} dateEnd date de fin du sondage
      * @param {string} memberId membre à l'origine de la création du sondage
      * @param {string} channelId identifiant du channel où a été envoyé le sondage
      * @param {string} messageId identifiant du message contenant le sondage
@@ -22,7 +22,7 @@ module.exports = {
             title: title,
             propositions: propositions,
             emojis: customEmojis || defaultEmojis.splice(propositions.length),
-            dateEnd: Math.floor(dateEnd / 1000),
+            dateEnd: dateEnd,
             createdBy: memberId,
             channelId: channelId,
             messageId: messageId
@@ -92,7 +92,7 @@ module.exports = {
                             const nbVotes = votes.filter(v => v.vote === poll.emojis[i]).length
                             const percent = Math.round(nbVotes * 100 / votes.length)
                             return `${poll.emojis[i]} : ${p} (${percent}% - ${nbVotes} ${nbVotes > 1 ? 'votes' : 'vote'})`
-                        }).join('\n') + `\n\nFin ${time(new Date(poll.dateEnd * 1000), TimestampStyles.RelativeTime)}`)
+                        }).join('\n') + `\n\nFin ${time(poll.dateEnd, TimestampStyles.RelativeTime)}`)
 
                     await reaction.message.edit({ embeds: [embed] })
                 }
@@ -112,7 +112,7 @@ module.exports = {
         const polls = await Polls.findAll({
             where: {
                 dateEnd: {
-                    [Op.lte]: Math.floor(Date.now() / 1000)
+                    [Op.lte]: new Date()
                 }
             }
         })

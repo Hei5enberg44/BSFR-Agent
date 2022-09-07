@@ -11,16 +11,14 @@ module.exports = {
      * @param {string} memberId identifiant du membre
      * @param {string} mutedBy identifiant du membre réalisant la demante de mute
      * @param {string} reason raison du mute
-     * @param {number} unmuteDate date d'unmute
+     * @param {Date} unmuteDate date d'unmute
      */
     add: async function(memberId, mutedBy, reason, unmuteDate) {
-        const muteDate = Math.floor(Date.now() / 1000)
-
         await Mutes.create({
             memberId: memberId,
             mutedBy: mutedBy,
             reason: reason,
-            muteDate: muteDate,
+            muteDate: new Date(),
             unmuteDate: unmuteDate
         })
     },
@@ -40,7 +38,7 @@ module.exports = {
     /**
      * Test si un membre est muted
      * @param {string} memberId identifiant du membre
-     * @returns {Promise<{id: number, memberId: string, mutedBy: string, reason: string, muteDate: number, unmuteDate: number}|null>} données concernant le mute
+     * @returns {Promise<{id: number, memberId: string, mutedBy: string, reason: string, muteDate: Date, unmuteDate: Date}|null>} données concernant le mute
      */
     isMuted: async function(memberId) {
         const muted = await Mutes.findOne({
@@ -55,7 +53,7 @@ module.exports = {
     /**
      * Détermine la date d'unmute en fonction du choix réalisé par l'Administrateur ou le Modérateur
      * @param {string} duration durée du mute
-     * @returns {number} date de d'unmute au format timestamp
+     * @returns {Date} date de d'unmute
      */
     getUnmuteDate: function(duration) {
         const unit = duration.charAt(duration.length - 1).toUpperCase()
@@ -67,22 +65,22 @@ module.exports = {
                 date.setSeconds(date.getSeconds() + time)
                 break
             case "I":
-                date.setSeconds(date.getSeconds() + (time * 60))
+                date.setMinutes(date.getMinutes() + time)
                 break
             case "H":
-                date.setSeconds(date.getSeconds() + (time * 60 * 60))
+                date.setHours(date.getHours() + time)
                 break
             case "D":
-                date.setSeconds(date.getSeconds() + (time * 24 * 60 * 60))
+                date.setDate(date.getDate() + time)
                 break
             case "W":
-                date.setSeconds(date.getSeconds() + (time * 7 * 24 * 60 * 60))
+                date.setDate(date.getDate() + (time * 7))
                 break
             case "M":
-                date.setSeconds(date.getSeconds() + (time * 30 * 24 * 60 * 60))
+                date.setMonth(date.getMonth() + time)
                 break
             case "Y":
-                date.setSeconds(date.getSeconds() + (time * 365 * 24 * 60 * 60))
+                date.setFullYear(date.getFullYear() + time)
                 break
             default:
                 return false
@@ -91,7 +89,7 @@ module.exports = {
         if(date.toString().toLowerCase() === "invalid date")
             return false
     
-        return Math.floor(date.getTime() / 1000)
+        return date
     },
 
     /**
@@ -100,9 +98,8 @@ module.exports = {
      */
     remute: async function(member) {
         const isMuted = await module.exports.isMuted(member.user.id)
-        const date = Math.floor(new Date().getTime() / 1000)
 
-        if(isMuted && isMuted.unmuteDate > date) {
+        if(isMuted && isMuted.unmuteDate > new Date()) {
             const logsChannel = member.guild.channels.cache.get(config.guild.channels.logs)
             const muteRole = member.guild.roles.cache.get(config.guild.roles.Muted)
 
@@ -114,7 +111,7 @@ module.exports = {
                     { name: 'Le vilain', value: userMention(isMuted.memberId) },
                     { name: 'La sanction a été prononcée par', value: userMention(isMuted.mutedBy) },
                     { name: 'Raison', value: isMuted.reason },
-                    { name: 'Date de démute', value: new Date(isMuted.unmuteDate * 1000).toLocaleString('fr-FR', { timeZone: 'Europe/Paris' }) }
+                    { name: 'Date de démute', value: isMuted.unmuteDate.toLocaleString('fr-FR', { timeZone: 'Europe/Paris' }) }
                 )
 
             await member.roles.add(muteRole)
@@ -133,11 +130,9 @@ module.exports = {
         const logsChannel = guild.channels.cache.get(config.guild.channels.logs)
         const muteRole = guild.roles.cache.get(config.guild.roles.Muted)
 
-        const date = Math.floor(new Date().getTime() / 1000)
-
         const mutedMembers = await Mutes.findAll({
             where: {
-                unmuteDate: { [Op.lte]: date }
+                unmuteDate: { [Op.lte]: new Date() }
             }
         })
 

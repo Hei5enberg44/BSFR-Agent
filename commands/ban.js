@@ -67,7 +67,7 @@ module.exports = {
                         { name: 'Le vilain', value: userMention(member.id), inline: true },
                         { name: 'La sanction a été demandée par', value: userMention(interaction.user.id), inline: true },
                         { name: 'Raison', value: reason },
-                        { name: 'Date de débannissement', value: new Date(date * 1000).toLocaleString('fr-FR', { timeZone: 'Europe/Paris' }) }
+                        { name: 'Date de débannissement', value: date.toLocaleString('fr-FR', { timeZone: 'Europe/Paris' }) }
                     ))
 
                 const guildMember = interaction.guild.members.cache.get(member.id)
@@ -101,7 +101,7 @@ module.exports = {
                         { name: 'Le vilain', value: userMention(member.id), inline: true },
                         { name: 'La sanction a été demandée par', value: userMention(interaction.user.id), inline: true },
                         { name: 'Raison', value: reason },
-                        { name: 'Date de débannissement', value: new Date(date * 1000).toLocaleString('fr-FR', { timeZone: 'Europe/Paris' }) }
+                        { name: 'Date de débannissement', value: date.toLocaleString('fr-FR', { timeZone: 'Europe/Paris' }) }
                     ))
 
                 await ban.add(member.id, interaction.user.id, interaction.user.id, reason, date)

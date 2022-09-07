@@ -55,7 +55,7 @@ module.exports = {
                     { name: 'Prononcée par', value: userMention(isMuted.mutedBy), inline: true },
                     { name: 'Levée par', value: userMention(interaction.user.id), inline: true },
                     { name: 'Raison unmute', value: reason, inline: true },
-                    { name: 'Date de démute initiale', value: new Date(isMuted.unmuteDate * 1000).toLocaleString('fr-FR', { timeZone: 'Europe/Paris' }) },
+                    { name: 'Date de démute initiale', value: isMuted.unmuteDate.toLocaleString('fr-FR', { timeZone: 'Europe/Paris' }) },
                 ))
 
             const guildMember = interaction.guild.members.cache.get(member.id)

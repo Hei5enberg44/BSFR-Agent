@@ -9,7 +9,7 @@ module.exports = {
     /**
      * Ajoute une date d'anniversaire dans la base de données
      * @param {string} memberId identifiant du membre
-     * @param {number} date date de naissance au format timestamp
+     * @param {Date} date date de naissance au format timestamp
      */
     set: async function(memberId, date) {
         const bd = await Birthdays.findOne({ where: { memberId: memberId } })
@@ -37,7 +37,7 @@ module.exports = {
      * @returns {Promise<Array<{id: number, memberId: string, date: Date}>>} liste des anniversaires
      */
     get: async function() {
-        const date = ((new Date()).toLocaleDateString('fr-FR', { timeZone: 'Europe/Paris' })).substr(0, 5)
+        const date = ((new Date()).toLocaleDateString('fr-FR', { timeZone: 'Europe/Paris' })).substring(0, 5)
 
         const birthdays = await Birthdays.findAll({
             where: Sequelize.where(Sequelize.fn('date_format', Sequelize.col('date'), '%d/%m'), date)

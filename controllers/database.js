@@ -98,8 +98,8 @@ const Mutes = sequelize.define('mutes', {
     memberId: DataTypes.STRING(255),
     mutedBy: DataTypes.STRING(255),
     reason: DataTypes.TEXT,
-    muteDate: DataTypes.BIGINT,
-    unmuteDate: DataTypes.BIGINT
+    muteDate: DataTypes.DATE,
+    unmuteDate: DataTypes.DATE
 }, {
     timestamps: false,
     freezeTableName: true
@@ -115,8 +115,8 @@ const Bans = sequelize.define('bans', {
     bannedBy: DataTypes.STRING(255),
     approvedBy: DataTypes.STRING(255),
     reason: DataTypes.TEXT,
-    banDate: DataTypes.BIGINT,
-    unbanDate: DataTypes.BIGINT
+    banDate: DataTypes.DATE,
+    unbanDate: DataTypes.DATE
 }, {
     timestamps: false,
     freezeTableName: true
@@ -221,7 +221,7 @@ const Polls = sequelize.define('polls', {
     title: DataTypes.STRING(255),
     propositions: DataTypes.JSON,
     emojis: DataTypes.JSON,
-    dateEnd: DataTypes.INTEGER,
+    dateEnd: DataTypes.DATE,
     createdBy: DataTypes.STRING(255),
     channelId: DataTypes.STRING(255),
     messageId: DataTypes.STRING(255)

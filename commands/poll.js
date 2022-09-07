@@ -63,16 +63,16 @@ module.exports = {
             const dateDate = date.split(' ')[0]
             const dateTime = date.split(' ')[1]
             
-            const dateEnd = new Date(dateDate.split('/')[2], dateDate.split('/')[1] - 1, dateDate.split('/')[0], dateTime.split(':')[0], dateTime.split(':')[1]).getTime()
+            const dateEnd = new Date(dateDate.split('/')[2], dateDate.split('/')[1] - 1, dateDate.split('/')[0], dateTime.split(':')[0], dateTime.split(':')[1])
 
-            if(dateEnd <= Date.now()) throw new CommandInteractionError('La date de fin ne peut pas être passée.')
+            if(dateEnd <= new Date()) throw new CommandInteractionError('La date de fin ne peut pas être passée.')
         
             const embed = new Embed()
                 .setColor('#F1C40F')
                 .setTitle(`🗳️ ${title}`)
                 .setDescription(propositions.map((p, i) => {
                     return `${emojis[i]} : ${p} (0% - 0 vote)`
-                }).join('\n') + `\n\nFin ${time(new Date(dateEnd), TimestampStyles.RelativeTime)}`)
+                }).join('\n') + `\n\nFin ${time(dateEnd, TimestampStyles.RelativeTime)}`)
 
             const message = await interaction.reply({ embeds: [embed], fetchReply: true })
 

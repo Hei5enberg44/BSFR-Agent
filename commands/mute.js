@@ -65,14 +65,14 @@ module.exports = {
                     { name: 'Le vilain', value: userMention(member.id), inline: true },
                     { name: 'La sanction a été prononcée par', value: userMention(interaction.user.id), inline: true },
                     { name: 'Raison', value: reason },
-                    { name: 'Date de démute', value: new Date(date * 1000).toLocaleString('fr-FR', { timeZone: 'Europe/Paris' }) }
+                    { name: 'Date de démute', value: date.toLocaleString('fr-FR', { timeZone: 'Europe/Paris' }) }
                 ))
 
             const guildMember = interaction.guild.members.cache.get(member.id)
             await guildMember.roles.add(muteRole)
 
             try {
-                await member.send({ content: `${bold('[BSFR]')}\n\nTu as été mute pour la raison suivante :\n${inlineCode(reason)}\n\nTu seras unmute le ${new Date(date * 1000).toLocaleString('fr-FR', { timeZone: 'Europe/Paris' })}` })
+                await member.send({ content: `${bold('[BSFR]')}\n\nTu as été mute pour la raison suivante :\n${inlineCode(reason)}\n\nTu seras unmute le ${date.toLocaleString('fr-FR', { timeZone: 'Europe/Paris' })}` })
             } catch(error) {
                 embeds.push(new Embed()
                     .setColor('#E74C3C')

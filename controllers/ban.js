@@ -14,10 +14,10 @@ module.exports = {
      * @param {string} reason raison du ban
      * @param {string|null} channelId channel où a été effectuée la demande de ban (facultatif)
      * @param {string|null} messageId identifiant du message correspondant à la demande de ban (facultatif)
-     * @param {number} unbanDate date de déban
+     * @param {Date} unbanDate date de déban
      */
     add: async function(memberId, bannedBy, approvedBy, reason, unbanDate, channelId = null, messageId = null) {
-        const banDate = bannedBy === approvedBy ? Math.floor(Date.now() / 1000) : null
+        const banDate = bannedBy === approvedBy ? new Date() : null
 
         const ban = await Bans.create({
             memberId: memberId,
@@ -47,11 +47,9 @@ module.exports = {
      * @param {string} approvedBy identifiant du membre approuvant la demande de ban
      */
     approve: async function(banId, approvedBy) {
-        const banDate = Math.floor(Date.now() / 1000)
-
         await Bans.update({
             approvedBy: approvedBy,
-            banDate: banDate
+            banDate: new Date()
         }, {
             where: { id: banId }
         })
@@ -64,8 +62,8 @@ module.exports = {
      * @property {string} bannedBy
      * @property {string} approvedBy
      * @property {string} reason
-     * @property {number} banDate
-     * @property {number} unbanDate
+     * @property {Date} banDate
+     * @property {Date} unbanDate
      */
 
     /**
@@ -91,7 +89,7 @@ module.exports = {
         const bans = await Bans.findAll({
             where: {
                 unbanDate: {
-                    [Op.lte]: Math.floor(new Date().getTime() / 1000)
+                    [Op.lte]: new Date()
                 }
             }
         })
@@ -129,7 +127,7 @@ module.exports = {
     /**
      * Détermine la date de déban en fonction du choix réalisé par l'Administrateur ou le Modérateur
      * @param {string} duration durée du ban
-     * @returns {number} date de de déban au format timestamp
+     * @returns {Date} date de de déban
      */
     getUnbanDate: function(duration) {
         const unit = duration.charAt(duration.length - 1).toUpperCase()
@@ -141,22 +139,22 @@ module.exports = {
                 date.setSeconds(date.getSeconds() + time)
                 break
             case "I":
-                date.setSeconds(date.getSeconds() + (time * 60))
+                date.setMinutes(date.getMinutes() + time)
                 break
             case "H":
-                date.setSeconds(date.getSeconds() + (time * 60 * 60))
+                date.setHours(date.getHours() + time)
                 break
             case "D":
-                date.setSeconds(date.getSeconds() + (time * 24 * 60 * 60))
+                date.setDate(date.getDate() + time)
                 break
             case "W":
-                date.setSeconds(date.getSeconds() + (time * 7 * 24 * 60 * 60))
+                date.setDate(date.getDate() + (time * 7))
                 break
             case "M":
-                date.setSeconds(date.getSeconds() + (time * 30 * 24 * 60 * 60))
+                date.setMonth(date.getMonth() + time)
                 break
             case "Y":
-                date.setSeconds(date.getSeconds() + (time * 365 * 24 * 60 * 60))
+                date.setFullYear(date.getFullYear() + time)
                 break
             default:
                 return false
@@ -165,7 +163,7 @@ module.exports = {
         if(date.toString().toLowerCase() === "invalid date")
             return false
     
-        return Math.floor(date.getTime() / 1000)
+        return date
     },
 
     /**
@@ -209,7 +207,7 @@ module.exports = {
                 .addFields(
                     { name: 'La demande a été acceptée par', value: userMention(user.id), inline: true },
                     { name: 'Raison', value: banInfos.reason },
-                    { name: 'Date de débannissement', value: new Date(banInfos.unbanDate * 1000).toLocaleString('fr-FR', { timeZone: 'Europe/Paris' }) }
+                    { name: 'Date de débannissement', value: banInfos.unbanDate.toLocaleString('fr-FR', { timeZone: 'Europe/Paris' }) }
                 ))
 
             await module.exports.approve(banId, user.id)
@@ -237,7 +235,7 @@ module.exports = {
                 .addFields(
                     { name: 'La demande a été refusée par', value: userMention(user.id), inline: true },
                     { name: 'Raison', value: banInfos.reason },
-                    { name: 'Date de débannissement', value: new Date(banInfos.unbanDate * 1000).toLocaleString('fr-FR', { timeZone: 'Europe/Paris' }) },
+                    { name: 'Date de débannissement', value: banInfos.unbanDate.toLocaleString('fr-FR', { timeZone: 'Europe/Paris' }) },
                 ))
 
             await member.roles.remove(muteRole)

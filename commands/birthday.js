@@ -46,9 +46,9 @@ module.exports = {
                     if(!date.match(/^(0?[1-9]|[12][0-9]|3[01])\/(0?[1-9]|1[0-2])\/\d{4}$/))
                         throw new CommandInteractionError('Date invalide. La date doit être au format JJ/MM/AAAA.')
 
-                    const bdDate = new Date(date.split('/')[2], date.split('/')[1] - 1, date.split('/')[0]).getTime()
+                    const bdDate = new Date(date.split('/')[2], date.split('/')[1] - 1, date.split('/')[0])
 
-                    if(bdDate > new Date().getTime())
+                    if(bdDate > new Date())
                         throw new CommandInteractionError('Bien essayé petit malin 😉')
 
                     await birthday.set(interaction.user.id, bdDate)
