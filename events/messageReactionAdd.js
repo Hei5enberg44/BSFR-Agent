@@ -2,7 +2,6 @@ const { MessageReaction, User } = require('discord.js')
 const { Reactions } = require('../controllers/database')
 const { Op } = require('sequelize')
 const rules = require('../controllers/rules')
-const bannedWords = require('../controllers/bannedWords')
 const birthdayMessages = require('../controllers/birthdayMessages')
 const maliciousURL = require('../controllers/maliciousURL')
 const ban = require('../controllers/ban')
@@ -34,10 +33,6 @@ module.exports = {
                 // Attribution de rôle après acceptation des règles
                 case 'rules':
                     await rules.accept(reaction, user)
-                    break
-                // Supression de mots bannis
-                case 'removeBannedWord':
-                    await bannedWords.confirmRemove(reaction, user, r)
                     break
                 // Supression de messages d'anniversaire
                 case 'removeBirthdayMessage':

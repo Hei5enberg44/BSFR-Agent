@@ -1,7 +1,6 @@
 const { CommandInteraction, ApplicationCommandOptionType } = require('discord.js')
 const Embed = require('../utils/embed')
-const { CommandError, CommandInteractionError, BannedWordsError, BirthdayMessagesError } = require('../utils/error')
-const bannedWords = require('../controllers/bannedWords')
+const { CommandError, CommandInteractionError, BirthdayMessagesError } = require('../utils/error')
 const birthdayMessages = require('../controllers/birthdayMessages')
 const maliciousURL = require('../controllers/maliciousURL')
 
@@ -15,10 +14,6 @@ module.exports = {
                 name: 'sujet',
                 description: 'Sujet',
                 choices: [
-                    {
-                        name: 'Mots à bannir',
-                        value: 'bannedWords'
-                    },
                     {
                         name: 'Messages d\'anniversaire',
                         value: 'birthdayMessages'
@@ -56,11 +51,6 @@ module.exports = {
             let embed = new Embed().setColor('#F1C40F')
 
             switch(subject) {
-                case 'bannedWords':
-                    const wordsList = await bannedWords.list(page)
-                    embed.setTitle('📒 Liste des mots bannis')
-                    embed.addFields({ name: 'Messages', value: wordsList })
-                    break
                 case 'birthdayMessages':
                     const messagesList = await birthdayMessages.list(page)
                     embed.setTitle('📒 Liste des messages d\'anniversaire')
@@ -75,7 +65,7 @@ module.exports = {
 
             await interaction.reply({ embeds: [embed] })
         } catch(error) {
-            if(error instanceof CommandInteractionError || error instanceof BannedWordsError || error instanceof BirthdayMessagesError) {
+            if(error instanceof CommandInteractionError || error instanceof BirthdayMessagesError) {
                 throw new CommandError(error.message, interaction.commandName)
             } else {
                 throw Error(error.message)

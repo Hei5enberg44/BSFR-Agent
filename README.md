@@ -51,13 +51,12 @@ __Paramètres :__
 
 |    Nom    | Obligatoire | Contenu |
 | --------- |:-----------:| ------- |
-| **sujet** | ☑ | Choix parmis `Mots à bannir`, `Message d'anniversaire`, `URL malveillant` |
+| **sujet** | ☑ | Choix parmis `Message d'anniversaire`, `URL malveillant` |
 | **page** |   | Numéro de page à afficher |
 
 __Exemples :__
 
 ```
-/list sujet:Mots à bannir
 /list sujet:Message d'anniversaire
 /list sujet:URL malveillant page:3
 ```
@@ -72,13 +71,12 @@ __Paramètres :__
 
 |    Nom    | Obligatoire | Contenu |
 | --------- |:-----------:| ------- |
-| **sujet** | ☑ | Choix parmis `Mots à bannir`, `Message d'anniversaire`, `URL malveillant` |
+| **sujet** | ☑ | Choix parmis `Message d'anniversaire`, `URL malveillant` |
 | **texte** | ☑ | Liste des mots, messages d'anniversaire, URL malveillants à ajouter séparés par un point virgule `;` |
 
 __Exemples :__
 
 ```
-/add sujet:Mots à bannir texte:mot1;mot2;mot3
 /add sujet:Message d'anniversaire texte:Bon anniversaire !
 /add sujet:URL malveillant texte:app-discordc.com
 ```
@@ -93,13 +91,12 @@ __Paramètres :__
 
 |    Nom    | Obligatoire | Contenu |
 | --------- |:-----------:| ------- |
-| **sujet** | ☑ | Choix parmis `Mots à bannir`, `Message d'anniversaire`, `URL malveillant` |
+| **sujet** | ☑ | Choix parmis `Message d'anniversaire`, `URL malveillant` |
 | **texte** | ☑ | Liste des identifiants pour les mots, messages d'anniversaire, URL malveillants à supprimer séparés par un point virgule `;` |
 
 __Exemples :__
 
 ```
-/remove sujet:Mots à bannir ids:2;3
 /remove sujet:Message d'anniversaire ids:1
 /remove sujet:URLs malveillants ids:1
 ```
@@ -399,7 +396,7 @@ __Exemples :__
 
 ***
 
-- ### /poll : Créer un sondage
+- ### /poll : Créé un sondage
 
 Permet de créer un sondage et d'afficher les résultats en temps réel.
 

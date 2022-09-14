@@ -1,7 +1,6 @@
 const { CommandInteraction, ApplicationCommandOptionType } = require('discord.js')
 const Embed = require('../utils/embed')
 const { CommandError, CommandInteractionError } = require('../utils/error')
-const bannedWords = require('../controllers/bannedWords')
 const birthdayMessages = require('../controllers/birthdayMessages')
 const maliciousURL = require('../controllers/maliciousURL')
 
@@ -15,10 +14,6 @@ module.exports = {
                 name: 'sujet',
                 description: 'Sujet',
                 choices: [
-                    {
-                        name: 'Mots à bannir',
-                        value: 'bannedWords'
-                    },
                     {
                         name: 'Messages d\'anniversaire',
                         value: 'birthdayMessages'
@@ -59,21 +54,6 @@ module.exports = {
             let reply
 
             switch(subject) {
-                case 'bannedWords':
-                    const wordsList = await bannedWords.get(ids)
-
-                    if(wordsList.length === 0)
-                        throw new CommandInteractionError('Aucun mot banni à supprimer trouvé')
-
-                    embed.setTitle('🗑️ Confirmation de la suppression de mots bannis')
-                    embed.setDescription('Êtes-vous sûr de vouloir supprimer les mots à bannir suivants ?')
-                    embed.addFields({ name: 'Mots à bannir', value: wordsList.map(word => word.word).join('\n') })
-
-                    reply = await interaction.reply({ embeds: [embed], fetchReply: true })
-
-                    await bannedWords.remove(wordsList, interaction.user.id, interaction.channelId, reply.id)
-
-                    break
                 case 'birthdayMessages':
                     const messagesList = await birthdayMessages.get(ids)
 

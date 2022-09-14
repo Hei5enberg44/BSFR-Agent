@@ -1,6 +1,5 @@
 const { Message, userMention } = require('discord.js')
 const crypto = require('crypto')
-const bannedWords = require('../controllers/bannedWords')
 const maliciousURL = require('../controllers/maliciousURL')
 const threads = require('../controllers/threads')
 const antivirus = require('../controllers/antivirus')
@@ -17,7 +16,6 @@ module.exports = {
         if(message) {
             if(message.guildId) {
                 // Si ce n'est pas un dm
-                await bannedWords.test(message)
                 await module.exports.feur(message)
 
                 // Test si un URL malveillant a été envoyé

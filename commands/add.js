@@ -1,7 +1,6 @@
 const { CommandInteraction, ApplicationCommandOptionType } = require('discord.js')
 const Embed = require('../utils/embed')
 const { CommandError, CommandInteractionError } = require('../utils/error')
-const bannedWords = require('../controllers/bannedWords')
 const birthdayMessages = require('../controllers/birthdayMessages')
 const maliciousURL = require('../controllers/maliciousURL')
 const Logger = require('../utils/logger')
@@ -16,10 +15,6 @@ module.exports = {
                 name: 'sujet',
                 description: 'Sujet',
                 choices: [
-                    {
-                        name: 'Mots à bannir',
-                        value: 'bannedWords'
-                    },
                     {
                         name: 'Message d\'anniversaire',
                         value: 'birthdayMessage'
@@ -58,20 +53,6 @@ module.exports = {
                 .addFields({ name: 'Membre', value: interaction.user.tag })
 
             switch(subject) {
-                case 'bannedWords':
-                    const wordsList = await bannedWords.add(text, interaction.user)
-
-                    Logger.log('BannedWords', 'INFO', `${interaction.user.tag} a ajouté les mots bannis suivants : ${text.split(';').map(word => word.trim()).join(', ')}`)
-
-                    embed.setTitle('⛔ Ajout de mots bannis')
-
-                    for(const [action, words] of Object.entries(wordsList)) {
-                        if(words.length > 0) {
-                            embed.addFields({ name: action === 'new' ? 'Ajouté' : 'Déjà ajouté', value: words.join(', ') })
-                        }
-                    }
-
-                    break
                 case 'birthdayMessage':
                     const messagesList = await birthdayMessages.add(text, interaction.user)
 

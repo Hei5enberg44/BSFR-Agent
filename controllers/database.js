@@ -17,20 +17,6 @@ const test = async function() {
     }
 }
 
-const BannedWords = sequelize.define('banned_words', {
-    id: {
-        type: DataTypes.INTEGER,
-        autoIncrement: true,
-        primaryKey: true
-    },
-    word: DataTypes.TEXT,
-    memberId: DataTypes.STRING(255),
-    date: DataTypes.DATE
-}, {
-    timestamps: false,
-    freezeTableName: true
-})
-
 const BirthdayMessages = sequelize.define('birthday_messages', {
     id: {
         type: DataTypes.INTEGER,
@@ -245,5 +231,5 @@ const PollsVotes = sequelize.define('polls_votes', {
 })
 
 module.exports = {
-    test, BannedWords, BirthdayMessages, MaliciousURL, Reactions, Birthdays, Mutes, Bans, Threads, YoutubeVideos, FranceCities, Cities, Twitch, BSUpdates, Polls, PollsVotes
+    test, BirthdayMessages, MaliciousURL, Reactions, Birthdays, Mutes, Bans, Threads, YoutubeVideos, FranceCities, Cities, Twitch, BSUpdates, Polls, PollsVotes
 }
