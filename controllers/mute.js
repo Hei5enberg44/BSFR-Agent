@@ -1,11 +1,11 @@
-const { Client, GuildMember, userMention, bold } = require('discord.js')
-const Embed = require('../utils/embed')
-const { Mutes } = require('../controllers/database')
-const { Op } = require('sequelize')
-const Logger = require('../utils/logger')
-const config = require('../config.json')
+import { Client, GuildMember, userMention, bold } from 'discord.js'
+import Embed from '../utils/embed.js'
+import { Mutes } from '../controllers/database.js'
+import { Op } from 'sequelize'
+import Logger from '../utils/logger.js'
+import config from '../config.json' assert { type: 'json' }
 
-module.exports = {
+export default {
     /**
      * Ajoute un mute dans la base de données
      * @param {string} memberId identifiant du membre
@@ -13,7 +13,7 @@ module.exports = {
      * @param {string} reason raison du mute
      * @param {Date} unmuteDate date d'unmute
      */
-    add: async function(memberId, mutedBy, reason, unmuteDate) {
+    async add(memberId, mutedBy, reason, unmuteDate) {
         await Mutes.create({
             memberId: memberId,
             mutedBy: mutedBy,
@@ -27,7 +27,7 @@ module.exports = {
      * Supprime un mute de la base de donnée
      * @param {string} memberId identifiant du membre
      */
-    remove: async function(memberId) {
+    async remove(memberId) {
         await Mutes.destroy({
             where: {
                 memberId: memberId
@@ -40,7 +40,7 @@ module.exports = {
      * @param {string} memberId identifiant du membre
      * @returns {Promise<{id: number, memberId: string, mutedBy: string, reason: string, muteDate: Date, unmuteDate: Date}|null>} données concernant le mute
      */
-    isMuted: async function(memberId) {
+    async isMuted(memberId) {
         const muted = await Mutes.findOne({
             where: {
                 memberId: memberId
@@ -55,7 +55,7 @@ module.exports = {
      * @param {string} duration durée du mute
      * @returns {Date} date de d'unmute
      */
-    getUnmuteDate: function(duration) {
+    getUnmuteDate(duration) {
         const unit = duration.charAt(duration.length - 1).toUpperCase()
         const time = parseInt(duration.slice(0, -1))
         const date = new Date()
@@ -96,8 +96,8 @@ module.exports = {
      * Si le membre avait été mute avant son départ et que le mute n'est pas terminé, on le mute à nouveau
      * @param {GuildMember} member The member that has joined a guild
      */
-    remute: async function(member) {
-        const isMuted = await module.exports.isMuted(member.user.id)
+    async remute(member) {
+        const isMuted = await this.isMuted(member.user.id)
 
         if(isMuted && isMuted.unmuteDate > new Date()) {
             const logsChannel = member.guild.channels.cache.get(config.guild.channels.logs)
@@ -125,7 +125,7 @@ module.exports = {
      * Démute un membre
      * @param {Client} client client Discord
      */
-    unmute: async function(client) {
+    async unmute(client) {
         const guild = client.guilds.cache.get(config.guild.id)
         const logsChannel = guild.channels.cache.get(config.guild.channels.logs)
         const muteRole = guild.roles.cache.get(config.guild.roles.Muted)
@@ -140,7 +140,7 @@ module.exports = {
             const embeds = []
             const memberToUnmute = guild.members.cache.get(mutedMember.memberId)
 
-            await module.exports.remove(mutedMember.memberId)
+            await this.remove(mutedMember.memberId)
 
             if(memberToUnmute) {
                 embeds.push(new Embed()

@@ -1,11 +1,11 @@
-const { CommandInteraction, ApplicationCommandOptionType } = require('discord.js')
-const Embed = require('../utils/embed')
-const { CommandError, CommandInteractionError } = require('../utils/error')
-const birthdayMessages = require('../controllers/birthdayMessages')
-const maliciousURL = require('../controllers/maliciousURL')
-const Logger = require('../utils/logger')
+import { CommandInteraction, ApplicationCommandOptionType } from 'discord.js'
+import Embed from '../utils/embed.js'
+import { CommandError, CommandInteractionError } from '../utils/error.js'
+import birthdayMessages from '../controllers/birthdayMessages.js'
+import maliciousURL from '../controllers/maliciousURL.js'
+import Logger from '../utils/logger.js'
 
-module.exports = {
+export default {
     data: {
         name: 'add',
         description: 'Ajouts divers',

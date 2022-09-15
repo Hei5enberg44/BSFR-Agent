@@ -1,18 +1,18 @@
-const { GuildMember, userMention } = require('discord.js')
-const Embed = require('../utils/embed')
-const mute = require('../controllers/mute')
-const { Reactions } = require('../controllers/database')
-const Logger = require('../utils/logger')
-const config = require('../config.json')
+import { GuildMember, userMention } from 'discord.js'
+import Embed from '../utils/embed.js'
+import mute from '../controllers/mute.js'
+import { Reactions } from '../controllers/database.js'
+import Logger from '../utils/logger.js'
+import config from '../config.json' assert { type: 'json' }
 
-module.exports = {
+export default {
     /**
      * Emitted whenever a user joins a guild
      * @param {GuildMember} member The member that has joined a guild
      */
     async execute(member) {
-        await module.exports.welcome(member)
-        await module.exports.removeRulesReactions(member)
+        await this.welcome(member)
+        await this.removeRulesReactions(member)
         await mute.remute(member)
     },
 

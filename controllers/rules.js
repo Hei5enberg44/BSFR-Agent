@@ -1,14 +1,14 @@
-const { MessageReaction, User } = require("discord.js")
-const Logger = require('../utils/logger')
-const config = require('../config.json')
+import { MessageReaction, User } from 'discord.js'
+import Logger from '../utils/logger.js'
+import config from '../config.json' assert { type: 'json' }
 
-module.exports = {
+export default {
     /**
      * Attribution de rôle après acceptation des règles
      * @param {MessageReaction} reaction The reaction object
      * @param {User} user The user that applied the guild or reaction emoji
      */
-    accept: async function(reaction, user) {
+    async accept(reaction, user) {
         const guild = reaction.client.guilds.cache.get(config.guild.id)
         const member = guild.members.cache.get(user.id)
 
@@ -32,7 +32,7 @@ module.exports = {
      * @param {MessageReaction} reaction The reaction object
      * @param {User} user The user that applied the guild or reaction emoji
      */
-    refuse: async function(reaction, user) {
+    async refuse(reaction, user) {
         const guild = reaction.client.guilds.cache.get(config.guild.id)
         const member = guild.members.cache.get(user.id)
 

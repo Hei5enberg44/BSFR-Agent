@@ -1,11 +1,11 @@
-const { Client, MessageReaction, User, time, TimestampStyles, userMention, bold } = require('discord.js')
-const Embed = require('../utils/embed')
-const { Reactions, Polls, PollsVotes } = require('./database')
-const { Op } = require('sequelize')
-const Logger = require('../utils/logger')
-const config = require('../config.json')
+import { Client, MessageReaction, User, time, TimestampStyles, userMention, bold } from 'discord.js'
+import Embed from '../utils/embed.js'
+import { Reactions, Polls, PollsVotes } from './database.js'
+import { Op } from 'sequelize'
+import Logger from '../utils/logger.js'
+import config from '../config.json' assert { type: 'json' }
 
-module.exports = {
+export default {
     /**
      * Créer un sondage
      * @param {string} title titre du sondage
@@ -17,7 +17,7 @@ module.exports = {
      * @param {string} messageId identifiant du message contenant le sondage
      * @returns {Promise<number>} identifiant du sondage créé
      */
-    create: async function(title, propositions, customEmojis, dateEnd, memberId, channelId, messageId) {
+    async create(title, propositions, customEmojis, dateEnd, memberId, channelId, messageId) {
         const poll = await Polls.create({
             title: title,
             propositions: propositions,
@@ -58,7 +58,7 @@ module.exports = {
      * @param {User} user The user that applied the guild or reaction emoji
      * @param {Reaction} r données concernant la réaction
      */
-    vote: async function(reaction, user, r) {
+    async vote(reaction, user, r) {
         const pollId = r.data.pollId
         const emoji = reaction.emoji.id ? `<${reaction.emoji.animated ? 'a' : ''}:${reaction.emoji.name}:${reaction.emoji.id}>` : reaction.emoji.name
 
@@ -106,7 +106,7 @@ module.exports = {
      * Supprime les réactions pour les sondages terminés
      * @param {Client} client client Discord
      */
-    finish: async function(client) {
+    async finish(client) {
         const guild = client.guilds.cache.get(config.guild.id)
 
         const polls = await Polls.findAll({
@@ -124,7 +124,7 @@ module.exports = {
                 where: { pollId: poll.id }
             })
 
-            await module.exports.delete(poll.id)
+            await this.delete(poll.id)
 
             const pollChannel = guild.channels.cache.get(poll.channelId)
             if(pollChannel) {
@@ -157,7 +157,7 @@ module.exports = {
      * Supprime un sondage de la base de données
      * @param {number} pollId identifiant du sondage
      */
-    delete: async function(pollId) {
+    async delete(pollId) {
         await Reactions.destroy({
             where: { 'data.pollId': pollId }
         })

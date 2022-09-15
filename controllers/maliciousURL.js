@@ -1,18 +1,18 @@
-const { GuildMember, Message, MessageReaction, User, userMention, roleMention } = require("discord.js")
-const Embed = require('../utils/embed')
-const { MaliciousURLError } = require('../utils/error')
-const { MaliciousURL, Reactions } = require('./database')
-const Logger = require('../utils/logger')
-const config = require('../config.json')
+import { GuildMember, Message, MessageReaction, User, userMention, roleMention } from 'discord.js'
+import Embed from '../utils/embed.js'
+import { MaliciousURLError } from '../utils/error.js'
+import { MaliciousURL, Reactions } from './database.js'
+import Logger from '../utils/logger.js'
+import config from '../config.json' assert { type: 'json' }
 
-module.exports = {
+export default {
     /**
      * Ajoute un URL malveillant dans la base de données
      * @param {string} url URL malveillant
      * @param {GuildMember} member membre réalisant la demande d'ajout
      * @returns {Promise<{new: string, old: string}>} liste des URL malveillants
      */
-    add: async function(url, member) {
+    async add(url, member) {
         url = url.trim()
 
         const result = {
@@ -41,7 +41,7 @@ module.exports = {
      * @param {string} ids identifiant(s) des URL malveillants à récupérer
      * @returns {Promise<Array<{id: number, url: string, memberId: string, date: Date}>>} liste des URL malveillants
      */
-    get: async function(ids) {
+    async get(ids) {
         ids = ids.split(';').map(id => id.trim())
 
         const urlsList = await MaliciousURL.findAll({
@@ -57,7 +57,7 @@ module.exports = {
      * Test si un URL malveillant a été utilisé par un membre
      * @param {Message} message The created message
      */
-    test: async function(message) {
+    async test(message) {
         if(!message.author.bot) {
             const urlsList = await MaliciousURL.findAll()
             const logsChannel = message.guild.channels.cache.get(config.guild.channels.logs)
@@ -99,7 +99,7 @@ module.exports = {
      * @param {number} page page à retourner
      * @returns {Promise<string>} liste des URL malveillants
      */
-    list: async function(page) {
+    async list(page) {
         const itemsPerPage = 10
 
         const urlCount = await MaliciousURL.count()
@@ -137,7 +137,7 @@ module.exports = {
      * @param {string} channelId identifiant du salon dans lequel la demande de suppression a été effectuée
      * @param {string} messageId identifiant du message de confirmation de suppression
      */
-    remove: async function(urlsList, memberId, channelId, messageId) {
+    async remove(urlsList, memberId, channelId, messageId) {
         await Reactions.create({
             type: 'removeMaliciousURL',
             data: urlsList,
@@ -164,7 +164,7 @@ module.exports = {
      * @param {User} user The user that applied the guild or reaction emoji
      * @param {Reaction} r données concernant la réaction
      */
-    confirmRemove: async function(reaction, user, r) {
+    async confirmRemove(reaction, user, r) {
         const embed = new Embed()
             .setThumbnail(user.displayAvatarURL({ dynamic: true }))
             .addFields({ name: 'Membre', value: user.tag })

@@ -1,11 +1,11 @@
-const { CommandInteraction, ApplicationCommandOptionType, bold, inlineCode, userMention, roleMention } = require('discord.js')
-const Embed = require('../utils/embed')
-const { CommandError, CommandInteractionError } = require('../utils/error')
-const ban = require('../controllers/ban')
-const Logger = require('../utils/logger')
-const config = require('../config.json')
+import { CommandInteraction, ApplicationCommandOptionType, bold, inlineCode, userMention, roleMention } from 'discord.js'
+import Embed from '../utils/embed.js'
+import { CommandError, CommandInteractionError } from '../utils/error.js'
+import ban from '../controllers/ban.js'
+import Logger from '../utils/logger.js'
+import config from '../config.json' assert { type: 'json' }
 
-module.exports = {
+export default {
     data: {
         name: 'ban',
         description: 'Bannit un utilisateur sur une période donnée',

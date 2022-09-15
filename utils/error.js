@@ -1,4 +1,4 @@
-const Logger = require('./logger')
+import Logger from './logger.js'
 
 class DatabaseError extends Error {
     constructor(message) {
@@ -65,6 +65,6 @@ class NextcloudError extends Error {
     }
 }
 
-module.exports = {
+export {
     DatabaseError, CommandError, CommandInteractionError, BirthdayMessagesError, MaliciousURLError, TwitchError, NextcloudError, AntivirusError
 }

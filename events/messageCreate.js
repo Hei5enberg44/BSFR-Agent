@@ -1,13 +1,13 @@
-const { Message, userMention } = require('discord.js')
-const crypto = require('crypto')
-const maliciousURL = require('../controllers/maliciousURL')
-const threads = require('../controllers/threads')
-const antivirus = require('../controllers/antivirus')
-const twitch = require('../controllers/twitch')
-const Logger = require('../utils/logger')
-const config = require('../config.json')
+import { Message, userMention } from 'discord.js'
+import crypto from 'crypto'
+import maliciousURL from '../controllers/maliciousURL.js'
+import threads from '../controllers/threads.js'
+import antivirus from '../controllers/antivirus.js'
+import twitch from '../controllers/twitch.js'
+import Logger from '../utils/logger.js'
+import config from '../config.json' assert { type: 'json' }
 
-module.exports = {
+export default {
     /**
      * Emitted whenever a message is created
      * @param {Message} message The created message
@@ -16,7 +16,7 @@ module.exports = {
         if(message) {
             if(message.guildId) {
                 // Si ce n'est pas un dm
-                await module.exports.feur(message)
+                await this.feur(message)
 
                 // Test si un URL malveillant a été envoyé
                 if(message.content.match(/https?:\/\//)) {
@@ -25,7 +25,7 @@ module.exports = {
 
                 // Récéption d'un webhook dans le channel #vote-run-bsfr
                 if(message.channel.id === config.guild.channels.voteRun && message.webhookId) {
-                    await module.exports.voteRunReactions(message)
+                    await this.voteRunReactions(message)
                 }
 
                 // Récupération des clips Twitch
@@ -38,7 +38,7 @@ module.exports = {
                 }
             } else {
                 // Si c'est un dm
-                await module.exports.dm(message)
+                await this.dm(message)
             }
 
             // Scan antivirus des pièces jointes du message

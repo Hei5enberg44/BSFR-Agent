@@ -1,11 +1,11 @@
-const { Client, MessageReaction, User, userMention, roleMention, bold, inlineCode } = require('discord.js')
-const Embed = require('../utils/embed')
-const { Bans, Reactions } = require('../controllers/database')
-const { Op } = require('sequelize')
-const Logger = require('../utils/logger')
-const config = require('../config.json')
+import { Client, MessageReaction, User, userMention, roleMention, bold, inlineCode } from 'discord.js'
+import Embed from '../utils/embed.js'
+import { Bans, Reactions } from '../controllers/database.js'
+import { Op } from 'sequelize'
+import Logger from '../utils/logger.js'
+import config from '../config.json' assert { type: 'json' }
 
-module.exports = {
+export default {
     /**
      * Ajoute un ban dans la base de données
      * @param {string} memberId identifiant du membre
@@ -16,7 +16,7 @@ module.exports = {
      * @param {string|null} messageId identifiant du message correspondant à la demande de ban (facultatif)
      * @param {Date} unbanDate date de déban
      */
-    add: async function(memberId, bannedBy, approvedBy, reason, unbanDate, channelId = null, messageId = null) {
+    async add(memberId, bannedBy, approvedBy, reason, unbanDate, channelId = null, messageId = null) {
         const banDate = bannedBy === approvedBy ? new Date() : null
 
         const ban = await Bans.create({
@@ -46,7 +46,7 @@ module.exports = {
      * @param {number} banId identifiant du ban
      * @param {string} approvedBy identifiant du membre approuvant la demande de ban
      */
-    approve: async function(banId, approvedBy) {
+    async approve(banId, approvedBy) {
         await Bans.update({
             approvedBy: approvedBy,
             banDate: new Date()
@@ -71,7 +71,7 @@ module.exports = {
      * @param {number} banId identifiant du ban
      * @returns {Promise<MemberBan>} informations du ban
      */
-    get: async function(banId) {
+    async get(banId) {
         const ban = await Bans.findOne({
             where: {
                 id: banId
@@ -85,7 +85,7 @@ module.exports = {
      * Récupère la liste des membres bannis
      * @returns {Promise<Array<MemberBan>>} liste des membres bannis
      */
-    list: async function() {
+    async list() {
         const bans = await Bans.findAll({
             where: {
                 unbanDate: {
@@ -101,7 +101,7 @@ module.exports = {
      * Supprime un ban de la base de donnée
      * @param {string} banId identifiant du ban
      */
-    remove: async function(banId) {
+    async remove(banId) {
         await Bans.destroy({
             where: {
                 id: banId
@@ -114,7 +114,7 @@ module.exports = {
      * @param {string} memberId identifiant du membre
      * @returns {Promise<MemberBan|null>} données concernant le ban
      */
-    isBanned: async function(memberId) {
+    async isBanned(memberId) {
         const banned = await Bans.findOne({
             where: {
                 memberId: memberId
@@ -129,7 +129,7 @@ module.exports = {
      * @param {string} duration durée du ban
      * @returns {Date} date de de déban
      */
-    getUnbanDate: function(duration) {
+    getUnbanDate(duration) {
         const unit = duration.charAt(duration.length - 1).toUpperCase()
         const time = parseInt(duration.slice(0, -1))
         const date = new Date()
@@ -183,9 +183,9 @@ module.exports = {
      * @param {User} user The user that applied the guild or reaction emoji
      * @param {Reaction} r données concernant la réaction
      */
-    ban: async function(reaction, user, r) {
+    async ban(reaction, user, r) {
         const banId = r.data.banId
-        const banInfos = await module.exports.get(banId)
+        const banInfos = await this.get(banId)
 
         const guild = reaction.client.guilds.cache.get(config.guild.id)
         const logsChannel = guild.channels.cache.get(config.guild.channels.logs)
@@ -210,7 +210,7 @@ module.exports = {
                     { name: 'Date de débannissement', value: banInfos.unbanDate.toLocaleString('fr-FR', { timeZone: 'Europe/Paris' }) }
                 ))
 
-            await module.exports.approve(banId, user.id)
+            await this.approve(banId, user.id)
             await Reactions.destroy({ where: { id: r.id } })
 
             await logsChannel.send({ embeds: embeds })
@@ -240,7 +240,7 @@ module.exports = {
 
             await member.roles.remove(muteRole)
 
-            await module.exports.remove(banId)
+            await this.remove(banId)
             await Reactions.destroy({ where: { id: r.id } })
 
             await logsChannel.send({ embeds: embeds })
@@ -264,12 +264,19 @@ module.exports = {
      * Deban les membres pour qui la date de fin de ban est passée
      * @param {Client} client client Discord
      */
-    unban: async function(client) {
+    async unban(client) {
         const guild = client.guilds.cache.get(config.guild.id)
-        const bans = await module.exports.list()
+        const bans = await this.list()
 
         for(const ban of bans) {
-            const guildBan = await guild.bans.fetch(ban.memberId)
+            let guildBan = null
+            
+            try {
+                guildBan = await guild.bans.fetch(ban.memberId)
+            } catch(error) {
+                await this.remove(ban.id)
+                Logger.log('Unban', 'ERROR', `L'utilisateur "${ban.memberId}" est introuvable dans la liste des bannissements`)
+            }
 
             if(guildBan) {
                 // On envoie un message privé à l'utilisateur afin de le prévenir que son ban est levé
@@ -280,12 +287,12 @@ module.exports = {
                     const moderationChannel = guild.channels.cache.get(config.guild.channels.moderation)
                     await moderationChannel.send({ content: `${roleMention(config.guild.roles["Modérateur"])} - ${bold('Déban de')} ${userMention(guildBan.user.id)}\n\nImpossible d'envoyer le lien d'invitation automatiquement.\nMerci de réinviter l'utilisateur manuellement.\n\nLien d'invitation : ${config.links.discordInvite}` })
                 }
+
+                await guild.members.unban(guildBan.user.id)
+                await this.remove(ban.id)
+
+                Logger.log('Unban', 'INFO', `L'utilisateur ${guildBan.user.tag} a été débanni du serveur`)
             }
-
-            await guild.members.unban(guildBan.user.id)
-            await module.exports.remove(ban.id)
-
-            Logger.log('Unban', 'INFO', `L'utilisateur ${guildBan.user.tag} a été débanni du serveur`)
         }
     }
 }

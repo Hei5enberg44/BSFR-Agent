@@ -1,11 +1,11 @@
-const { CommandInteraction, ApplicationCommandOptionType, time, TimestampStyles, userMention, hyperlink } = require('discord.js')
-const Embed = require('../utils/embed')
-const { CommandError, CommandInteractionError } = require('../utils/error')
-const poll = require('../controllers/poll')
-const Logger = require('../utils/logger')
-const config = require('../config.json')
+import { CommandInteraction, ApplicationCommandOptionType, time, TimestampStyles, userMention, hyperlink } from 'discord.js'
+import Embed from '../utils/embed.js'
+import { CommandError, CommandInteractionError } from '../utils/error.js'
+import poll from '../controllers/poll.js'
+import Logger from '../utils/logger.js'
+import config from '../config.json' assert { type: 'json' }
 
-module.exports = {
+export default {
     data: {
         name: 'poll',
         description: 'Créer un sondage',

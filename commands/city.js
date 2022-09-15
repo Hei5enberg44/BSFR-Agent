@@ -1,9 +1,9 @@
-const { CommandInteraction, ActionRowBuilder, ButtonBuilder, ButtonStyle, ApplicationCommandOptionType } = require('discord.js')
-const { CommandError, CommandInteractionError } = require('../utils/error')
-const city = require('../controllers/city')
-const Logger = require('../utils/logger')
+import { CommandInteraction, ActionRowBuilder, ButtonBuilder, ButtonStyle, ApplicationCommandOptionType } from 'discord.js'
+import { CommandError, CommandInteractionError } from '../utils/error.js'
+import city from '../controllers/city.js'
+import Logger from '../utils/logger.js'
 
-module.exports = {
+export default {
     data: {
         name: 'city',
         description: 'Ajoute/Supprime une ville d\'origine',
@@ -51,7 +51,7 @@ module.exports = {
                         const pageCount = Math.ceil(cities.length / (maxRows * maxItemsPerRow))
                         let page = 0
 
-                        const getComponents = function(page = 0) {
+                        const getComponents = (page = 0) => {
                             let components = []
 
                             const _cities = cities.slice(page * maxRows * maxItemsPerRow, (page * maxRows * maxItemsPerRow) + (maxRows * maxItemsPerRow))

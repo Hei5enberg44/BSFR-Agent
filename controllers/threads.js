@@ -1,17 +1,17 @@
-const { GuildMember } = require('discord.js')
-const { Threads } = require('../controllers/database')
-const { Op } = require('sequelize')
-const Logger = require('../utils/logger')
-const config = require('../config.json')
+import { GuildMember } from 'discord.js'
+import { Threads } from '../controllers/database.js'
+import { Op } from 'sequelize'
+import Logger from '../utils/logger.js'
+import config from '../config.json' assert { type: 'json' }
 
-module.exports = {
+export default {
     /**
      * Ajoute un thread dans la base de données
      * @param {string} type type de thread
      * @param {string} threadId identifiant du thread
      * @param {string} memberId identifiant du membre qui créer le thread
      */
-    add: async function(type, threadId, memberId) {
+    async add(type, threadId, memberId) {
         await Threads.create({
             type: type,
             threadId: threadId,
@@ -34,7 +34,7 @@ module.exports = {
      * @param {string|null} memberId identifiant du membre
      * @returns {Promise<Thread>} thread
      */
-    get: async function(type, threadId, memberId) {
+    async get(type, threadId, memberId) {
         const thread = await Threads.findOne({
             where: {
                 type: type,
@@ -53,7 +53,7 @@ module.exports = {
      * @param {string} type type de thread
      * @returns {Promise<Array<Thread>>} threads
      */
-    getByType: async function(type) {
+    async getByType(type) {
         const threads = await Threads.findAll({
             where: { type: type }
         })
@@ -66,9 +66,9 @@ module.exports = {
      * @param {string} type type de threads dans lequel ajouter le membre
      * @param {GuildMember} member membre à ajouter dans les threads
      */
-    addMember: async function(type, member) {
+    async addMember(type, member) {
         const agentDmChannel = member.guild.channels.cache.get(config.guild.channels.agentDm)
-        const threads = await module.exports.getByType(type)
+        const threads = await this.getByType(type)
 
         await agentDmChannel.threads.fetch()
         await agentDmChannel.threads.fetchArchived()
@@ -95,9 +95,9 @@ module.exports = {
      * @param {string} type type de threads dans lequel supprimer le membre
      * @param {GuildMember} member membre à supprimer des threads
      */
-    removeMember: async function(type, member) {
+    async removeMember(type, member) {
         const agentDmChannel = member.guild.channels.cache.get(config.guild.channels.agentDm)
-        const threads = await module.exports.getByType(type)
+        const threads = await this.getByType(type)
 
         await agentDmChannel.threads.fetch()
         await agentDmChannel.threads.fetchArchived()

@@ -1,16 +1,15 @@
-const { Message, bold, inlineCode, userMention, roleMention } = require('discord.js')
-const Embed = require('../utils/embed')
-const { AntivirusError } = require('../utils/error')
-const fetch = require('node-fetch')
-const FormData = require('form-data')
-const tmp = require('tmp')
-const fs = require('fs')
-const Logger = require('../utils/logger')
-const config = require('../config.json')
+import { Message, bold, inlineCode, userMention, roleMention } from 'discord.js'
+import Embed from '../utils/embed.js'
+import { AntivirusError } from '../utils/error.js'
+import fetch, { FormData } from 'node-fetch'
+import tmp from 'tmp'
+import * as fs from 'node:fs'
+import Logger from '../utils/logger.js'
+import config from '../config.json' assert { type: 'json' }
 
 const wait = (s) => new Promise((res) => setTimeout(res, s * 1000))
 
-module.exports = {
+export default {
     /**
      * @typedef {Object} ScanStats
      * @property {number} failure
@@ -26,11 +25,11 @@ module.exports = {
      * @param {string} url lien vers le fichier
      * @returns {Promise<{data:{attributes:{stats:ScanStats}}}>} résultat de l'analyse
      */
-    scan: async function(url) {
+    async scan(url) {
         try {
             const apiKey = config.antivirus.apiKey
 
-            const file = await module.exports.download(url)
+            const file = await this.download(url)
 
             const form = new FormData()
             form.append('file', fs.createReadStream(file.name))
@@ -80,7 +79,7 @@ module.exports = {
      * Scan antivirus de fichiers
      * @param {Message} message The created message
      */
-    scanFiles: async function(message) {
+    async scanFiles(message) {
         const attachments = message.attachments
         for(const [, attachment] of attachments.entries()) {
             const contentType = attachment.contentType
@@ -91,7 +90,7 @@ module.exports = {
 
                 try {
                     const url = attachment.url
-                    const scanResult = await module.exports.scan(url)
+                    const scanResult = await this.scan(url)
                 
                     const stats = scanResult.data.attributes.stats
                     if(stats.harmless + stats.undetected > stats.malicious + stats.suspicious) {
@@ -137,7 +136,7 @@ module.exports = {
                         await message.member.roles.add(muteRole)
 
                         // On supprime le message d'avertissement au bout de 15 minutes
-                        setTimeout(async function() {
+                        setTimeout(async () => {
                             try {
                                 await warningMessage.delete()
                             } catch(error) {}
@@ -164,7 +163,7 @@ module.exports = {
      * @param {string} url lien vers le fichier
      * @returns {Promise<tmp.FileResult>} fichier temporaire téléchargé
      */
-    download: async function(url) {
+    async download(url) {
         const tmpFile = tmp.fileSync()
 
         try {

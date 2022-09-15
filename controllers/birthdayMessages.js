@@ -1,17 +1,17 @@
-const { GuildMember, MessageReaction, User } = require("discord.js")
-const Embed = require('../utils/embed')
-const { BirthdayMessagesError } = require('../utils/error')
-const { BirthdayMessages, Reactions } = require('./database')
-const Logger = require('../utils/logger')
+import { GuildMember, MessageReaction, User } from 'discord.js'
+import Embed from '../utils/embed.js'
+import { BirthdayMessagesError } from '../utils/error.js'
+import { BirthdayMessages, Reactions } from './database.js'
+import Logger from '../utils/logger.js'
 
-module.exports = {
+export default {
     /**
      * Ajoute un message d'anniversaire dans la base de données
      * @param {string} message message d'anniversaire
      * @param {GuildMember} member membre réalisant la demande d'ajout
      * @returns {Promise<{new: string, old: string}>} liste des messages d'anniversaire
      */
-    add: async function(message, member) {
+    async add(message, member) {
         message = message.trim()
 
         const result = {
@@ -40,7 +40,7 @@ module.exports = {
      * @param {string} ids identifiant(s) des messages d'anniversaire à récupérer
      * @returns {Promise<Array<{id: number, message: string, memberId: string, date: Date}>>} liste des messages d'anniversaire
      */
-    get: async function(ids) {
+    async get(ids) {
         ids = ids.split(';').map(id => id.trim())
 
         const messagesList = await BirthdayMessages.findAll({
@@ -57,7 +57,7 @@ module.exports = {
      * @param {number} page page à retourner
      * @returns {Promise<string>} liste des messages d'anniversaire
      */
-    list: async function(page) {
+    async list(page) {
         const itemsPerPage = 10
 
         const messagesCount = await BirthdayMessages.count()
@@ -95,7 +95,7 @@ module.exports = {
      * @param {string} channelId identifiant du salon dans lequel la demande de suppression a été effectuée
      * @param {string} messageId identifiant du message de confirmation de suppression
      */
-    remove: async function(messagesList, memberId, channelId, messageId) {
+    async remove(messagesList, memberId, channelId, messageId) {
         await Reactions.create({
             type: 'removeBirthdayMessage',
             data: messagesList,
@@ -122,7 +122,7 @@ module.exports = {
      * @param {User} user The user that applied the guild or reaction emoji
      * @param {Reaction} r données concernant la réaction
      */
-    confirmRemove: async function(reaction, user, r) {
+    async confirmRemove(reaction, user, r) {
         const embed = new Embed()
             .setThumbnail(user.displayAvatarURL({ dynamic: true }))
             .addFields({ name: 'Membre', value: user.tag })

@@ -1,13 +1,13 @@
-const { MessageReaction, User } = require('discord.js')
-const { Reactions } = require('../controllers/database')
-const { Op } = require('sequelize')
-const rules = require('../controllers/rules')
-const birthdayMessages = require('../controllers/birthdayMessages')
-const maliciousURL = require('../controllers/maliciousURL')
-const ban = require('../controllers/ban')
-const poll = require('../controllers/poll')
+import { MessageReaction, User } from 'discord.js'
+import { Reactions } from '../controllers/database.js'
+import { Op } from 'sequelize'
+import rules from '../controllers/rules.js'
+import birthdayMessages from '../controllers/birthdayMessages.js'
+import maliciousURL from '../controllers/maliciousURL.js'
+import ban from '../controllers/ban.js'
+import poll from '../controllers/poll.js'
 
-module.exports = {
+export default {
     /**
      * Emitted whenever a reaction is added to a cached message
      * @param {MessageReaction} reaction The reaction object

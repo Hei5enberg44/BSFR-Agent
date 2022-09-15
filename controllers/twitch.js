@@ -1,26 +1,26 @@
-const { Client, Message, Attachment, userMention, hyperlink } = require('discord.js')
-const Embed = require('../utils/embed')
-const { TwitchError, NextcloudError } = require('../utils/error')
-const { Twitch } = require('./database')
-const fetch = require('node-fetch')
-const pLimit = require('p-limit')
-const crypto = require('crypto')
-const tmp = require('tmp')
-const path = require('path')
-const fs = require('fs')
-const ffmpeg = require('fluent-ffmpeg')
-const nextcloud = require('../controllers/nextcloud')
-const Logger = require('../utils/logger')
-const config = require('../config.json')
+import { Client, Message, Attachment, userMention, hyperlink } from 'discord.js'
+import Embed from '../utils/embed.js'
+import { TwitchError, NextcloudError } from '../utils/error.js'
+import { Twitch } from './database.js'
+import fetch from 'node-fetch'
+import pLimit from 'p-limit'
+import crypto from 'crypto'
+import tmp from 'tmp'
+import * as path from 'node:path'
+import * as fs from 'node:fs'
+import ffmpeg from 'fluent-ffmpeg'
+import nextcloud from '../controllers/nextcloud.js'
+import Logger from '../utils/logger.js'
+import config from '../config.json' assert { type: 'json' }
 
 const twitchGqlClientId = 'kimne78kx3ncx6brgo4mv6wki5h1ko'
 
-module.exports = {
+export default {
     /**
      * Retourne l'Access Token de Twitch API
      * @returns {Promise<string>} Access Token
      */
-    getToken: async function() {
+    async getToken() {
         const params = new URLSearchParams({
             client_id: config.twitch.clientId,
             client_secret: config.twitch.clientSecret,
@@ -45,7 +45,7 @@ module.exports = {
      * Récupération des clips depuis un message Discord
      * @param {Message} message The created message
      */
-    getClip: async function(message) {
+    async getClip(message) {
         try {
             const clipsList = message.content.replace(/\n/g, ' ').split(' ').filter(x => x.includes('https://clips.twitch.tv/') || x.includes('https://www.twitch.tv/'))
 
@@ -53,7 +53,7 @@ module.exports = {
 
             for(const url of clipsList) {
                 Logger.log('Clips', 'INFO', 'Récupération d\'un clip Twitch de la part de ' + message.author.tag)
-                const result = await module.exports.getClipByUrl(url)
+                const result = await this.getClipByUrl(url)
                 if(result) {
                     uploadedClipsCount++
                 } else {
@@ -71,7 +71,7 @@ module.exports = {
             for(const [, attachment] of attachments.entries()) {
                 if(attachment.contentType.match(/(video)/i)) {
                     Logger.log('Clips', 'INFO', 'Récupération d\'un clip Twitch de la part de ' + message.author.tag)
-                    const result = await module.exports.getClipByAttachment(attachment, message.author.id)
+                    const result = await this.getClipByAttachment(attachment, message.author.id)
                     if(result) {
                         uploadedClipsCount++
                     } else {
@@ -105,27 +105,27 @@ module.exports = {
      * @param {string} url lien vers le clip Twitch
      * @returns {Promise<boolean>}
      */
-    getClipByUrl: async function(url) {
+    async getClipByUrl(url) {
         try {
             let file, createdAt, broadcasterName
             if(!url.includes('https://www.twitch.tv/videos/')) {
                 const slug = url.substring(url.lastIndexOf('/') + 1, url.length)
-                const clipInfos = await module.exports.getClipInfos(slug)
+                const clipInfos = await this.getClipInfos(slug)
                 createdAt = clipInfos.data.clip.createdAt
                 broadcasterName = clipInfos.data.clip.broadcaster.displayName
-                const downloadUrl = await module.exports.getClipDownloadUrl(slug)
-                file = await module.exports.downloadClip(downloadUrl)
+                const downloadUrl = await this.getClipDownloadUrl(slug)
+                file = await this.downloadClip(downloadUrl)
             } else {
                 const videoId = url.substring(url.lastIndexOf('/') + 1, url.length)
-                const videoInfos = await module.exports.getVideoInfos(videoId)
+                const videoInfos = await this.getVideoInfos(videoId)
                 createdAt = videoInfos.data.video.createdAt
                 broadcasterName = videoInfos.data.video.creator.login
-                file = await module.exports.downloadVideo(videoId)
+                file = await this.downloadVideo(videoId)
             }
 
             try {
                 const hash = crypto.randomBytes(Math.ceil(10 / 2)).toString('hex').slice(0, 10)
-                const fileName = `${module.exports.convertDate(new Date(createdAt))}_${hash}`
+                const fileName = `${this.convertDate(new Date(createdAt))}_${hash}`
                 const folderName = 'Twitch-' + broadcasterName
 
                 const newFolder = await nextcloud.createFolder(`${config.twitch.clipsLocation}/${folderName}`)
@@ -155,13 +155,13 @@ module.exports = {
      * @param {string} memberId identifiant du membre Discord ayant uploadé le clip
      * @returns {Promise<boolean>}
      */
-    getClipByAttachment: async function(attachment, memberId) {
+    async getClipByAttachment(attachment, memberId) {
         try {
-            const file = await module.exports.downloadClip(attachment.url)
+            const file = await this.downloadClip(attachment.url)
 
             try {
                 const hash = crypto.randomBytes(Math.ceil(10 / 2)).toString('hex').slice(0, 10)
-                const fileName = `${module.exports.convertDate(new Date())}_${hash}`
+                const fileName = `${this.convertDate(new Date())}_${hash}`
                 const folderName = 'Discord-' + memberId
 
                 const newFolder = await nextcloud.createFolder(`${config.twitch.clipsLocation}/${folderName}`)
@@ -190,7 +190,7 @@ module.exports = {
      * @param {string} ClipSlug identifiant du clip
      * @returns {Promise<{data:{clip:{title: string, createdAt: string, broadcaster:{id: string, displayName: string}}}}>} informations du clip
      */
-    getClipInfos: async function(ClipSlug) {
+    async getClipInfos(ClipSlug) {
         const clipInfosRequest = await fetch('https://gql.twitch.tv/gql', {
             method: 'POST',
             headers: {
@@ -217,7 +217,7 @@ module.exports = {
      * @param {string} clipSlug identifiant du clip
      * @returns {Promise<string>} lien de téléchargement du clip
      */
-    getClipDownloadUrl: async function(clipSlug) {
+    async getClipDownloadUrl(clipSlug) {
         const clipLinksRequest = await fetch('https://gql.twitch.tv/gql', {
             method: 'POST',
             headers: {
@@ -245,7 +245,7 @@ module.exports = {
      * @param {string} url url du fichier à télécharger
      * @returns {Promise<tmp.FileResult>} fichier temporaire téléchargé
      */
-    downloadClip: async function(url) {
+    async downloadClip(url) {
         const tmpFile = tmp.fileSync()
 
         try {
@@ -271,7 +271,7 @@ module.exports = {
      * @param {string} videoId identifiant de la VOD
      * @returns {Promise<{data:{videoPlaybackAccessToken:{value: string, signature: string}}}>} token de la VOD
      */
-    getVideoToken: async function(videoId) {
+    async getVideoToken(videoId) {
         const videoTokenRequest = await fetch('https://gql.twitch.tv/gql', {
             method: 'POST',
             headers: {
@@ -291,7 +291,7 @@ module.exports = {
      * @param {string} sig signature de la VOD
      * @returns {Promise<string>} liste des chunks constituants la VOD
      */
-    getVideoPlaylist: async function(videoId, token, sig) {
+    async getVideoPlaylist(videoId, token, sig) {
         const params = new URLSearchParams({
             nauth: token,
             nauthsig: sig,
@@ -323,7 +323,7 @@ module.exports = {
      * @param {string} videoId identifiant de la VOD
      * @returns {Promise<string>} URL du fichier playlist
      */
-    getRestrictedVideoPlaylist: async function(videoId) {
+    async getRestrictedVideoPlaylist(videoId) {
         const videoInfosRequest = await fetch(`https://api.twitch.tv/kraken/videos/${videoId}`, {
             method: 'GET',
             headers: {
@@ -347,7 +347,7 @@ module.exports = {
      * @param {string} videoId identifiant de la VOD
      * @returns {Promise<{data:{video:{createdAt: string, creator:{login: string}}}}>} informations de la VOD
      */
-    getVideoInfos: async function(videoId) {
+    async getVideoInfos(videoId) {
         const clipInfosRequest = await fetch('https://gql.twitch.tv/gql', {
             method: 'POST',
             headers: {
@@ -374,7 +374,7 @@ module.exports = {
      * @param {string} url URL de téléchargement du chunk
      * @param {string} path chemin vers le fichier de destination
      */
-    downloadChunk: async function(url, path) {
+    async downloadChunk(url, path) {
         const downloadRequest = await fetch(url, {
             method: 'GET'
         })
@@ -399,9 +399,9 @@ module.exports = {
      * @param {string} videoId identifiant de la VOD à télécharger
      * @returns {Promise<tmp.FileResult>} fichier téléchargé
      */
-    downloadVideo: async function(videoId) {
-        const videoToken = await module.exports.getVideoToken(videoId)
-        const videoPlaylistRaw = await module.exports.getVideoPlaylist(videoId, videoToken.data.videoPlaybackAccessToken.value, videoToken.data.videoPlaybackAccessToken.signature)
+    async downloadVideo(videoId) {
+        const videoToken = await this.getVideoToken(videoId)
+        const videoPlaylistRaw = await this.getVideoPlaylist(videoId, videoToken.data.videoPlaybackAccessToken.value, videoToken.data.videoPlaybackAccessToken.signature)
         
         let vodAge = 25
         let playlistUrl
@@ -409,7 +409,7 @@ module.exports = {
             const videoPlaylist = videoPlaylistRaw.split('\n')
             playlistUrl = videoPlaylist[videoPlaylist.findIndex(vp => vp.includes('#EXT-X-MEDIA')) + 2]
         } else {
-            playlistUrl = await module.exports.getRestrictedVideoPlaylist(videoId)
+            playlistUrl = await this.getRestrictedVideoPlaylist(videoId)
         }
 
         const baseUrl = playlistUrl.substring(0, playlistUrl.lastIndexOf('/') + 1)
@@ -460,9 +460,9 @@ module.exports = {
                 while(!isDone && errorCount < 10) {
                     try {
                         if(tryUnmute && video.key.includes('-muted')) {
-                            await module.exports.downloadChunk(baseUrl + video.key.replace('-muted', ''), tmpChunk.name)
+                            await this.downloadChunk(baseUrl + video.key.replace('-muted', ''), tmpChunk.name)
                         } else {
-                            await module.exports.downloadChunk(baseUrl + video.key, tmpChunk.name)
+                            await this.downloadChunk(baseUrl + video.key, tmpChunk.name)
                         }
 
                         isDone = true
@@ -531,10 +531,10 @@ module.exports = {
      * Recherche les membres en live sur Twitch et envoie une notification dans le channel #twitch-youtube
      * @param {Client} client client Discord
      */
-    live: async function(client) {
+    async live(client) {
         try {
             const gameId = '503116'
-            const accessToken = await module.exports.getToken()
+            const accessToken = await this.getToken()
             
             if(accessToken) {
                 const streamers = await Twitch.findAll()
@@ -636,7 +636,7 @@ module.exports = {
      * @param {string} memberId identifiant du membre Discord auquel lier à un compte Twitch
      * @param {string} channelName nom de la chaîne Twitch à lier au membre Discord
      */
-    link: async function(memberId, channelName) {
+    async link(memberId, channelName) {
         const streamer = await Twitch.findOne({ where: { memberId: memberId } })
 
         if(streamer) {
@@ -658,7 +658,7 @@ module.exports = {
      * Délie un compte Twitch d'un membre Discord
      * @param {string} memberId identifiant du membre Discord pour lequel délier un compte Twitch
      */
-    unlink: async function(memberId) {
+    async unlink(memberId) {
         await Twitch.destroy({ where: { memberId: memberId } })
     },
 
@@ -667,7 +667,7 @@ module.exports = {
      * @param {Date} date date à convertir
      * @returns {string} date convertie
      */
-    convertDate: function(date) {
+    convertDate(date) {
         const year = date.getFullYear()
         const month = date.getMonth() < 9 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1
         const day = date.getDate() < 10 ? '0' + date.getDate() : date.getDate()

@@ -1,8 +1,8 @@
-const { AttachmentBuilder, CommandInteraction, ApplicationCommandOptionType } = require('discord.js')
-const { CommandError, CommandInteractionError } = require('../utils/error')
-const fs = require('fs')
+import { AttachmentBuilder, CommandInteraction, ApplicationCommandOptionType } from 'discord.js'
+import { CommandError, CommandInteractionError } from '../utils/error.js'
+import * as fs from 'node:fs'
 
-module.exports = {
+export default {
     data: {
         name: 'log',
         description: 'Récupère un fichier de log',

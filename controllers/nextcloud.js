@@ -1,13 +1,13 @@
-const { NextcloudError } = require('../utils/error')
-const { Client, Server, UploadFilesCommand, CommandStatus, Folder } = require('nextcloud-node-client')
-const config = require('../config.json')
+import { NextcloudError } from '../utils/error.js'
+import { Client, Server, UploadFilesCommand, CommandStatus, Folder } from 'nextcloud-node-client'
+import config from '../config.json' assert { type: 'json' }
 
-module.exports = {
+export default {
     /**
      * Connexion Nextcloud
      * @returns {Client} client Nextcloud
      */
-    getClient: function() {
+    getClient() {
         const server = new Server({
             basicAuth: {
                 username: config.nextcloud.username,
@@ -26,9 +26,9 @@ module.exports = {
      * @param {string} source chemin du fichier source
      * @param {string} destination chemin du fichier cible
      */
-    uploadFile: async function(source, destination) {
+    async uploadFile(source, destination) {
         try {
-            const client = module.exports.getClient()
+            const client = this.getClient()
 
             const upload = new UploadFilesCommand(client, {
                 files: [
@@ -52,9 +52,9 @@ module.exports = {
      * @param {string} folderName chemin du dossier à créer
      * @returns {Promise<Folder>} dossier créé ou dossier déjà existant
      */
-    createFolder: async function(folderName) {
+    async createFolder(folderName) {
         try {
-            const client = module.exports.getClient()
+            const client = this.getClient()
 
             const folder = await client.getFolder(folderName)
 

@@ -1,16 +1,16 @@
-const { Client, roleMention } = require('discord.js')
-const gapi = require('../controllers/google')
-const { YoutubeVideos } = require('../controllers/database')
-const Logger = require('../utils/logger')
-const config = require('../config.json')
+import { Client, roleMention } from 'discord.js'
+import gapi from '../controllers/google.js'
+import { YoutubeVideos } from '../controllers/database.js'
+import Logger from '../utils/logger.js'
+import config from '../config.json' assert { type: 'json' }
 
-module.exports = {
+export default {
     /**
      * Publication des nouvelles vidéos de la chaîne YouTube Beat Saber FR
      * dans le channel #youtube
      * @param {Client} client client Discord
      */
-    publish: async function(client) {
+    async publish(client) {
         const videos = await YoutubeVideos.findAll()
         const latestVideos = await gapi.getYoutubeLatestPublicsVideos()
 

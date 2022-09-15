@@ -1,10 +1,9 @@
-const { ApplicationCommandOptionType, userMention } = require('discord.js')
-const { CommandError, CommandInteractionError } = require('../utils/error')
-const threads = require('../controllers/threads')
-const Logger = require('../utils/logger')
-const { CommandInteraction } = require('discord.js')
+import { CommandInteraction, ApplicationCommandOptionType, userMention } from 'discord.js'
+import { CommandError, CommandInteractionError } from '../utils/error.js'
+import threads from '../controllers/threads.js'
+import Logger from '../utils/logger.js'
 
-module.exports = {
+export default {
     data: {
         name: 'r',
         description: 'Répond à un message privé',

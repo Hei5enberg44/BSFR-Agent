@@ -1,19 +1,25 @@
-const { Sequelize, DataTypes } = require('sequelize')
-const { DatabaseError } = require('../utils/error')
-const config = require('../config.json')
+import { Sequelize, DataTypes } from 'sequelize'
+import { DatabaseError } from '../utils/error.js'
+import config from '../config.json' assert { type: 'json' }
 
 const sequelize = new Sequelize(config.database.name, config.database.username, config.database.password, {
     host: config.database.host,
     port: config.database.port,
     dialect: 'mariadb',
-    logging: false
+    logging: false,
+    define: {
+        timestamps: false,
+        freezeTableName: true
+    }
 })
 
-const test = async function() {
-    try {
-        await sequelize.authenticate()
-    } catch(error) {
-        throw new DatabaseError('Échec de la connexion à la base de données : ' + error.message)
+export default {
+    async test() {
+        try {
+            await sequelize.authenticate()
+        } catch(error) {
+            throw new DatabaseError('Échec de la connexion à la base de données : ' + error.message)
+        }
     }
 }
 
@@ -26,9 +32,6 @@ const BirthdayMessages = sequelize.define('birthday_messages', {
     message: DataTypes.TEXT,
     memberId: DataTypes.STRING(255),
     date: DataTypes.DATE
-}, {
-    timestamps: false,
-    freezeTableName: true
 })
 
 const MaliciousURL = sequelize.define('malicious_url', {
@@ -40,9 +43,6 @@ const MaliciousURL = sequelize.define('malicious_url', {
     url: DataTypes.TEXT,
     memberId: DataTypes.STRING(255),
     date: DataTypes.DATE
-}, {
-    timestamps: false,
-    freezeTableName: true
 })
 
 const Reactions = sequelize.define('reactions', {
@@ -57,9 +57,6 @@ const Reactions = sequelize.define('reactions', {
     channelId: DataTypes.STRING(255),
     messageId: DataTypes.STRING(255),
     date: DataTypes.DATE
-}, {
-    timestamps: false,
-    freezeTableName: true
 })
 
 const Birthdays = sequelize.define('birthdays', {
@@ -70,9 +67,6 @@ const Birthdays = sequelize.define('birthdays', {
     },
     memberId: DataTypes.STRING(255),
     date: DataTypes.DATEONLY
-}, {
-    timestamps: false,
-    freezeTableName: true
 })
 
 const Mutes = sequelize.define('mutes', {
@@ -86,9 +80,6 @@ const Mutes = sequelize.define('mutes', {
     reason: DataTypes.TEXT,
     muteDate: DataTypes.DATE,
     unmuteDate: DataTypes.DATE
-}, {
-    timestamps: false,
-    freezeTableName: true
 })
 
 const Bans = sequelize.define('bans', {
@@ -103,9 +94,6 @@ const Bans = sequelize.define('bans', {
     reason: DataTypes.TEXT,
     banDate: DataTypes.DATE,
     unbanDate: DataTypes.DATE
-}, {
-    timestamps: false,
-    freezeTableName: true
 })
 
 const Threads = sequelize.define('threads', {
@@ -118,9 +106,6 @@ const Threads = sequelize.define('threads', {
     threadId: DataTypes.STRING(255),
     memberId: DataTypes.STRING(255),
     date: DataTypes.DATE
-}, {
-    timestamps: false,
-    freezeTableName: true
 })
 
 const YoutubeVideos = sequelize.define('youtube_videos', {
@@ -132,9 +117,6 @@ const YoutubeVideos = sequelize.define('youtube_videos', {
     videoId: DataTypes.STRING(255),
     publishedAt: DataTypes.DATE,
     title: DataTypes.STRING(255)
-}, {
-    timestamps: false,
-    freezeTableName: true
 })
 
 const FranceCities = sequelize.define('france_cities', {
@@ -149,9 +131,6 @@ const FranceCities = sequelize.define('france_cities', {
     ligne_5: DataTypes.STRING(255),
     libelle_d_acheminement: DataTypes.STRING(255),
     coordonnees_gps: DataTypes.STRING(255)
-}, {
-    timestamps: false,
-    freezeTableName: true
 })
 
 const Cities = sequelize.define('cities', {
@@ -164,9 +143,6 @@ const Cities = sequelize.define('cities', {
     code_postal: DataTypes.INTEGER,
     nom_de_la_commune: DataTypes.STRING(255),
     coordonnees_gps: DataTypes.STRING(255)
-}, {
-    timestamps: false,
-    freezeTableName: true
 })
 
 const Twitch = sequelize.define('twitch', {
@@ -179,9 +155,6 @@ const Twitch = sequelize.define('twitch', {
     channelName: DataTypes.STRING(255),
     live: DataTypes.BOOLEAN,
     messageId: DataTypes.STRING(255)
-}, {
-    timestamps: false,
-    freezeTableName: true
 })
 
 const BSUpdates = sequelize.define('bs_updates', {
@@ -193,9 +166,6 @@ const BSUpdates = sequelize.define('bs_updates', {
     image: DataTypes.TEXT,
     title: DataTypes.TEXT,
     content: DataTypes.TEXT
-}, {
-    timestamps: false,
-    freezeTableName: true
 })
 
 const Polls = sequelize.define('polls', {
@@ -211,9 +181,6 @@ const Polls = sequelize.define('polls', {
     createdBy: DataTypes.STRING(255),
     channelId: DataTypes.STRING(255),
     messageId: DataTypes.STRING(255)
-}, {
-    timestamps: false,
-    freezeTableName: true
 })
 
 const PollsVotes = sequelize.define('polls_votes', {
@@ -225,11 +192,8 @@ const PollsVotes = sequelize.define('polls_votes', {
     pollId: DataTypes.INTEGER,
     memberId: DataTypes.STRING(255),
     vote: DataTypes.STRING(255)
-}, {
-    timestamps: false,
-    freezeTableName: true
 })
 
-module.exports = {
-    test, BirthdayMessages, MaliciousURL, Reactions, Birthdays, Mutes, Bans, Threads, YoutubeVideos, FranceCities, Cities, Twitch, BSUpdates, Polls, PollsVotes
+export {
+    BirthdayMessages, MaliciousURL, Reactions, Birthdays, Mutes, Bans, Threads, YoutubeVideos, FranceCities, Cities, Twitch, BSUpdates, Polls, PollsVotes
 }

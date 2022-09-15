@@ -1,20 +1,20 @@
-const { Client, userMention } = require('discord.js')
-const { Birthdays, BirthdayMessages } = require('./database')
-const { Sequelize } = require('sequelize')
-const crypto = require('crypto')
-const Logger = require('../utils/logger')
-const config = require('../config.json')
+import { Client, userMention } from 'discord.js'
+import { Birthdays, BirthdayMessages } from './database.js'
+import { Sequelize } from 'sequelize'
+import crypto from 'crypto'
+import Logger from '../utils/logger.js'
+import config from '../config.json' assert { type: 'json' }
 
-module.exports = {
+export default {
     /**
      * Ajoute une date d'anniversaire dans la base de données
      * @param {string} memberId identifiant du membre
      * @param {Date} date date de naissance au format timestamp
      */
-    set: async function(memberId, date) {
+    async set(memberId, date) {
         const bd = await Birthdays.findOne({ where: { memberId: memberId } })
 
-        if(bd) await module.exports.unset(memberId)
+        if(bd) await this.unset(memberId)
 
         await Birthdays.create({
             memberId: memberId,
@@ -26,7 +26,7 @@ module.exports = {
      * Supprime une date d'anniversaire de la base de données
      * @param {string} memberId identifiant du membre
      */
-    unset: async function(memberId) {
+    async unset(memberId) {
         await Birthdays.destroy({
             where: { memberId: memberId }
         })
@@ -36,7 +36,7 @@ module.exports = {
      * Récupère la liste des anniversaire pour les membres dont c'est l'anniversaire ce jour
      * @returns {Promise<Array<{id: number, memberId: string, date: Date}>>} liste des anniversaires
      */
-    get: async function() {
+    async get() {
         const date = ((new Date()).toLocaleDateString('fr-FR', { timeZone: 'Europe/Paris' })).substring(0, 5)
 
         const birthdays = await Birthdays.findAll({
@@ -50,8 +50,8 @@ module.exports = {
      * Souhaite l'anniversaire aux membres pour qui c'est l'anniversaire ce jour
      * @param {Client} client client Discord
      */
-    wish: async function(client) {
-        const birthdays = await module.exports.get()
+    async wish(client) {
+        const birthdays = await this.get()
         const bdMessages = await BirthdayMessages.findAll()
 
         const guild = client.guilds.cache.get(config.guild.id)

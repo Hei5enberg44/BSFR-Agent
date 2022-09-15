@@ -1,11 +1,10 @@
-const { ApplicationCommandOptionType, userMention } = require('discord.js')
-const { CommandError, CommandInteractionError } = require('../utils/error')
-const threads = require('../controllers/threads')
-const Logger = require('../utils/logger')
-const { CommandInteraction } = require('discord.js')
-const config = require('../config.json')
+import { CommandInteraction, ApplicationCommandOptionType, userMention } from 'discord.js'
+import { CommandError, CommandInteractionError } from '../utils/error.js'
+import threads from '../controllers/threads.js'
+import Logger from '../utils/logger.js'
+import config from '../config.json' assert { type: 'json' }
 
-module.exports = {
+export default {
     data: {
         name: 'dm',
         description: 'Envoie un message privé à un membre',

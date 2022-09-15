@@ -1,21 +1,21 @@
-const { GuildMember, userMention } = require('discord.js')
-const Embed = require('../utils/embed')
-const { Birthdays, Cities, Twitch } = require('../controllers/database')
-const threads = require('../controllers/threads')
-const Logger = require('../utils/logger')
-const config = require('../config.json')
+import { GuildMember, userMention } from 'discord.js'
+import Embed from '../utils/embed.js'
+import { Birthdays, Cities, Twitch } from '../controllers/database.js'
+import threads from '../controllers/threads.js'
+import Logger from '../utils/logger.js'
+import config from '../config.json' assert { type: 'json' }
 
-module.exports = {
+export default {
     /**
      * Emitted whenever a member leaves a guild, or is kicked
      * @param {GuildMember} member The member that has left/been kicked from the guild
      */
     async execute(member) {
-        await module.exports.bye(member)
-        await module.exports.removeBirthday(member)
-        await module.exports.removeCity(member)
-        await module.exports.removeTwitch(member)
-        await module.exports.updateThreads(member)
+        await this.bye(member)
+        await this.removeBirthday(member)
+        await this.removeCity(member)
+        await this.removeTwitch(member)
+        await this.updateThreads(member)
     },
 
     /**

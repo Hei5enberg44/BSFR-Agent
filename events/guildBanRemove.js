@@ -1,8 +1,8 @@
-const { GuildBan, userMention } = require('discord.js')
-const Embed = require('../utils/embed')
-const config = require('../config.json')
+import { GuildBan, userMention } from 'discord.js'
+import Embed from '../utils/embed.js'
+import config from '../config.json' assert { type: 'json' }
 
-module.exports = {
+export default {
     /**
      * Emitted whenever a member is unbanned from a guild
      * @param {GuildBan} ban The ban that was removed

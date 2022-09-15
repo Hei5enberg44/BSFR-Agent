@@ -1,10 +1,10 @@
-const { Client, roleMention } = require('discord.js')
-const puppeteer = require('puppeteer')
-const { BSUpdates } = require('./database')
-const Logger = require('../utils/logger')
-const config = require('../config.json')
+import { Client, roleMention } from 'discord.js'
+import puppeteer from 'puppeteer'
+import { BSUpdates } from './database.js'
+import Logger from '../utils/logger.js'
+import config from '../config.json' assert { type: 'json' }
 
-module.exports = {
+export default {
     /**
      * @typedef {Object} UpdateData
      * @property {string} image
@@ -16,7 +16,7 @@ module.exports = {
      * Récupération des informations sur la dernière mise à jour de Beat Saber
      * @returns {Promise<UpdateData|null>} informations sur la mise à jour
      */
-    getLastUpdate: async function() {
+    async getLastUpdate() {
         try {
             const oculusUrl = 'https://www.oculus.com'
             const beatsaberPath = '/experiences/rift/1304877726278670/'
@@ -112,7 +112,7 @@ module.exports = {
      * @param {Client} client client Discord
      * @param {UpdateData} update contenu de la mise à jour
      */
-    postUpdate: async function(client, update) {
+    async postUpdate(client, update) {
         const guild = client.guilds.cache.get(config.guild.id)
         const updateChannel = guild.channels.cache.get(config.guild.channels.bsUpdates)
 

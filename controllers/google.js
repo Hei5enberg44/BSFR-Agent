@@ -1,13 +1,13 @@
-const { google } = require('googleapis')
-const { OAuth2Client } = require('google-auth-library')
-const config = require('../config.json')
+import { google } from 'googleapis'
+import { OAuth2Client } from 'google-auth-library'
+import config from '../config.json' assert { type: 'json' }
 
-module.exports = {
+export default {
     /**
      * Authentification à Google API
      * @returns {OAuth2Client} client Google
      */
-    getAuth: function() {
+    getAuth() {
         const oAuth2 = new google.auth.OAuth2(config.google.clientId, config.google.clientSecret)
 
         oAuth2.setCredentials({ refresh_token: config.google.refreshToken })
@@ -19,10 +19,10 @@ module.exports = {
      * Récupère les dernières vidéos publiques sur la chaîne YouTube
      * @returns {Promise<Array<{videoId: string, publishedAt: string, title: string}>>} liste des vidéos
      */
-    getYoutubeLatestPublicsVideos: async function() {
+    async getYoutubeLatestPublicsVideos() {
         const latestPublicsVideos = []
 
-        const auth = module.exports.getAuth()
+        const auth = this.getAuth()
 
         const youtube = google.youtube('v3')
 

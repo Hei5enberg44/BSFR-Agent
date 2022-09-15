@@ -1,7 +1,7 @@
-const { CommandInteraction, ApplicationCommandOptionType, ALLOWED_EXTENSIONS, ALLOWED_SIZES } = require('discord.js')
-const { CommandError, CommandInteractionError } = require('../utils/error')
+import { CommandInteraction, ApplicationCommandOptionType, ALLOWED_EXTENSIONS, ALLOWED_SIZES } from 'discord.js'
+import { CommandError, CommandInteractionError } from '../utils/error.js'
 
-module.exports = {
+export default {
     data: {
         name: 'avatar',
         description: 'Récupère l\'avatar d\'un membre',

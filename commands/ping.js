@@ -1,8 +1,8 @@
-const { CommandInteraction } = require('discord.js')
-const { CommandError, CommandInteractionError } = require('../utils/error')
-const Logger = require('../utils/logger')
+import { CommandInteraction } from 'discord.js'
+import { CommandError, CommandInteractionError } from '../utils/error.js'
+import Logger from '../utils/logger.js'
 
-module.exports = {
+export default {
     data: {
         name: 'ping',
         description: 'Test si le bot fonctionne',

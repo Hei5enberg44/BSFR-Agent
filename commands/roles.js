@@ -1,11 +1,11 @@
-const { CommandInteraction, ApplicationCommandOptionType, roleMention, bold } = require('discord.js')
-const Embed = require('../utils/embed')
-const { CommandError, CommandInteractionError } = require('../utils/error')
-const roles = require('../roles.json')
-const Logger = require('../utils/logger')
-const config = require('../config.json')
+import { CommandInteraction, ApplicationCommandOptionType, roleMention, bold } from 'discord.js'
+import Embed from '../utils/embed.js'
+import { CommandError, CommandInteractionError } from '../utils/error.js'
+import Logger from '../utils/logger.js'
+import roles from '../roles.json' assert { type: 'json' }
+import config from '../config.json' assert { type: 'json' }
 
-module.exports = {
+export default {
     data: {
         name: 'roles',
         description: 'Assignation auto de rôles',

@@ -1,9 +1,9 @@
-const { CommandInteraction, ApplicationCommandOptionType } = require('discord.js')
-const { CommandError, CommandInteractionError } = require('../utils/error')
-const twitch = require('../controllers/twitch')
-const Logger = require('../utils/logger')
+import { CommandInteraction, ApplicationCommandOptionType } from 'discord.js'
+import { CommandError, CommandInteractionError } from '../utils/error.js'
+import twitch from '../controllers/twitch.js'
+import Logger from '../utils/logger.js'
 
-module.exports = {
+export default {
     data: {
         name: 'twitch',
         description: 'Lie votre compte Twitch afin d\'activer les notifications lorsque vous êtes en live',

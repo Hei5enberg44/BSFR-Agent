@@ -1,15 +1,15 @@
-const { GuildMember } = require('discord.js')
-const threads = require('../controllers/threads')
-const config = require('../config.json')
+import { GuildMember } from 'discord.js'
+import threads from '../controllers/threads.js'
+import config from '../config.json' assert { type: 'json' }
 
-module.exports = {
+export default {
     /**
      * Emitted whenever a guild member changes - i.e. new role, removed role, nickname
      * @param {GuildMember} oldMember The member before the update
      * @param {GuildMember} newMember The member after the update
      */
     async execute(oldMember, newMember) {
-        await module.exports.updateThreads(oldMember, newMember)
+        await this.updateThreads(oldMember, newMember)
     },
 
     /**

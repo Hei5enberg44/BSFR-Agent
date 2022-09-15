@@ -1,16 +1,16 @@
-const { Cities, FranceCities } = require('./database')
+import { Cities, FranceCities } from './database.js'
 
-module.exports = {
+export default {
     /**
      * Ajoute une ville d'origine dans la base de données
      * @param {string} memberId identifiant du membre
      * @param {string} postalCode nom de la ville
      * @param {string} cityName nom de la ville
      */
-    set: async function(memberId, postalCode, cityName) {
+    async set(memberId, postalCode, cityName) {
         const c = await Cities.findOne({ where: { memberId: memberId } })
 
-        if(c) await module.exports.unset(memberId)
+        if(c) await this.unset(memberId)
 
         const city = await FranceCities.findOne({
             where: {
@@ -32,7 +32,7 @@ module.exports = {
      * Supprime une ville d'origine de la base de données
      * @param {string} memberId identifiant du membre
      */
-    unset: async function(memberId) {
+    async unset(memberId) {
         await Cities.destroy({
             where: { memberId: memberId }
         })
@@ -53,7 +53,7 @@ module.exports = {
      * @param {number} postalCode code postal de la ville
      * @returns {Promise<Array<City>>} liste des villes
      */
-    getCitiesByPostalCode: async function(postalCode) {
+    async getCitiesByPostalCode(postalCode) {
         const cities = await FranceCities.findAll({
             where: { code_postal: postalCode },
             group: 'nom_de_la_commune'

@@ -1,9 +1,9 @@
-const { CommandInteraction, ApplicationCommandOptionType } = require('discord.js')
-const { CommandError, CommandInteractionError } = require('../utils/error')
-const birthday = require('../controllers/birthday')
-const Logger = require('../utils/logger')
+import { CommandInteraction, ApplicationCommandOptionType } from 'discord.js'
+import { CommandError, CommandInteractionError } from '../utils/error.js'
+import birthday from '../controllers/birthday.js'
+import Logger from '../utils/logger.js'
 
-module.exports = {
+export default {
     data: {
         name: 'birthday',
         description: 'Ajoute/Supprime une date d\'anniversaire',

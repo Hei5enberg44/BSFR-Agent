@@ -1,9 +1,9 @@
-const { MessageReaction, User } = require('discord.js')
-const { Reactions } = require('../controllers/database')
-const { Op } = require('sequelize')
-const rules = require('../controllers/rules')
+import { MessageReaction, User } from 'discord.js'
+import { Reactions } from '../controllers/database.js'
+import { Op } from 'sequelize'
+import rules from '../controllers/rules.js'
 
-module.exports = {
+export default {
     /**
      * Emitted whenever a reaction is removed from a cached message
      * @param {MessageReaction} reaction The reaction object

@@ -1,10 +1,10 @@
-const { CommandInteraction, ApplicationCommandOptionType, hyperlink, userMention, channelMention } = require('discord.js')
-const Embed = require('../utils/embed')
-const { CommandError, CommandInteractionError } = require('../utils/error')
-const Logger = require('../utils/logger')
-const config = require('../config.json')
+import { CommandInteraction, ApplicationCommandOptionType, hyperlink, userMention, channelMention } from 'discord.js'
+import Embed from '../utils/embed.js'
+import { CommandError, CommandInteractionError } from '../utils/error.js'
+import Logger from '../utils/logger.js'
+import config from '../config.json' assert { type: 'json' }
 
-module.exports = {
+export default {
     data: {
         name: 'send',
         description: 'Envoie un message dans un channel',
