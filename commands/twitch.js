@@ -40,7 +40,7 @@ export default {
             const action = interaction.options.getSubcommand()
 
             switch(action) {
-                case 'link':
+                case 'link': {
                     const channelName = interaction.options.getString('chaine')
 
                     if(channelName.match(/^https?:\/\//)) throw new CommandInteractionError('Merci de renseigner le nom de votre chaîne Twitch et non son URL')
@@ -51,13 +51,15 @@ export default {
 
                     await interaction.reply({ content: 'Votre compte Twitch a bien été lié à votre profil Discord', ephemeral: true })
                     break
-                case 'unlink':
+                }
+                case 'unlink': {
                     await twitch.unlink(interaction.user.id)
 
                     Logger.log('TwitchCommand', 'INFO', `${interaction.user.tag} a délié son compte Twitch`)
 
                     await interaction.reply({ content: 'Votre compte Twitch a bien été délié de votre profil Discord', ephemeral: true })
                     break
+                }
             }
         } catch(error) {
             if(error instanceof CommandInteractionError) {

@@ -48,19 +48,21 @@ export default {
 
             if(page < 1) throw new CommandInteractionError('Le numéro de page doit être supérieur ou égal à 1')
 
-            let embed = new Embed().setColor('#F1C40F')
+            const embed = new Embed().setColor('#F1C40F')
 
             switch(subject) {
-                case 'birthdayMessages':
+                case 'birthdayMessages': {
                     const messagesList = await birthdayMessages.list(page)
                     embed.setTitle('📒 Liste des messages d\'anniversaire')
                     embed.addFields({ name: 'Messages', value: messagesList })
                     break
-                case 'maliciousURL':
+                }
+                case 'maliciousURL': {
                     const urlsList = await maliciousURL.list(page)
                     embed.setTitle('📒 Liste des URLs malveillants')
                     embed.addFields({ name: 'URLs', value: urlsList })
                     break
+                }
             }
 
             await interaction.reply({ embeds: [embed] })

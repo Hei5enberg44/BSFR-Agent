@@ -39,7 +39,7 @@ export default {
             const action = interaction.options.getSubcommand()
 
             switch(action) {
-                case 'set':
+                case 'set': {
                     const postalCode = interaction.options.getInteger('code_postal')
 
                     const cities = await city.getCitiesByPostalCode(postalCode)
@@ -52,7 +52,7 @@ export default {
                         let page = 0
 
                         const getComponents = (page = 0) => {
-                            let components = []
+                            const components = []
 
                             const _cities = cities.slice(page * maxRows * maxItemsPerRow, (page * maxRows * maxItemsPerRow) + (maxRows * maxItemsPerRow))
                             for(let row = 0; row < Math.ceil(_cities.length / 5); row++) {
@@ -128,13 +128,15 @@ export default {
                         await interaction.reply({ content: `Aucune ville correspondant au code postal ${postalCode} n'a été trouvée`, ephemeral: true })
                     }
                     break
-                case 'unset':
+                }
+                case 'unset': {
                     await city.unset(interaction.user.id)
 
                     Logger.log('CityCommand', 'INFO', `${interaction.user.tag} a supprimé sa ville d'origine`)
 
                     await interaction.reply({ content: 'Votre ville d\'origine a bien été supprimée', ephemeral: true })
                     break
+                }
             }
         } catch(error) {
             if(error instanceof CommandInteractionError) {

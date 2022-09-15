@@ -40,7 +40,7 @@ export default {
             const action = interaction.options.getSubcommand()
 
             switch(action) {
-                case 'set':
+                case 'set': {
                     const date = interaction.options.getString('date')
 
                     if(!date.match(/^(0?[1-9]|[12][0-9]|3[01])\/(0?[1-9]|1[0-2])\/\d{4}$/))
@@ -57,13 +57,15 @@ export default {
 
                     await interaction.reply({ content: 'Votre date de naissance a bien été enregistrée', ephemeral: true })
                     break
-                case 'unset':
+                }
+                case 'unset': {
                     await birthday.unset(interaction.user.id)
 
                     Logger.log('BirthdayCommand', 'INFO', `${interaction.user.tag} a supprimé sa date de naissance`)
 
                     await interaction.reply({ content: 'Votre date de naissance a bien été supprimée', ephemeral: true })
                     break
+                }
             }
         } catch(error) {
             if(error instanceof CommandInteractionError) {

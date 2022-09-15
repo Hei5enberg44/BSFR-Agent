@@ -46,7 +46,7 @@ export default {
             const subject = interaction.options.getString('sujet')
             const ids = interaction.options.getString('ids')
 
-            let embed = new Embed()
+            const embed = new Embed()
                 .setColor('#9B59B6')
                 .setThumbnail(interaction.user.displayAvatarURL({ dynamic: true }))
                 .addFields({ name: 'Membre', value: interaction.user.tag })
@@ -54,7 +54,7 @@ export default {
             let reply
 
             switch(subject) {
-                case 'birthdayMessages':
+                case 'birthdayMessages': {
                     const messagesList = await birthdayMessages.get(ids)
 
                     if(messagesList.length === 0)
@@ -69,7 +69,8 @@ export default {
                     await birthdayMessages.remove(messagesList, interaction.user.id, interaction.channelId, reply.id)
 
                     break
-                case 'maliciousURL':
+                }
+                case 'maliciousURL': {
                     const urlsList = await maliciousURL.get(ids)
 
                     if(urlsList.length === 0)
@@ -84,6 +85,7 @@ export default {
                     await maliciousURL.remove(urlsList, interaction.user.id, interaction.channelId, reply.id)
 
                     break
+                }
             }
 
             await reply.react('✅')

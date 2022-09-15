@@ -25,14 +25,13 @@ export default {
      */
     async execute(interaction) {
         try {
-            const rawDate = new Date()
-            let date = interaction.options.getString('date') ?? ('0' + rawDate.getDate()).slice(-2) + '/' + ('0' + (rawDate.getUTCMonth() + 1)).slice(-2) + '/' + rawDate.getFullYear()
+            let date = interaction.options.getString('date') ?? new Date().toLocaleDateString('fr-FR', { timeZone: 'Europe/Paris' })
 
             if(!date.match(/^(0?[1-9]|[12][0-9]|3[01])\/(0?[1-9]|1[0-2])\/\d{4}$/))
                 throw new CommandInteractionError('Date invalide. La date doit être au format JJ/MM/AAAA.')
 
-            const splitedDate = date.split("/")
-            date = splitedDate[2] + "-" + splitedDate[1] + "-" + splitedDate[0]
+            const splitedDate = date.split('/')
+            date = `${splitedDate[2]}-${splitedDate[1]}-${splitedDate[0]}`
 
             const path = `./logs/${date}.log`
 

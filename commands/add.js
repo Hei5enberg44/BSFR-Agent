@@ -47,13 +47,13 @@ export default {
             const subject = interaction.options.getString('sujet')
             const text = interaction.options.getString('texte')
 
-            let embed = new Embed()
+            const embed = new Embed()
                 .setColor('#2ECC71')
                 .setThumbnail(interaction.user.displayAvatarURL({ dynamic: true }))
                 .addFields({ name: 'Membre', value: interaction.user.tag })
 
             switch(subject) {
-                case 'birthdayMessage':
+                case 'birthdayMessage': {
                     const messagesList = await birthdayMessages.add(text, interaction.user)
 
                     Logger.log('BirthdayMessages', 'INFO', `${interaction.user.tag} a ajouté le message d'anniversaire suivant : ${text.trim()}`)
@@ -67,7 +67,8 @@ export default {
                     }
 
                     break
-                case 'maliciousURL':
+                }
+                case 'maliciousURL': {
                     const urlsList = await maliciousURL.add(text, interaction.user)
 
                     Logger.log('MaliciousURL', 'INFO', `${interaction.user.tag} a ajouté l'URL malveillant suivant : ${text.trim()}`)
@@ -81,6 +82,7 @@ export default {
                     }
 
                     break
+                }
             }
 
             await interaction.reply({ embeds: [embed] })
