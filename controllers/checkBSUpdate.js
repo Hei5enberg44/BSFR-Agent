@@ -26,7 +26,7 @@ export default {
             await page.goto(oculusUrl + beatsaberPath)
 
             await page.waitForSelector('a.devpost-tile', {
-                visible: true
+                timeout: 10000
             })
 
             const lastDevPostPath = await page.evaluate(() => {
