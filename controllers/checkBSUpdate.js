@@ -17,11 +17,12 @@ export default {
      * @returns {Promise<UpdateData|null>} informations sur la mise à jour
      */
     async getLastUpdate() {
-        try {
-            const oculusUrl = 'https://www.oculus.com'
-            const beatsaberPath = '/experiences/rift/1304877726278670/'
+        const oculusUrl = 'https://www.oculus.com'
+        const beatsaberPath = '/experiences/rift/1304877726278670/'
 
-            const browser = await puppeteer.launch()
+        const browser = await puppeteer.launch()
+
+        try {
             const page = await browser.newPage()
             await page.goto(oculusUrl + beatsaberPath)
 
@@ -102,6 +103,7 @@ export default {
 
             return false
         } catch(error) {
+            await browser.close()
             Logger.log('BSUpdate', 'ERROR', 'Une erreur est survenue lors de la récupération des mises à jour')
             return false
         }
