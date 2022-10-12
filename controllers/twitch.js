@@ -107,29 +107,28 @@ export default {
      */
     async getClipByUrl(url) {
         try {
-            let file, createdAt, broadcasterName
+            let file, title, broadcasterName
             if(!url.includes('https://www.twitch.tv/videos/')) {
                 const slug = url.substring(url.lastIndexOf('/') + 1, url.length)
                 const clipInfos = await this.getClipInfos(slug)
-                createdAt = clipInfos.data.clip.createdAt
+                title = clipInfos.data.clip.title
                 broadcasterName = clipInfos.data.clip.broadcaster.displayName
                 const downloadUrl = await this.getClipDownloadUrl(slug)
                 file = await this.downloadClip(downloadUrl)
             } else {
                 const videoId = url.substring(url.lastIndexOf('/') + 1, url.length)
                 const videoInfos = await this.getVideoInfos(videoId)
-                createdAt = videoInfos.data.video.createdAt
+                title = videoInfos.data.video.title
                 broadcasterName = videoInfos.data.video.creator.login
                 file = await this.downloadVideo(videoId)
             }
 
             try {
-                const hash = crypto.randomBytes(Math.ceil(10 / 2)).toString('hex').slice(0, 10)
-                const fileName = `${this.convertDate(new Date(createdAt))}_${hash}`
+                const fileName = `${title}.mp4`
                 const folderName = 'Twitch-' + broadcasterName
 
                 const newFolder = await nextcloud.createFolder(`${config.twitch.clipsLocation}/${folderName}`)
-                await nextcloud.uploadFile(file.name, `${newFolder.name}/${fileName}.mp4`)
+                await nextcloud.uploadFile(file.name, `${newFolder.name}/${fileName}`)
                 file.removeCallback()
             } catch(error) {
                 file.removeCallback()
@@ -354,7 +353,7 @@ export default {
             headers: {
                 'Client-ID': twitchGqlClientId
             },
-            body: JSON.stringify({"query":"query{video(id:\"" + videoId + "\"){createdAt,creator{login}}}","variables":{}})
+            body: JSON.stringify({"query":"query{video(id:\"" + videoId + "\"){title,createdAt,creator{login}}}","variables":{}})
         })
 
         if(clipInfosRequest.ok) {
