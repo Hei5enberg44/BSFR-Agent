@@ -250,7 +250,8 @@ export default {
 
         try {
             const response = await fetch(url)
-            const buffer = await response.buffer()
+            const file = await response.arrayBuffer()
+            const buffer = Buffer.from(file)
 
             await new Promise((resolve, reject) => {
                 fs.writeFile(tmpFile.name, buffer, (err) => {
