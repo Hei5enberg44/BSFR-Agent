@@ -1,7 +1,7 @@
 {
   "name": "bsfr-agent",
   "displayName": "BSFR Agent",
-  "version": "2.14.5",
+  "version": "2.14.6",
   "description": "Admin agent bot for BSFR",
   "main": "bot.js",
   "type": "module",
@@ -16,21 +16,21 @@
   "author": "BSFR",
   "license": "ISC",
   "dependencies": {
-    "chalk": "^5.0.1",
+    "chalk": "^5.1.2",
     "cron": "^2.1.0",
-    "discord.js": "^14.5.0",
+    "discord.js": "^14.6.0",
     "fluent-ffmpeg": "^2.1.2",
     "googleapis": "^108.0.0",
     "mariadb": "^3.0.1",
     "nextcloud-node-client": "^1.8.1",
     "node-fetch": "^3.2.10",
     "p-limit": "^4.0.0",
-    "puppeteer": "^18.0.5",
-    "sequelize": "^6.23.2",
+    "puppeteer": "^18.2.1",
+    "sequelize": "^6.25.0",
     "tmp": "^0.2.1",
     "twit": "^2.2.11"
   },
   "devDependencies": {
-    "eslint": "^8.24.0"
+    "eslint": "^8.25.0"
   }
 }
