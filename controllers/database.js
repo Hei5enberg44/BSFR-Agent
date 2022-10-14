@@ -163,7 +163,7 @@ const BSUpdates = sequelize.define('bs_updates', {
         autoIncrement: true,
         primaryKey: true
     },
-    image: DataTypes.TEXT,
+    image: DataTypes.BLOB,
     title: DataTypes.TEXT,
     content: DataTypes.TEXT
 })
