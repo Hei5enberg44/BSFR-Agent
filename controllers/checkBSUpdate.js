@@ -1,5 +1,6 @@
 import { Client, roleMention } from 'discord.js'
 import puppeteer from 'puppeteer'
+import fetch from 'node-fetch'
 import { BSUpdates } from './database.js'
 import Logger from '../utils/logger.js'
 import config from '../config.json' assert { type: 'json' }
@@ -7,9 +8,9 @@ import config from '../config.json' assert { type: 'json' }
 export default {
     /**
      * @typedef {Object} UpdateData
-     * @property {string} image
-     * @property {string} title
-     * @property {string} content
+     * @property {Buffer|null} image
+     * @property {string|null} title
+     * @property {string|null} content
      */
 
     /**
@@ -44,11 +45,18 @@ export default {
                 updateInfos = await page.evaluate(() => {
                     const formatText = (text) => text.replace(/([\*\|_-])/g, '\\$1')
 
-                    const infos = {}
+                    const infos = {
+                        image: null,
+                        title: null,
+                        content: null
+                    }
+
                     const imageContainer = document.body.querySelector('._9cqr')
                     if(imageContainer) infos.image = imageContainer.src
+
                     const titleContainer = document.body.querySelector('._9cq4')
                     if(titleContainer) infos.title = `**${formatText(titleContainer.textContent)}**`
+
                     const contentContainer = document.body.querySelector('[data-contents="true"]')
                     if(contentContainer) {
                         const content = []
@@ -87,12 +95,23 @@ export default {
 
             await browser.close()
 
-            if(updateInfos?.title) {
+            if(updateInfos.title) {
                 const newUpdate = await BSUpdates.findOne({
                     where: {
                         title: updateInfos.title
                     }
                 })
+
+                if(updateInfos.image) {
+                    try {
+                        const imageRequest = await fetch(updateInfos.image)
+                        if(!imageRequest.ok) throw new Error('Récupération de l\'image impossible')
+                        const image = await imageRequest.arrayBuffer()
+                        updateInfos.image = Buffer.from(image)
+                    } catch(err) {
+                        updateInfos.image = null
+                    }
+                }
 
                 if(!newUpdate) {
                     Logger.log('BSUpdate', 'INFO', 'Nouvelle mise à jour de Beat Saber')
@@ -101,11 +120,12 @@ export default {
                 }
             }
 
-            return false
+            return null
         } catch(error) {
             await browser.close()
+            console.log(error)
             Logger.log('BSUpdate', 'ERROR', 'Une erreur est survenue lors de la récupération des mises à jour')
-            return false
+            return null
         }
     },
 
@@ -120,7 +140,7 @@ export default {
 
         if(update.title && update.content) await updateChannel.send({ content: roleMention(config.guild.roles['Beat Saber Update']) })
 
-        if(update.image) await updateChannel.send({ content: update.image })
+        if(update.image) await updateChannel.send({ files: [update.image] })
         if(update.title) await updateChannel.send({ content: update.title })
         if(update.content) {
             let message = []
