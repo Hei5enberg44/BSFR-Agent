@@ -194,6 +194,33 @@ const PollsVotes = sequelize.define('polls_votes', {
     vote: DataTypes.STRING(255)
 })
 
+const Roles = sequelize.define('roles', {
+    id: {
+        type: DataTypes.INTEGER,
+        autoIncrement: true,
+        primaryKey: true
+    },
+    categoryId: DataTypes.INTEGER,
+    name: DataTypes.STRING(255),
+    multiple: DataTypes.BOOLEAN
+})
+
+const RolesCategories = sequelize.define('roles_categories', {
+    id: {
+        type: DataTypes.INTEGER,
+        autoIncrement: true,
+        primaryKey: true
+    },
+    name: DataTypes.STRING(255)
+})
+
+Roles.hasOne(RolesCategories, {
+    foreignKey: 'id',
+    sourceKey: 'categoryId',
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE'
+})
+
 export {
-    BirthdayMessages, MaliciousURL, Reactions, Birthdays, Mutes, Bans, Threads, YoutubeVideos, FranceCities, Cities, Twitch, BSUpdates, Polls, PollsVotes
+    BirthdayMessages, MaliciousURL, Reactions, Birthdays, Mutes, Bans, Threads, YoutubeVideos, FranceCities, Cities, Twitch, BSUpdates, Polls, PollsVotes, Roles, RolesCategories
 }

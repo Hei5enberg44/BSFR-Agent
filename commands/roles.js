@@ -1,9 +1,11 @@
 import { CommandInteraction, ApplicationCommandOptionType, roleMention, bold } from 'discord.js'
 import Embed from '../utils/embed.js'
 import { CommandError, CommandInteractionError } from '../utils/error.js'
+import roles from '../controllers/roles.js'
 import Logger from '../utils/logger.js'
-import roles from '../roles.json' assert { type: 'json' }
 import config from '../config.json' assert { type: 'json' }
+
+const _roles = await roles.list()
 
 export default {
     data: {
@@ -19,8 +21,8 @@ export default {
                 type: ApplicationCommandOptionType.SubcommandGroup,
                 name: 'add',
                 description: 'Ajoute un rôle',
-                options: roles.map((g, i) => {
-                    roles[i].id = g.category.toLowerCase().replace(/\s/g, '')
+                options: _roles.map((g, i) => {
+                    _roles[i].id = g.category.toLowerCase().replace(/\s/g, '')
                     return {
                         type: ApplicationCommandOptionType.Subcommand,
                         name: g.id,
@@ -43,8 +45,8 @@ export default {
                 type: ApplicationCommandOptionType.SubcommandGroup,
                 name: 'remove',
                 description: 'Supprime un rôle',
-                options: roles.map((g, i) => {
-                    roles[i].id = g.category.toLowerCase().replace(/\s/g, '')
+                options: _roles.map((g, i) => {
+                    _roles[i].id = g.category.toLowerCase().replace(/\s/g, '')
                     return {
                         type: ApplicationCommandOptionType.Subcommand,
                         name: g.id,
@@ -83,15 +85,15 @@ export default {
 
             const embed = new Embed()
 
-            let roleGroupId, roleGroup, roleGroupRolesList, role
+            let roleGroupId, roleGroup, roleGrouproleList, role
             switch(action) {
                 case 'list':
-                    const rolesList = {}
-                    for(const group of roles) {
+                    const roleList = {}
+                    for(const group of _roles) {
                         for(const role of group.roles) {
                             if(memberRoles.find(r => r.name === role.name)) {
-                                if(!rolesList[group.category]) rolesList[group.category] = []
-                                rolesList[group.category].push(role.name)
+                                if(!roleList[group.category]) roleList[group.category] = []
+                                roleList[group.category].push(role.name)
                             }
                         }
                     }
@@ -101,8 +103,8 @@ export default {
                         .setThumbnail(interaction.member.displayAvatarURL({ dynamic: true }))
                         .setFooter({ text: `${config.appName} ${config.appVersion}`, iconURL: config.appLogo })
 
-                    if(Object.keys(rolesList).length > 0) {
-                        for(const [group, roles] of Object.entries(rolesList)) {
+                    if(Object.keys(roleList).length > 0) {
+                        for(const [group, roles] of Object.entries(roleList)) {
                             embed.addFields({ name: group, value: roles.join('\n'), inline: true })
                         }
                     } else {
@@ -114,9 +116,9 @@ export default {
                     break
                 case 'add':
                     roleGroupId = subCommand
-                    roleGroup = roles.find(g => g.id === roleGroupId)
-                    roleGroupRolesList = roleGroup.roles
-                    const roleToAdd = roleGroupRolesList.find(r => r.name === interaction.options.getString('role'))
+                    roleGroup = _roles.find(g => g.id === roleGroupId)
+                    roleGrouproleList = roleGroup.roles
+                    const roleToAdd = roleGrouproleList.find(r => r.name === interaction.options.getString('role'))
 
                     embed.setTitle('Ajout de rôle')
 
@@ -127,7 +129,7 @@ export default {
                             embed.setColor('#E74C3C').setDescription(`Vous possédez déjà le rôle ${roleMention(role.id)}.`)
                         } else {
                             // On vérifie si plusieurs rôles de ce même groupe peuvent être attibués simultanément
-                            const error = (!roleToAdd.multiple && roleGroupRolesList.filter(rl => memberRoles.map(mr => mr.name).includes(rl.name)).find(r => !r.multiple)) ? true : false
+                            const error = (!roleToAdd.multiple && roleGrouproleList.filter(rl => memberRoles.map(mr => mr.name).includes(rl.name)).find(r => !r.multiple)) ? true : false
                             if(error) {
                                 embed.setColor('#E74C3C').setDescription(`Vous possédez déjà un rôle de ${bold(roleGroup.category)}.\nVeuillez le supprimer avant de pouvoir ajouter le rôle ${roleMention(role.id)}.`)
                             } else {
@@ -145,9 +147,9 @@ export default {
                     break
                 case 'remove':
                     roleGroupId = subCommand
-                    roleGroup = roles.find(g => g.id === roleGroupId)
-                    roleGroupRolesList = roleGroup.roles
-                    const roleToRemove = roleGroupRolesList.find(r => r.name === interaction.options.getString('role'))
+                    roleGroup = _roles.find(g => g.id === roleGroupId)
+                    roleGrouproleList = roleGroup.roles
+                    const roleToRemove = roleGrouproleList.find(r => r.name === interaction.options.getString('role'))
 
                     embed.setTitle('Suppression de rôle')
                     
