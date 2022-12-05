@@ -40,20 +40,27 @@ export default {
 
         const videosInfos = await youtube.videos.list({
             auth: auth,
-            part : 'status,snippet',
+            part : 'status,snippet,liveStreamingDetails',
             id: latestVideos.join(','),
-            fields : 'items(id,status/privacyStatus,snippet(publishedAt,title))'
+            fields : 'items(id,status/privacyStatus,snippet(publishedAt,title,liveBroadcastContent),liveStreamingDetails/scheduledStartTime)'
         })
 
-        videosInfos.data.items.forEach(item => {
-            if(item.status.privacyStatus.toLowerCase() === 'public') {
+        for(const item of videosInfos.data.items) {
+            if(item.status.privacyStatus === 'public') {
+                if(item.snippet?.liveBroadcastContent === 'upcoming') {
+                    const scheduledStartTime = new Date(item.liveStreamingDetails.scheduledStartTime).getTime()
+                    if(Date.now() < scheduledStartTime) {
+                        continue
+                    }
+                }
+
                 latestPublicsVideos.push({
                     videoId: item.id,
                     publishedAt: item.snippet.publishedAt,
                     title: item.snippet.title
                 })
             }
-        })
+        }
 
         return latestPublicsVideos
     }
