@@ -221,6 +221,22 @@ Roles.hasOne(RolesCategories, {
     onUpdate: 'CASCADE'
 })
 
+const Feur = sequelize.define('feur', {
+    id: {
+        type: DataTypes.INTEGER,
+        autoIncrement: true,
+        primaryKey: true
+    },
+    attackerId: DataTypes.STRING(255),
+    victimId: DataTypes.STRING(255),
+    messageId: DataTypes.STRING(255),
+    message: DataTypes.TEXT,
+    messageDate: DataTypes.DATE,
+    responseId: DataTypes.STRING(255),
+    response: DataTypes.TEXT,
+    responseDate: DataTypes.DATE
+})
+
 export {
-    BirthdayMessages, MaliciousURL, Reactions, Birthdays, Mutes, Bans, Threads, YoutubeVideos, FranceCities, Cities, Twitch, BSUpdates, Polls, PollsVotes, Roles, RolesCategories
+    BirthdayMessages, MaliciousURL, Reactions, Birthdays, Mutes, Bans, Threads, YoutubeVideos, FranceCities, Cities, Twitch, BSUpdates, Polls, PollsVotes, Roles, RolesCategories, Feur
 }
