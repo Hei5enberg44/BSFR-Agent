@@ -45,7 +45,7 @@ export default {
      */
     async feurLeaderboard(message) {
         const messageSplit = message.content.toLowerCase().replace(/[^a-zA-Z0-9\s]/g, '').split(' ')
-        if(message.reference && messageSplit.includes('feur')) {
+        if(message.reference && messageSplit.find(m => m.toLowerCase() === 'feur')) {
             const channelReference = message.guild.channels.cache.find(c => c.id === message.reference.channelId)
             const messageReference = await channelReference.messages.fetch(message.reference.messageId)
 
