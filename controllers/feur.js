@@ -8,7 +8,7 @@ const exceptions = [ 'aquoibonisme', 'aquoibonismes', 'aquoiboniste', 'aquoiboni
 
 export default {
     isException(word) {
-        if(word.length > 6 && word.length < 15 && exceptions.find(e => e === word)) 
+        if(word.length > 6 && word.length < 15 && exceptions.find(e => e === word.toLowerCase())) 
             return true
         return false
     },
