@@ -10,7 +10,8 @@ const sequelize = new Sequelize(config.database.name, config.database.username, 
     define: {
         timestamps: false,
         freezeTableName: true
-    }
+    },
+    timezone: 'Europe/Paris'
 })
 
 export default {
@@ -25,109 +26,109 @@ export default {
 
 const BirthdayMessages = sequelize.define('birthday_messages', {
     id: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.INTEGER(),
         autoIncrement: true,
         primaryKey: true
     },
-    message: DataTypes.TEXT,
+    message: DataTypes.TEXT(),
     memberId: DataTypes.STRING(255),
-    date: DataTypes.DATE
+    date: DataTypes.DATE()
 })
 
 const MaliciousURL = sequelize.define('malicious_url', {
     id: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.INTEGER(),
         autoIncrement: true,
         primaryKey: true
     },
-    url: DataTypes.TEXT,
+    url: DataTypes.TEXT(),
     memberId: DataTypes.STRING(255),
-    date: DataTypes.DATE
+    date: DataTypes.DATE()
 })
 
 const Reactions = sequelize.define('reactions', {
     id: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.INTEGER(),
         autoIncrement: true,
         primaryKey: true
     },
     type: DataTypes.STRING(255),
-    data: DataTypes.JSON,
+    data: DataTypes.JSON(),
     memberId: DataTypes.STRING(255),
     channelId: DataTypes.STRING(255),
     messageId: DataTypes.STRING(255),
-    date: DataTypes.DATE
+    date: DataTypes.DATE()
 })
 
 const Birthdays = sequelize.define('birthdays', {
     id: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.INTEGER(),
         autoIncrement: true,
         primaryKey: true
     },
     memberId: DataTypes.STRING(255),
-    date: DataTypes.DATEONLY
+    date: DataTypes.DATEONLY()
 })
 
 const Mutes = sequelize.define('mutes', {
     id: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.INTEGER(),
         autoIncrement: true,
         primaryKey: true
     },
     memberId: DataTypes.STRING(255),
     mutedBy: DataTypes.STRING(255),
-    reason: DataTypes.TEXT,
-    muteDate: DataTypes.DATE,
-    unmuteDate: DataTypes.DATE
+    reason: DataTypes.TEXT(),
+    muteDate: DataTypes.DATE(),
+    unmuteDate: DataTypes.DATE()
 })
 
 const Bans = sequelize.define('bans', {
     id: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.INTEGER(),
         autoIncrement: true,
         primaryKey: true
     },
     memberId: DataTypes.STRING(255),
     bannedBy: DataTypes.STRING(255),
     approvedBy: DataTypes.STRING(255),
-    reason: DataTypes.TEXT,
-    banDate: DataTypes.DATE,
-    unbanDate: DataTypes.DATE
+    reason: DataTypes.TEXT(),
+    banDate: DataTypes.DATE(),
+    unbanDate: DataTypes.DATE()
 })
 
 const Threads = sequelize.define('threads', {
     id: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.INTEGER(),
         autoIncrement: true,
         primaryKey: true
     },
     type: DataTypes.STRING(255),
     threadId: DataTypes.STRING(255),
     memberId: DataTypes.STRING(255),
-    date: DataTypes.DATE
+    date: DataTypes.DATE()
 })
 
 const YoutubeVideos = sequelize.define('youtube_videos', {
     id: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.INTEGER(),
         autoIncrement: true,
         primaryKey: true
     },
     videoId: DataTypes.STRING(255),
-    publishedAt: DataTypes.DATE,
+    publishedAt: DataTypes.DATE(),
     title: DataTypes.STRING(255)
 })
 
 const FranceCities = sequelize.define('france_cities', {
     id: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.INTEGER(),
         autoIncrement: true,
         primaryKey: true
     },
     code_commune_insee: DataTypes.STRING(5),
     nom_de_la_commune: DataTypes.STRING(255),
-    code_postal: DataTypes.INTEGER,
+    code_postal: DataTypes.INTEGER(),
     ligne_5: DataTypes.STRING(255),
     libelle_d_acheminement: DataTypes.STRING(255),
     coordonnees_gps: DataTypes.STRING(255)
@@ -135,49 +136,49 @@ const FranceCities = sequelize.define('france_cities', {
 
 const Cities = sequelize.define('cities', {
     id: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.INTEGER(),
         autoIncrement: true,
         primaryKey: true
     },
     memberId: DataTypes.STRING(255),
-    code_postal: DataTypes.INTEGER,
+    code_postal: DataTypes.INTEGER(),
     nom_de_la_commune: DataTypes.STRING(255),
     coordonnees_gps: DataTypes.STRING(255)
 })
 
 const Twitch = sequelize.define('twitch', {
     id: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.INTEGER(),
         autoIncrement: true,
         primaryKey: true
     },
     memberId: DataTypes.STRING(255),
     channelName: DataTypes.STRING(255),
-    live: DataTypes.BOOLEAN,
+    live: DataTypes.BOOLEAN(),
     messageId: DataTypes.STRING(255)
 })
 
 const BSUpdates = sequelize.define('bs_updates', {
     id: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.INTEGER(),
         autoIncrement: true,
         primaryKey: true
     },
-    image: DataTypes.BLOB,
-    title: DataTypes.TEXT,
-    content: DataTypes.TEXT
+    image: DataTypes.BLOB(),
+    title: DataTypes.TEXT(),
+    content: DataTypes.TEXT()
 })
 
 const Polls = sequelize.define('polls', {
     id: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.INTEGER(),
         autoIncrement: true,
         primaryKey: true
     },
     title: DataTypes.STRING(255),
-    propositions: DataTypes.JSON,
-    emojis: DataTypes.JSON,
-    dateEnd: DataTypes.DATE,
+    propositions: DataTypes.JSON(),
+    emojis: DataTypes.JSON(),
+    dateEnd: DataTypes.DATE(),
     createdBy: DataTypes.STRING(255),
     channelId: DataTypes.STRING(255),
     messageId: DataTypes.STRING(255)
@@ -185,29 +186,29 @@ const Polls = sequelize.define('polls', {
 
 const PollsVotes = sequelize.define('polls_votes', {
     id: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.INTEGER(),
         autoIncrement: true,
         primaryKey: true
     },
-    pollId: DataTypes.INTEGER,
+    pollId: DataTypes.INTEGER(),
     memberId: DataTypes.STRING(255),
     vote: DataTypes.STRING(255)
 })
 
 const Roles = sequelize.define('roles', {
     id: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.INTEGER(),
         autoIncrement: true,
         primaryKey: true
     },
-    categoryId: DataTypes.INTEGER,
+    categoryId: DataTypes.INTEGER(),
     name: DataTypes.STRING(255),
-    multiple: DataTypes.BOOLEAN
+    multiple: DataTypes.BOOLEAN()
 })
 
 const RolesCategories = sequelize.define('roles_categories', {
     id: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.INTEGER(),
         autoIncrement: true,
         primaryKey: true
     },
@@ -223,18 +224,18 @@ Roles.hasOne(RolesCategories, {
 
 const Feur = sequelize.define('feur', {
     id: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.INTEGER(),
         autoIncrement: true,
         primaryKey: true
     },
     attackerId: DataTypes.STRING(255),
     victimId: DataTypes.STRING(255),
     messageId: DataTypes.STRING(255),
-    message: DataTypes.TEXT,
-    messageDate: DataTypes.DATE,
+    message: DataTypes.TEXT(),
+    messageDate: DataTypes.DATE(),
     responseId: DataTypes.STRING(255),
-    response: DataTypes.TEXT,
-    responseDate: DataTypes.DATE
+    response: DataTypes.TEXT(),
+    responseDate: DataTypes.DATE()
 })
 
 export {
