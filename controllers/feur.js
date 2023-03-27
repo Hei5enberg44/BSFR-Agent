@@ -80,9 +80,9 @@ export default {
                             response: message.content,
                             responseDate: new Date(message.createdTimestamp)
                         })
+                        await message.react('✂️')
+                        Logger.log('Feur', 'INFO', `${message.author.tag} a répondu "feur" à ${messageReference.author.tag}`)
                     }
-                    await message.react('✂️')
-                    Logger.log('Feur', 'INFO', `${message.author.tag} a répondu "feur" à ${messageReference.author.tag}`)
                     break
                 }
             }
