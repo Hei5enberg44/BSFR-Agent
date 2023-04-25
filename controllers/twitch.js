@@ -48,6 +48,16 @@ export default {
     async getClip(message) {
         try {
             const clipsList = message.content.replace(/\n/g, ' ').split(' ').filter(x => x.includes('https://clips.twitch.tv/') || x.includes('https://www.twitch.tv/'))
+            const attachments = message.attachments
+
+            if(clipsList.length === 0 && attachments.size === 0) {
+                if(!message.member.roles.cache.find(r => r.id === config.guild.roles['Admin'] || r.id === config.guild.roles['Modérateur'])) {
+                    try {
+                        await message.delete()
+                        await message.member.send({ content: `Pas de discussion dans le salon ${message.channel.url} stp.\nMerci.` })
+                    } catch(e) {}
+                }
+            }
 
             let uploadedClipsCount = 0
 
@@ -65,8 +75,6 @@ export default {
                     await logsChannel.send({ embeds: [embed] })
                 }
             }
-
-            const attachments = message.attachments
 
             for(const [, attachment] of attachments.entries()) {
                 if(attachment.contentType.match(/(video)/i)) {
