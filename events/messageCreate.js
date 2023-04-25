@@ -17,7 +17,6 @@ export default {
             if(message.guildId) {
                 // Si ce n'est pas un dm
                 await feur.feur(message)
-                await feur.feurLeaderboard(message)
 
                 // Test si un URL malveillant a été envoyé
                 if(message.content.match(/https?:\/\//)) {
