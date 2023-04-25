@@ -1,7 +1,7 @@
 {
   "name": "bsfr-agent",
   "displayName": "BSFR Agent",
-  "version": "2.16.2",
+  "version": "2.16.3",
   "description": "Admin agent bot for BSFR",
   "main": "bot.js",
   "type": "module",
@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://gitlab.weezle.xyz/bsfr/agent"
+    "url": "https://github.com/Hei5enberg44/BSFR-Agent"
   },
   "author": "BSFR",
   "license": "ISC",
