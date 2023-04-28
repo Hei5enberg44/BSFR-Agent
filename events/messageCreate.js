@@ -4,6 +4,7 @@ import threads from '../controllers/threads.js'
 import antivirus from '../controllers/antivirus.js'
 import twitch from '../controllers/twitch.js'
 import feur from '../controllers/feur.js'
+import cooldown from '../controllers/cooldown.js'
 import Logger from '../utils/logger.js'
 import config from '../config.json' assert { type: 'json' }
 
@@ -17,6 +18,7 @@ export default {
             if(message.guildId) {
                 // Si ce n'est pas un dm
                 await feur.feur(message)
+                await cooldown.check(message)
 
                 // Test si un URL malveillant a été envoyé
                 if(message.content.match(/https?:\/\//)) {

@@ -222,6 +222,17 @@ Roles.hasOne(RolesCategories, {
     onUpdate: 'CASCADE'
 })
 
+const Cooldowns = sequelize.define('cooldowns', {
+    id: {
+        type: DataTypes.INTEGER(),
+        autoIncrement: true,
+        primaryKey: true
+    },
+    memberId: DataTypes.STRING(255),
+    messageDate: DataTypes.DATE(),
+    count: DataTypes.INTEGER()
+})
+
 export {
-    BirthdayMessages, MaliciousURL, Reactions, Birthdays, Mutes, Bans, Threads, YoutubeVideos, FranceCities, Cities, Twitch, BSUpdates, Polls, PollsVotes, Roles, RolesCategories
+    BirthdayMessages, MaliciousURL, Reactions, Birthdays, Mutes, Bans, Threads, YoutubeVideos, FranceCities, Cities, Twitch, BSUpdates, Polls, PollsVotes, Roles, RolesCategories, Cooldowns
 }
