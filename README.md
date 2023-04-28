@@ -1,6 +1,6 @@
 <h1>bsfr-agent</h1>
 <p>
-  <img alt="Version" src="https://img.shields.io/badge/version-2.16.3-blue.svg?cacheSeconds=2592000" />
+  <img alt="Version" src="https://img.shields.io/badge/version-2.17.0-blue.svg?cacheSeconds=2592000" />
   <a href="#" target="_blank">
     <img alt="License: ISC" src="https://img.shields.io/badge/License-ISC-yellow.svg" />
   </a>
@@ -415,6 +415,42 @@ __Exemples :__
 ```
 /poll titre:Sondage de test liste:Proposition 1;Proposition 2;Proposition 3 date_fin:06/09/2022 20:00
 /poll titre:Sondage de test liste:Proposition 1;Proposition 2;Proposition 3 date_fin:07/09/2022 15:30 emojis:💀;💩;😂
+```
+
+***
+
+- ### /cooldown add : Ajoute un membre au cooldown
+
+Permet d'ajouter un membre au cooldown afin que celui-ci soit mute en cas de spam de messages.
+
+__Paramètres :__
+
+|    Nom    | Obligatoire | Contenu |
+| --------- |:-----------:| ------- |
+| **membre** | ☑ | Membre de la guild |
+
+__Exemples :__
+
+```
+/cooldown add membre:@Hei5enberg#6969
+```
+
+***
+
+- ### /cooldown remove : Supprime un membre du cooldown
+
+Permet de supprimer un membre du cooldown. Celui-ci ne sera plus mute en cas de spam de messages.
+
+__Paramètres :__
+
+|    Nom    | Obligatoire | Contenu |
+| --------- |:-----------:| ------- |
+| **membre** | ☑ | Membre de la guild |
+
+__Exemples :__
+
+```
+/cooldown remove membre:@Hei5enberg#6969
 ```
 
 ## Auteur
