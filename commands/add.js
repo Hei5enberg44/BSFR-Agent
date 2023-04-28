@@ -1,4 +1,4 @@
-import { CommandInteraction, ApplicationCommandOptionType } from 'discord.js'
+import { CommandInteraction, ApplicationCommandOptionType, userMention } from 'discord.js'
 import Embed from '../utils/embed.js'
 import { CommandError, CommandInteractionError } from '../utils/error.js'
 import birthdayMessages from '../controllers/birthdayMessages.js'
@@ -50,7 +50,7 @@ export default {
             const embed = new Embed()
                 .setColor('#2ECC71')
                 .setThumbnail(interaction.user.displayAvatarURL({ dynamic: true }))
-                .addFields({ name: 'Membre', value: interaction.user.tag })
+                .addFields({ name: 'Membre', value: userMention(interaction.user.id) })
 
             switch(subject) {
                 case 'birthdayMessage': {

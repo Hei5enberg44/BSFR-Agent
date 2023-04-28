@@ -167,7 +167,7 @@ export default {
     async confirmRemove(reaction, user, r) {
         const embed = new Embed()
             .setThumbnail(user.displayAvatarURL({ dynamic: true }))
-            .addFields({ name: 'Membre', value: user.tag })
+            .addFields({ name: 'Membre', value: userMention(user.id) })
 
         if(reaction.emoji.name === '✅') {
             const ids = r.data.map(url => url.id)

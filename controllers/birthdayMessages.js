@@ -1,4 +1,4 @@
-import { GuildMember, MessageReaction, User } from 'discord.js'
+import { GuildMember, MessageReaction, User, userMention } from 'discord.js'
 import Embed from '../utils/embed.js'
 import { BirthdayMessagesError } from '../utils/error.js'
 import { BirthdayMessages, Reactions } from './database.js'
@@ -125,7 +125,7 @@ export default {
     async confirmRemove(reaction, user, r) {
         const embed = new Embed()
             .setThumbnail(user.displayAvatarURL({ dynamic: true }))
-            .addFields({ name: 'Membre', value: user.tag })
+            .addFields({ name: 'Membre', value: userMention(user.id) })
 
         if(reaction.emoji.name === '✅') {
             const ids = r.data.map(message => message.id)
