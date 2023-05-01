@@ -15,27 +15,30 @@ export default {
      */
     async execute(message) {
         if(message) {
+            // Si ce n'est pas un dm
             if(message.guildId) {
-                // Si ce n'est pas un dm
-                await feur.feur(message)
-                await cooldown.check(message)
+                // Si le message n'a pas été envoyé par le bot
+                if(!message.author.bot) {
+                    await feur.feur(message)
+                    await cooldown.check(message)
 
-                // Test si un URL malveillant a été envoyé
-                if(message.content.match(/https?:\/\//)) {
-                    await maliciousURL.test(message)
-                }
+                    // Test si un URL malveillant a été envoyé
+                    if(message.content.match(/https?:\/\//)) {
+                        await maliciousURL.test(message)
+                    }
 
-                // Récéption d'un webhook dans le channel #vote-run-bsfr
-                if(message.channel.id === config.guild.channels.voteRun && message.webhookId) {
-                    await this.voteRunReactions(message)
-                }
-
-                // Récupération des clips Twitch
-                if(message.channel.id === config.guild.channels.clips) {
-                    try {
-                        await twitch.getClip(message)
-                    } catch(error) {
-                        Logger.log('Clips', 'ERROR', 'Récupération du clip impossible : ' + error.message)
+                    // Récupération des clips Twitch
+                    if(message.channel.id === config.guild.channels.clips) {
+                        try {
+                            await twitch.getClip(message)
+                        } catch(error) {
+                            Logger.log('Clips', 'ERROR', 'Récupération du clip impossible : ' + error.message)
+                        }
+                    }
+                } else {
+                    // Récéption d'un webhook dans le channel #vote-run-bsfr
+                    if(message.channel.id === config.guild.channels.voteRun && message.webhookId) {
+                        await this.voteRunReactions(message)
                     }
                 }
             } else {
@@ -45,11 +48,11 @@ export default {
 
             // Scan antivirus des pièces jointes du message
             if(message.attachments.size > 0 && !message.author.bot) {
-                try {
-                    await antivirus.scanFiles(message)
-                } catch(error) {
-                    Logger.log('Antivirus', 'ERROR', 'Scan impossible : ' + error.message)
-                }
+                // try {
+                //     await antivirus.scanFiles(message)
+                // } catch(error) {
+                //     Logger.log('Antivirus', 'ERROR', 'Scan impossible : ' + error.message)
+                // }
             }
         }
     },
