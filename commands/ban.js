@@ -1,4 +1,4 @@
-import { CommandInteraction, ApplicationCommandOptionType, bold, inlineCode, userMention, roleMention } from 'discord.js'
+import { CommandInteraction, ApplicationCommandOptionType, GuildMember, bold, inlineCode, userMention, roleMention } from 'discord.js'
 import Embed from '../utils/embed.js'
 import { CommandError, CommandInteractionError } from '../utils/error.js'
 import ban from '../controllers/ban.js'
@@ -39,9 +39,19 @@ export default {
      */
     async execute(interaction) {
         try {
-            const member = interaction.options.getUser('membre')
+            /** @type {GuildMember} */
+            const member = interaction.options.getMember('membre')
+            /** @type {string} */
             const reason = interaction.options.getString('raison')
+            /** @type {string} */
             const duration = interaction.options.getString('durée')
+
+            // Si on essaie de bannir un Administrateur ou un Modérateur
+            if(member.roles.cache.find(r => r.id === config.guild.roles['Admin'] || r.id === config.guild.roles['Modérateur']))
+                throw new CommandInteractionError('Vous ne pouvez pas bannir un·e Administrateur·rice ou un·e Modérateur·rice')
+
+            // Si on essaie de bannir un bot
+            if(member.user.bot) throw new CommandInteractionError('Vous ne pouvez pas bannir un bot')
 
             const isBanned = await ban.isBanned(member.id)
             if(isBanned) throw new CommandInteractionError(isBanned.approvedBy ? `${userMention(member.id)} est déjà banni` : `Il existe déjà une demande de ban à l'encontre de ${userMention(member.id)}`)

@@ -1,4 +1,4 @@
-import { CommandInteraction, ApplicationCommandOptionType, bold, inlineCode, userMention } from 'discord.js'
+import { CommandInteraction, ApplicationCommandOptionType, GuildMember, bold, inlineCode, userMention } from 'discord.js'
 import Embed from '../utils/embed.js'
 import { CommandError, CommandInteractionError } from '../utils/error.js'
 import mute from '../controllers/mute.js'
@@ -39,9 +39,19 @@ export default {
      */
     async execute(interaction) {
         try {
-            const member = interaction.options.getUser('membre')
+            /** @type {GuildMember} */
+            const member = interaction.options.getMember('membre')
+            /** @type {string} */
             const reason = interaction.options.getString('raison')
+            /** @type {string} */
             const duration = interaction.options.getString('durée')
+
+            // Si on essaie de mute un Administrateur ou un Modérateur
+            if(member.roles.cache.find(r => r.id === config.guild.roles['Admin'] || r.id === config.guild.roles['Modérateur']))
+                throw new CommandInteractionError('Vous ne pouvez pas mute un·e Administrateur·rice ou un·e Modérateur·rice')
+
+            // Si on essaie de mute un bot
+            if(member.user.bot) throw new CommandInteractionError('Vous ne pouvez pas mute un bot')
 
             const isMuted = await mute.isMuted(member.id)
             if(isMuted) throw new CommandInteractionError(`${userMention(member.id)} est déjà mute`)
