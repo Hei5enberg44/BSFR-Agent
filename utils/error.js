@@ -65,6 +65,14 @@ class NextcloudError extends Error {
     }
 }
 
+class CooldownError extends Error {
+    constructor(message) {
+        super(message)
+        this.name = this.constructor.name
+        Error.captureStackTrace(this, this.constructor)
+    }
+}
+
 export {
-    DatabaseError, CommandError, CommandInteractionError, BirthdayMessagesError, MaliciousURLError, TwitchError, NextcloudError, AntivirusError
+    DatabaseError, CommandError, CommandInteractionError, BirthdayMessagesError, MaliciousURLError, TwitchError, NextcloudError, AntivirusError, CooldownError
 }
