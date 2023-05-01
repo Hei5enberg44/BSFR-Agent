@@ -1,7 +1,6 @@
 import { Message, bold, inlineCode, userMention, roleMention } from 'discord.js'
 import Embed from '../utils/embed.js'
 import { AntivirusError } from '../utils/error.js'
-import fetch, { FormData, fileFrom } from 'node-fetch'
 import tmp from 'tmp'
 import * as fs from 'node:fs'
 import Logger from '../utils/logger.js'
@@ -32,7 +31,7 @@ export default {
             const file = await this.download(url)
 
             const form = new FormData()
-            form.set('file', await fileFrom(file.name))
+            form.set('file', file.name)
 
             const fileScan = await fetch('https://www.virustotal.com/api/v3/files', {
                 method: 'POST',
