@@ -52,15 +52,15 @@ export default {
 
             switch(subject) {
                 case 'birthdayMessages': {
-                    const messagesList = await birthdayMessages.list(page)
+                    const messageList = await birthdayMessages.list(page)
                     embed.setTitle('📒 Liste des messages d\'anniversaire')
-                    embed.addFields({ name: 'Messages', value: messagesList })
+                    embed.addFields({ name: 'Messages', value: messageList })
                     break
                 }
                 case 'maliciousURL': {
-                    const urlsList = await maliciousURL.list(page)
+                    const urlList = await maliciousURL.list(page)
                     embed.setTitle('📒 Liste des URLs malveillants')
-                    embed.addFields({ name: 'URLs', value: urlsList })
+                    embed.addFields({ name: 'URLs', value: urlList })
                     break
                 }
             }
