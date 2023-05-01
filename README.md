@@ -14,7 +14,6 @@
 ## Pré-requis
 
 - FFMPEG (pour le téléchargement des clips/vidéos Twitch)
-- Chromium (pour la vérification des mises à jour de Beat Saber)
 - Serveur NextCloud (pour l'hébergement des clips Twitch)
 - Clé d'API Twitch (pour le téléchargement des clips Twitch postés dans le channel #clips)
 - Clé d'API Google (pour la publication des nouvelles vidéos sur la chaîne YouTube BSFR)
