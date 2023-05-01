@@ -101,7 +101,7 @@ export default {
                         .setColor('#2ECC71')
                         .setTitle('⏳ Spam détécté !')
                         .setThumbnail(member.displayAvatarURL({ dynamic: true }))
-                        .setDescription(`${userMention(member.id)} s'est pris un cooldown`)
+                        .setDescription(`${userMention(member.id)} s'est pris un cooldown – ${hyperlink('Voir', message.url)}`)
 
                 await logsChannel.send({ embeds: [embed] })
 
