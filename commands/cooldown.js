@@ -11,6 +11,19 @@ export default {
         options: [
             {
                 type: ApplicationCommandOptionType.Subcommand,
+                name: 'list',
+                description: 'Liste les membres en cooldown',
+                options: [
+                    {
+                        type: ApplicationCommandOptionType.Integer,
+                        name: 'page',
+                        description: 'Page à afficher',
+                        required: false
+                    }
+                ]
+            },
+            {
+                type: ApplicationCommandOptionType.Subcommand,
                 name: 'add',
                 description: 'Ajoute un membre au cooldown',
                 options: [
@@ -19,6 +32,27 @@ export default {
                         name: 'membre',
                         description: 'Membre',
                         required: true
+                    },
+                    {
+                        type: ApplicationCommandOptionType.Integer,
+                        name: 'seuil_temps',
+                        description: 'Laps de temps entre le premier et le dernier message envoyé (en secondes)',
+                        minValue: 1,
+                        required: false
+                    },
+                    {
+                        type: ApplicationCommandOptionType.Integer,
+                        name: 'seuil_nombre',
+                        description: 'Nombre de messages envoyés dans le laps de temps',
+                        minValue: 2,
+                        required: false
+                    },
+                    {
+                        type: ApplicationCommandOptionType.Integer,
+                        name: 'durée_mute',
+                        description: 'Durée du mute du membre (en secondes)',
+                        minValue: 1,
+                        required: false
                     }
                 ]
             },
@@ -34,7 +68,7 @@ export default {
                         required: true
                     }
                 ]
-            },
+            }
         ],
         default_member_permissions: '0'
     },
@@ -48,15 +82,35 @@ export default {
     async execute(interaction) {
         try {
             const action = interaction.options.getSubcommand()
-            const member = interaction.options.getUser('membre')
-
-            const memberCooldown = await cooldown.get(member.id)
 
             switch(action) {
+                case 'list': {
+                    const page = interaction.options.getInteger('page') ?? 1
+
+                    if(page < 1) throw new CommandInteractionError('Le numéro de page doit être supérieur ou égal à 1')
+
+                    const cooldownList = await cooldown.list(page)
+
+                    const embed = new Embed()
+                        .setColor('#F1C40F')
+                        .setTitle('⏳ Liste des cooldowns')
+                        .addFields({ name: 'Cooldowns', value: cooldownList })
+
+                    await interaction.reply({ embeds: [embed] })
+
+                    break
+                }
                 case 'add': {
+                    const member = interaction.options.getUser('membre')
+
+                    const memberCooldown = await cooldown.get(member.id)
                     if(memberCooldown) throw new CommandInteractionError(`${userMention(member.id)} est déjà en cooldown`)
 
-                    await cooldown.add(member.id)
+                    const timeThreshold = interaction.options.getInteger('seuil_temps') ?? 10
+                    const countThreshold = interaction.options.getInteger('seuil_nombre') ?? 3
+                    const muteDuration = interaction.options.getInteger('durée_mute') ?? 10
+
+                    await cooldown.add(member.id, timeThreshold, countThreshold, muteDuration)
 
                     Logger.log('CooldownCommand', 'INFO', `${interaction.user.tag} a ajouté le membre ${member.tag} au cooldown`)
 
@@ -73,6 +127,9 @@ export default {
                     break
                 }
                 case 'remove': {
+                    const member = interaction.options.getUser('membre')
+
+                    const memberCooldown = await cooldown.get(member.id)
                     if(!memberCooldown) throw new CommandInteractionError(`${userMention(member.id)} n'est pas en cooldown`)
 
                     await cooldown.remove(member.id)

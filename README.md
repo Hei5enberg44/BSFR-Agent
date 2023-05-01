@@ -428,11 +428,15 @@ __Paramètres :__
 |    Nom    | Obligatoire | Contenu |
 | --------- |:-----------:| ------- |
 | **membre** | ☑ | Membre de la guild |
+| **seuil_temps** |   | Laps de temps entre le premier et le dernier message envoyé (en secondes) |
+| **seuil_nombre** |   | Nombre de messages envoyés dans le laps de temps |
+| **durée_mute** |   | Durée du mute du membre (en secondes) |
 
 __Exemples :__
 
 ```
 /cooldown add membre:@Hei5enberg#6969
+/cooldown add membre:@Hei5enberg#6969 seuil_temps:10 seuil_nombre:3 durée_mute:10
 ```
 
 ***
@@ -451,6 +455,25 @@ __Exemples :__
 
 ```
 /cooldown remove membre:@Hei5enberg#6969
+```
+
+***
+
+- ### /cooldown list : Liste les membres en cooldown
+
+Permet de lister les membres en cooldown.
+
+__Paramètres :__
+
+|    Nom    | Obligatoire | Contenu |
+| --------- |:-----------:| ------- |
+| **page** |   | Numéro de page à afficher |
+
+__Exemples :__
+
+```
+/cooldown list
+/cooldown list page:3
 ```
 
 ## Auteur

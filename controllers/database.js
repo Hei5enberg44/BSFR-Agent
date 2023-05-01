@@ -229,6 +229,9 @@ const Cooldowns = sequelize.define('cooldowns', {
         primaryKey: true
     },
     memberId: DataTypes.STRING(255),
+    timeThreshold: DataTypes.INTEGER(),
+    countThreshold: DataTypes.INTEGER(),
+    muteDuration: DataTypes.INTEGER(),
     messageDate: DataTypes.DATE(),
     count: DataTypes.INTEGER()
 })
