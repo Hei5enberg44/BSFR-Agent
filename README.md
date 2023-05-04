@@ -1,6 +1,6 @@
 <h1>bsfr-agent</h1>
 <p>
-  <img alt="Version" src="https://img.shields.io/badge/version-2.18.0-blue.svg?cacheSeconds=2592000" />
+  <img alt="Version" src="https://img.shields.io/badge/version-2.19.0-blue.svg?cacheSeconds=2592000" />
   <a href="#" target="_blank">
     <img alt="License: ISC" src="https://img.shields.io/badge/License-ISC-yellow.svg" />
   </a>
@@ -17,7 +17,6 @@
 - Serveur NextCloud (pour l'hébergement des clips Twitch)
 - Clé d'API Twitch (pour le téléchargement des clips Twitch postés dans le channel #clips)
 - Clé d'API Google (pour la publication des nouvelles vidéos sur la chaîne YouTube BSFR)
-- Clé d'API VirusTotal (pour le scan antivirus des fichiers uploadés sur le serveur)
 
 ## Installation
 
@@ -43,7 +42,7 @@ __Exemples :__
 
 ***
 
-- ### /list : Listes diverses
+- ### /lister : Listes diverses
 
 Permet de lister les mots à bannir, les messages d'anniversaire ou les URL malveillants.
 
@@ -63,16 +62,16 @@ __Exemples :__
 
 ***
 
-- ### /add : Ajouts divers
+- ### /ajouter : Ajouts divers
 
-Permet d'ajouter des mots à bannir, des messages d'anniversaire ou des URL malveillants.
+Permet d'ajouter des messages d'anniversaire ou des URL malveillants.
 
 __Paramètres :__
 
 |    Nom    | Obligatoire | Contenu |
 | --------- |:-----------:| ------- |
 | **sujet** | ☑ | Choix parmis `Message d'anniversaire`, `URL malveillant` |
-| **texte** | ☑ | Liste des mots, messages d'anniversaire, URL malveillants à ajouter séparés par un point virgule `;` |
+| **texte** | ☑ | Message d'anniversaire ou URL malveillant |
 
 __Exemples :__
 
@@ -83,7 +82,7 @@ __Exemples :__
 
 ***
 
-- ### /remove : Suppressions diverses
+- ### /supprimer : Suppressions diverses
 
 Permet de supprimer des mots à bannir, des messages d'anniversaire ou des URL malveillants.
 
@@ -92,13 +91,13 @@ __Paramètres :__
 |    Nom    | Obligatoire | Contenu |
 | --------- |:-----------:| ------- |
 | **sujet** | ☑ | Choix parmis `Message d'anniversaire`, `URL malveillant` |
-| **texte** | ☑ | Liste des identifiants pour les mots, messages d'anniversaire, URL malveillants à supprimer séparés par un point virgule `;` |
+| **texte** | ☑ | Liste des identifiants pour les messages d'anniversaire ou URL malveillants à supprimer séparés par un point virgule `;` |
 
 __Exemples :__
 
 ```
 /remove sujet:Message d'anniversaire ids:1
-/remove sujet:URLs malveillants ids:1
+/remove sujet:URLs malveillants ids:1;2;3;4;5
 ```
 
 ***
@@ -110,9 +109,9 @@ Permet d'afficher votre avatar ou celui d'un membre.
 |    Nom    | Obligatoire | Contenu |
 | --------- |:-----------:| ------- |
 | **membre** |   | Membre de la guild |
-| **extension** |   | Extension de l'image |
-| **taille** |   | Taille de l'image |
-| **statique** |   | Force l'affichage statique de l'image |
+| **extension** |   | Extension de l'image (défaut: png) |
+| **taille** |   | Taille de l'image (défaut: 1024) |
+| **statique** |   | Force l'affichage statique de l'image (défaut: True) |
 
 __Exemples :__
 
@@ -124,9 +123,9 @@ __Exemples :__
 
 ***
 
-- ### /birthday set : Ajoute une date d'anniversaire
+- ### /anniversaire ajouter : Ajoute votre date d'anniversaire
 
-Permet d'ajouter sa date d'anniversaire à la base de données afin que le bot vous le souhaite le jour J.
+Permet d'ajouter votre date d'anniversaire à la base de données afin que le bot vous le souhaite le jour J.
 
 __Paramètres :__
 
@@ -137,19 +136,19 @@ __Paramètres :__
 __Exemples :__
 
 ```
-/birthday set date:02/11/1995
+/anniversaire ajouter date:02/11/1995
 ```
 
 ***
 
-- ### /birthday unset : Supprime une date d'anniversaire
+- ### /anniversaire supprimer : Supprime votre date d'anniversaire
 
-Permet de supprimer sa date d'anniversaire de la base de données.
+Permet de supprimer votre date d'anniversaire de la base de données.
 
 __Exemples :__
 
 ```
-/birthday unset
+/anniversaire supprimer
 ```
 
 ***
@@ -164,7 +163,7 @@ __Paramètres :__
 | --------- |:-----------:| ------- |
 | **membre** | ☑ | Membre de la guild |
 | **raison** | ☑ | Raison du mute |
-| **durée** | ☑ | Durée du mute (s = secondes / i = minutes / h = heures / d = jours / w = semaines / m = mois / y = année) |
+| **durée** | ☑ | Durée du mute (s = secondes, i = minutes, h = heures, d = jours, w = semaines, m = mois, y = années) |
 
 __Exemples :__
 
@@ -203,7 +202,7 @@ __Paramètres :__
 | --------- |:-----------:| ------- |
 | **membre** | ☑ | Membre de la guild |
 | **raison** | ☑ | Raison du ban |
-| **durée** | ☑ | Durée du ban (s = secondes / i = minutes / h = heures / d = jours / w = semaines / m = mois / y = année) |
+| **durée** | ☑ | Durée du ban (s = secondes, i = minutes, h = heures, d = jours, w = semaines, m = mois, y = années) |
 
 __Exemples :__
 
@@ -213,34 +212,34 @@ __Exemples :__
 
 ***
 
-- ### /send : Envoie un message dans un channel
+- ### /envoyer : Envoie un message dans un salon
 
-Permet d'envoyer un message par l'Agent dans un channel.
+Permet d'envoyer un message par l'Agent dans un salon.
 
 __Paramètres :__
 
 |    Nom    | Obligatoire | Contenu |
 | --------- |:-----------:| ------- |
-| **channel** | ☑ | Channel de la guild |
-| **message** | ☑ | Message |
+| **salon** | ☑ | Salon dans lequel envoyer le message |
+| **message** | ☑ | Message à envoyer |
 
 __Exemples :__
 
 ```
-/send channel:#général message:Coucou !
+/envoyer salon:#général message:Coucou !
 ```
 
 ***
 
 - ### /log : Récupère un fichier de log
 
-Permet de récupérer les logs du bot à une date donnée.
+Permet d'afficher les logs du bot pour une date donnée.
 
 __Paramètres :__
 
 |    Nom    | Obligatoire | Contenu |
 | --------- |:-----------:| ------- |
-| **date** |   | Date du fichier de log demandé au format `JJ/MM/AAAA` |
+| **date** |   | Date du fichier de log à afficher au format `JJ/MM/AAAA` |
 
 __Exemples :__
 
@@ -251,19 +250,19 @@ __Exemples :__
 
 ***
 
-- ### /roles list : Liste vos rôles
+- ### /roles liste : Liste vos rôles
 
 Permet de récupérer la liste de vos rôles auto-assignables.
 
 __Exemples :__
 
 ```
-/roles list
+/roles liste
 ```
 
 ***
 
-- ### /roles add <catégorie> : Ajoute un rôle de `<catégorie>`
+- ### /roles ajouter <catégorie> : Ajoute un rôle pour la catégorie `<catégorie>`
 
 Permet de vous attribuer un rôle auto-assignables pour la catégorie donnée.
 
@@ -271,17 +270,17 @@ __Paramètres :__
 
 |    Nom    | Obligatoire | Contenu |
 | --------- |:-----------:| ------- |
-| **role** | ☑ | Rôle de `<catégorie>` à attribuer |
+| **role** | ☑ | Rôle pour la catégorie `<catégorie>` à ajouter |
 
 __Exemples :__
 
 ```
-/roles add notification role:Annonce
+/roles ajouter notification role:Annonce
 ```
 
 ***
 
-- ### /roles remove <catégorie> : Supprime un rôle de `<catégorie>`
+- ### /roles supprimer <catégorie> : Supprime un rôle pour la catégorie `<catégorie>`
 
 Permet de vous retirer un rôle auto-assignables pour la catégorie donnée.
 
@@ -289,12 +288,12 @@ __Paramètres :__
 
 |    Nom    | Obligatoire | Contenu |
 | --------- |:-----------:| ------- |
-| **role** | ☑ | Rôle de `<catégorie>` à retirer |
+| **role** | ☑ | Rôle pour la catégorie `<catégorie>` à supprimer |
 
 __Exemples :__
 
 ```
-/roles remove notification role:Annonce
+/roles supprimer notification role:Annonce
 ```
 
 ***
@@ -336,9 +335,9 @@ __Exemples :__
 
 ***
 
-- ### /city set : Ajoute une ville d'origine
+- ### /ville ajouter : Ajoute votre ville de résidence
 
-Permet d'ajouter sa ville d'origine à la base de données.
+Permet d'ajouter votre ville de résidence à la base de données.
 
 __Paramètres :__
 
@@ -349,24 +348,24 @@ __Paramètres :__
 __Exemples :__
 
 ```
-/city set code_postal:46800
+/ville ajouter code_postal:46800
 ```
 
 ***
 
-- ### /city unset : Supprime une ville d'origine
+- ### /ville supprimer : Supprime votre ville de résidence
 
-Permet de supprimer sa ville d'origine de la base de données.
+Permet de supprimer votre ville de résidence de la base de données.
 
 __Exemples :__
 
 ```
-/city unset
+/ville supprimer
 ```
 
 ***
 
-- ### /twitch link : Lie un compte Twitch à membre
+- ### /twitch ajouter : Lie un compte Twitch à membre
 
 Lie un compte Twitch afin d'activer les notifications lorsque le streameur est en live.
 
@@ -379,24 +378,24 @@ __Paramètres :__
 __Exemples :__
 
 ```
-/twitch link chaine:hei5enberg44
+/twitch ajouter chaine:hei5enberg44
 ```
 
 ***
 
-- ### /twitch unlink : Délie un compte Twitch d'un membre
+- ### /twitch supprimer : Délie un compte Twitch d'un membre
 
 Délie le compte Twitch afin de désactiver les notifications lorsque le streameur est en live.
 
 __Exemples :__
 
 ```
-/twitch unlink
+/twitch supprimer
 ```
 
 ***
 
-- ### /poll : Créé un sondage
+- ### /sondage : Créé un sondage
 
 Permet de créer un sondage et d'afficher les résultats en temps réel.
 
@@ -412,37 +411,37 @@ __Paramètres :__
 __Exemples :__
 
 ```
-/poll titre:Sondage de test liste:Proposition 1;Proposition 2;Proposition 3 date_fin:06/09/2022 20:00
-/poll titre:Sondage de test liste:Proposition 1;Proposition 2;Proposition 3 date_fin:07/09/2022 15:30 emojis:💀;💩;😂
+/sondage titre:Sondage de test liste:Proposition 1;Proposition 2;Proposition 3 date_fin:06/09/2022 20:00
+/sondage titre:Sondage de test liste:Proposition 1;Proposition 2;Proposition 3 date_fin:07/09/2022 15:30 emojis:💀;💩;😂
 ```
 
 ***
 
-- ### /cooldown add : Ajoute un membre au cooldown
+- ### /cooldown ajouter : Ajoute un membre à la liste des cooldowns
 
-Permet d'ajouter un membre au cooldown afin que celui-ci soit mute en cas de spam de messages.
+Permet d'ajouter un membre à la liste des cooldowns afin que celui-ci soit mute en cas de spam de messages.
 
 __Paramètres :__
 
 |    Nom    | Obligatoire | Contenu |
 | --------- |:-----------:| ------- |
 | **membre** | ☑ | Membre de la guild |
-| **seuil_temps** |   | Laps de temps entre le premier et le dernier message envoyé (en secondes) |
-| **seuil_nombre** |   | Nombre de messages envoyés dans le laps de temps |
+| **seuil_temps** |   | Seuil de temps entre le premier et le dernier message envoyé (en secondes) |
+| **seuil_nombre** |   | Nombre de messages envoyés dans le seuil de temps |
 | **durée_mute** |   | Durée du mute du membre (en secondes) |
 
 __Exemples :__
 
 ```
-/cooldown add membre:@Hei5enberg#6969
-/cooldown add membre:@Hei5enberg#6969 seuil_temps:10 seuil_nombre:3 durée_mute:10
+/cooldown ajouter membre:@Hei5enberg#6969
+/cooldown ajouter membre:@Hei5enberg#6969 seuil_temps:10 seuil_nombre:3 durée_mute:10
 ```
 
 ***
 
-- ### /cooldown remove : Supprime un membre du cooldown
+- ### /cooldown supprimer : Supprime un membre de la liste des cooldowns
 
-Permet de supprimer un membre du cooldown. Celui-ci ne sera plus mute en cas de spam de messages.
+Permet de supprimer un membre de la liste des cooldowns. Celui-ci ne sera plus mute en cas de spam de messages.
 
 __Paramètres :__
 
@@ -453,12 +452,12 @@ __Paramètres :__
 __Exemples :__
 
 ```
-/cooldown remove membre:@Hei5enberg#6969
+/cooldown supprimer membre:@Hei5enberg#6969
 ```
 
 ***
 
-- ### /cooldown list : Liste les membres en cooldown
+- ### /cooldown liste : Liste les membres en cooldown
 
 Permet de lister les membres en cooldown.
 
@@ -471,8 +470,8 @@ __Paramètres :__
 __Exemples :__
 
 ```
-/cooldown list
-/cooldown list page:3
+/cooldown liste
+/cooldown liste page:3
 ```
 
 ## Auteur
