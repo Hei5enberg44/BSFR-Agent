@@ -35,24 +35,25 @@ export default {
     log(scope, level, content) {
         const date = this.date()
 
-        let logLevel
+        const _scope = chalk.blackBright(scope)
+        const _date = `${chalk.yellow(date.date)} ${chalk.yellow(date.time)}`
+
+        let _level
         switch(level) {
             case 'INFO':
-                logLevel = chalk.blueBright(level)
+                _level = chalk.blueBright(level)
                 break
             case 'WARNING':
-                logLevel = chalk.yellowBright(level)
+                _level = chalk.yellowBright(level)
                 break
             case 'ERROR':
-                logLevel = chalk.redBright(level)
+                _level = chalk.redBright(level)
                 break
             default:
-                logLevel = chalk.blueBright(level)
+                _level = chalk.blueBright(level)
         }
 
-        const logContent = `[${scope}] [${logLevel}] ${content}`
-
-        appendFileSync(`${__dirname}/../logs/${date.date}.log`, `[${date.time}] [${scope}] [${level}] ${content}\n`)
-        console.log(logContent)
+        appendFileSync(`${__dirname}/../logs/${date.date}.log`, `[${date.date} ${date.time}] [${scope}] [${level}] ${content}\n`)
+        console.log(`[${_date}] [${_scope}] [${_level}] ${content}`)
     }
 }
