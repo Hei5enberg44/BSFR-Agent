@@ -134,6 +134,7 @@ export default {
             }
 
             try {
+                title = title.replace(/[<>:"\/\\|?*]/g, '')
                 const fileName = `${title}.mp4`
                 const folderName = 'Twitch-' + broadcasterName
 
