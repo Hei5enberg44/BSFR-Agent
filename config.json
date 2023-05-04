@@ -1,6 +1,6 @@
 {
     "appName": "Agent",
-    "appVersion": "2.18.0",
+    "appVersion": "2.19.0",
     "appLogo": "https://cdn.discordapp.com/avatars/933356443619442768/0a073fbfb191d57d50ec8cf5e38eafd6.webp?size=128",
     "token": "",
     "clientId": "",
@@ -10,17 +10,16 @@
             "birthday": "",
             "logs": "",
             "admin": "",
-            "agentDm": "",
-            "moderation": "",
-            "happyBirthday": "",
+            "agent-dm": "",
+            "modération": "",
+            "happy-birthday": "",
             "youtube": "",
             "clips": "",
-            "reuploadedClips": "",
-            "twitch": "",
-            "agentCommands": "",
-            "rolesAutoAssignables": "",
-            "voteRun": "",
-            "bsUpdates": ""
+            "twitch-youtube": "",
+            "bot-setup": "",
+            "rôles-auto-assignable": "",
+            "vote-run-bsfr": "",
+            "bs-updates": ""
         },
         "roles": {
             "Admin": "",
@@ -50,9 +49,6 @@
         "username": "",
         "password": "",
         "name": "bsfr_agent"
-    },
-    "antivirus": {
-        "apiKey": ""
     },
     "nextcloud": {
         "username": "",
