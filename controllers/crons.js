@@ -55,7 +55,7 @@ export default {
             await youtube.publish(client)
         }, null, true, 'Europe/Paris')
 
-        Logger.log('CronManager', 'INFO', 'Tâche "unban" chargée')
+        Logger.log('CronManager', 'INFO', 'Tâche "publish" chargée')
     },
 
     /**
