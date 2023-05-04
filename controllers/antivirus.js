@@ -1,4 +1,4 @@
-import { Message, bold, inlineCode, userMention, roleMention } from 'discord.js'
+import { Message, TextChannel, bold, inlineCode, userMention, roleMention } from 'discord.js'
 import Embed from '../utils/embed.js'
 import { AntivirusError } from '../utils/error.js'
 import tmp from 'tmp'
@@ -108,7 +108,8 @@ export default {
 
                         const warningMessage = await message.channel.send({ content: `❗ ${bold('Le fichier ' + inlineCode(attachment.name) + ' envoyé par ' + userMention(message.author.id) + ' est infecté ❗')}\nSi l'un d'entre vous a téléchargé ce fichier, nous vous recommandons fortement de supprimer ce dernier ainsi que d'effectuer une analyse anti-virus.` })
 
-                        const logsChannel = message.guild.channels.cache.get(config.guild.channels.logs)
+                        /** @type {TextChannel} */
+                        const logsChannel = message.guild.channels.cache.get(config.guild.channels['logs'])
                         const muteRole = message.guild.roles.cache.get(config.guild.roles['Muted'])
 
                         const embeds = []
@@ -147,7 +148,7 @@ export default {
                         await message.react('⚠')
                     } catch(error) {}
 
-                    if(error instanceof AntivirusError) {
+                    if(error.name === 'ANTIVIRUS_ERROR') {
                         Logger.log('Antivirus', 'ERROR', error.message)
                     } else {
                         throw new AntivirusError(error.message)

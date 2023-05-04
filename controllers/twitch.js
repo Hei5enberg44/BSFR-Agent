@@ -1,6 +1,6 @@
-import { Client, Message, Attachment, userMention, hyperlink } from 'discord.js'
+import { Client, Message, Attachment, TextChannel, userMention, hyperlink } from 'discord.js'
 import Embed from '../utils/embed.js'
-import { TwitchError, NextcloudError } from '../utils/error.js'
+import { TwitchError } from '../utils/error.js'
 import { Twitch } from './database.js'
 import pLimit from 'p-limit'
 import crypto from 'crypto'
@@ -66,7 +66,8 @@ export default {
                 if(result) {
                     uploadedClipsCount++
                 } else {
-                    const logsChannel = message.guild.channels.cache.get(config.guild.channels.logs)
+                    /** @type {TextChannel} */
+                    const logsChannel = message.guild.channels.cache.get(config.guild.channels['logs'])
                     const embed = new Embed()
                         .setColor('#E74C3C')
                         .setTitle('🎬 Échec de l\'upload d\'un clip')
@@ -82,7 +83,8 @@ export default {
                     if(result) {
                         uploadedClipsCount++
                     } else {
-                        const logsChannel = message.guild.channels.cache.get(config.guild.channels.logs)
+                        /** @type {TextChannel} */
+                        const logsChannel = message.guild.channels.cache.get(config.guild.channels['logs'])
                         const embed = new Embed()
                             .setColor('#E74C3C')
                             .setTitle('🎬 Échec de l\'upload d\'un clip')
@@ -93,7 +95,8 @@ export default {
             }
 
             if(uploadedClipsCount > 0) {
-                const logsChannel = message.guild.channels.cache.get(config.guild.channels.logs)
+                /** @type {TextChannel} */
+                const logsChannel = message.guild.channels.cache.get(config.guild.channels['logs'])
                 const embed = new Embed()
                     .setColor('#2ECC71')
                     .setTitle('🎬 Nouveau(x) clip(s) uploadé(s) !')
@@ -139,14 +142,14 @@ export default {
                 file.removeCallback()
             } catch(error) {
                 file.removeCallback()
-                if(error instanceof NextcloudError) {
+                if(error.name === 'NEXTCLOUD_ERROR') {
                     throw new TwitchError(error.message)
                 }
             }
 
             return true
         } catch(error) {
-            if(error instanceof TwitchError) {
+            if(error.name === 'TWITCH_ERROR') {
                 Logger.log('Clips', 'ERROR', error.message)
                 return false
             } else {
@@ -175,14 +178,14 @@ export default {
                 file.removeCallback()
             } catch(error) {
                 file.removeCallback()
-                if(error instanceof NextcloudError) {
+                if(error.name === 'NEXTCLOUD_ERROR') {
                     throw new TwitchError(error.message)
                 }
             }
 
             return true
         } catch(error) {
-            if(error instanceof TwitchError) {
+            if(error.name === 'TWITCH_ERROR') {
                 Logger.log('Clips', 'WARNING', error.message)
                 return false
             } else {
@@ -589,7 +592,8 @@ export default {
 
                             const guild = client.guilds.cache.get(config.guild.id)
                             const member = guild.members.cache.get(streamer.memberId)
-                            const twitchChannel = guild.channels.cache.get(config.guild.channels.twitch)
+                            /** @type {TextChannel} */
+                            const twitchChannel = guild.channels.cache.get(config.guild.channels['twitch-youtube'])
 
                             const embed = new Embed()
                                 .setColor('#6441A5')
@@ -630,7 +634,7 @@ export default {
                 }
             }
         } catch(error) {
-            if(error instanceof TwitchError) {
+            if(error.name === 'TWITCH_ERROR') {
                 Logger.log('Twitch', 'ERROR', error.message)
             } else {
                 throw new TwitchError(error.message)

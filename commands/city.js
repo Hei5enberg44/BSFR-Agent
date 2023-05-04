@@ -1,46 +1,55 @@
-import { CommandInteraction, ActionRowBuilder, ButtonBuilder, ButtonStyle, ApplicationCommandOptionType } from 'discord.js'
-import { CommandError, CommandInteractionError } from '../utils/error.js'
+import { SlashCommandBuilder, PermissionFlagsBits, CommandInteraction, ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js'
+import { CommandError } from '../utils/error.js'
 import city from '../controllers/city.js'
+import Locales from '../utils/locales.js'
 import Logger from '../utils/logger.js'
+import config from '../config.json' assert { type: 'json' }
 
 export default {
-    data: {
-        name: 'city',
-        description: 'Ajoute/Supprime une ville d\'origine',
-        options: [
-            {
-                type: ApplicationCommandOptionType.Subcommand,
-                name: 'set',
-                description: 'Ajoute une ville d\'origine',
-                options: [
-                    {
-                        type: ApplicationCommandOptionType.Integer,
-                        name: 'code_postal',
-                        description: 'Code postal',
-                        required: true
-                    }
-                ]
-            },
-            {
-                type: ApplicationCommandOptionType.Subcommand,
-                name: 'unset',
-                description: 'Supprime une ville d\'origine'
-            }
-        ],
-        default_member_permissions: '0'
-    },
+    data: new SlashCommandBuilder()
+        .setName('city')
+        .setNameLocalization('fr', 'ville')
+        .setDescription('Adds/Removes the city where you live')
+        .setDescriptionLocalization('fr', 'Ajoute/Supprime ta ville de résidence')
+        .addSubcommand(subcommand =>
+            subcommand.setName('add')
+                .setNameLocalization('fr', 'ajouter')
+                .setDescription('Add the city where you live')
+                .setDescriptionLocalization('fr', 'Ajouter ta ville de résidence')
+                .addIntegerOption(option =>
+                    option.setName('postal_code')
+                        .setNameLocalization('fr', 'code_postal')
+                        .setDescription('Postal code of your city')
+                        .setDescriptionLocalization('fr', 'Code postal de ta ville')
+                        .setRequired(true)
+                )
+        )
+        .addSubcommand(subcommand =>
+            subcommand.setName('remove')
+                .setNameLocalization('fr', 'supprimer')
+                .setDescription('Remove the city where you live')
+                .setDescriptionLocalization('fr', 'Supprimer ta ville de résidence')
+        )
+        .setDMPermission(false)
+        .setDefaultMemberPermissions(PermissionFlagsBits.SendMessages)
+    ,
+    allowedChannels: [
+        config.guild.channels['rôles-auto-assignable']
+    ],
 
     /**
      * Exécution de la commande
-     * @param {CommandInteraction} interaction intéraction Discord
+     * @param {CommandInteraction} interaction interaction Discord
      */
     async execute(interaction) {
         try {
+            /** @type {string} */
             const action = interaction.options.getSubcommand()
 
             switch(action) {
-                case 'set': {
-                    const postalCode = interaction.options.getInteger('code_postal')
+                case 'add': {
+                    /** @type {number} */
+                    const postalCode = interaction.options.getInteger('postal_code')
 
                     const cities = await city.getCitiesByPostalCode(postalCode)
 
@@ -74,12 +83,12 @@ export default {
                             citiesButtons.addComponents(
                                 new ButtonBuilder()
                                     .setCustomId(`previous_${customId}`)
-                                    .setLabel('Précédent')
+                                    .setLabel(Locales.get(interaction.locale, 'previous'))
                                     .setStyle(ButtonStyle.Primary)
                                     .setDisabled(page > 0 ? false : true),
                                 new ButtonBuilder()
                                     .setCustomId(`next_${customId}`)
-                                    .setLabel('Suivant')
+                                    .setLabel(Locales.get(interaction.locale, 'next'))
                                     .setStyle(ButtonStyle.Primary)
                                     .setDisabled(page < pageCount - 1 ? false : true)
                             )
@@ -90,7 +99,7 @@ export default {
 
                         let components = getComponents()
 
-                        await interaction.reply({ content: 'Veuillez sélectionner votre ville :', components: components, ephemeral: true })
+                        await interaction.reply({ content: Locales.get(interaction.locale, 'select_your_city'), components: components, ephemeral: true })
 
                         const filter = i => i.customId.includes(customId) && i.user.id === interaction.user.id
 
@@ -105,7 +114,7 @@ export default {
                                 const c = choice.split('_')
                                 await city.set(interaction.user.id, c[0], c[1])
 
-                                await i.editReply({ content: 'Votre ville d\'origine a bien été enregistrée', components: [] })
+                                await i.editReply({ content: Locales.get(interaction.locale, 'city_added'), components: [] })
 
                                 Logger.log('CityCommand', 'INFO', `${interaction.user.tag} a ajouté sa ville d'origine`)
                             } else {
@@ -115,31 +124,31 @@ export default {
                                 page = choice === `previous_${customId}` ? page - 1 : page + 1
                                 components = getComponents(page)
 
-                                await i.editReply({ content: 'Veuillez sélectionner votre ville :', components: components })
+                                await i.editReply({ content: Locales.get(interaction.locale, 'select_your_city'), components: components })
                             }
                         })
 
                         collector.on('end', async (collected, reason) => {
                             if(reason === 'time') {
-                                await interaction.editReply({ content: 'Vous avez mis trop de temps à répondre', components: [] })
+                                await interaction.editReply({ content: Locales.get(interaction.locale, 'too_long_to_respond_error'), components: [] })
                             }
                         })
                     } else {
-                        await interaction.reply({ content: `Aucune ville correspondant au code postal ${postalCode} n'a été trouvée`, ephemeral: true })
+                        await interaction.reply({ content: Locales.get(interaction.locale, 'city_not_found_error', postalCode), ephemeral: true })
                     }
                     break
                 }
-                case 'unset': {
+                case 'remove': {
                     await city.unset(interaction.user.id)
 
                     Logger.log('CityCommand', 'INFO', `${interaction.user.tag} a supprimé sa ville d'origine`)
 
-                    await interaction.reply({ content: 'Votre ville d\'origine a bien été supprimée', ephemeral: true })
+                    await interaction.reply({ content: Locales.get(interaction.locale, 'city_removed'), ephemeral: true })
                     break
                 }
             }
         } catch(error) {
-            if(error instanceof CommandInteractionError) {
+            if(error.name === 'COMMAND_INTERACTION_ERROR') {
                 throw new CommandError(error.message, interaction.commandName)
             } else {
                 throw Error(error.message)

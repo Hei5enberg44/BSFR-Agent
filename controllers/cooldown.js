@@ -1,12 +1,13 @@
-import { Message, userMention, hyperlink } from 'discord.js'
+import { Message, TextChannel, userMention, hyperlink } from 'discord.js'
 import Embed from '../utils/embed.js'
-import { CooldownError } from '../utils/error.js'
 import { Cooldowns } from './database.js'
+import { PageNotFoundError, CooldownEmptyError } from '../utils/error.js'
+import Logger from '../utils/logger.js'
 import config from '../config.json' assert { type: 'json' }
 
 export default {
     /**
-     * Ajoute un utilisateur en cooldown
+     * Ajoute un membre en cooldown
      * @param {string} memberId identifiant du membre Discord
      * @param {number} timeThreshold laps de temps entre le premier et le dernier message envoyé (en secondes)
      * @param {number} countThreshold nombre de messages envoyés dans le laps de temps
@@ -22,7 +23,7 @@ export default {
     },
 
     /**
-     * @typedef {object} MemberCooldown
+     * @typedef {Object} MemberCooldown
      * @property {number} id
      * @property {string} memberId
      * @property {number} timeThreshold
@@ -33,7 +34,7 @@ export default {
      */
 
     /**
-     * Récupère un utilisateur en cooldown
+     * Récupère un membre en cooldown
      * @param {string} memberId identifiant du membre Discord
      * @returns {Promise<MemberCooldown>} informations du cooldown
      */
@@ -41,11 +42,12 @@ export default {
         const memberCooldown = await Cooldowns.findOne({
             where: { memberId }
         })
+
         return memberCooldown
     },
 
     /**
-     * Supprime le cooldown d'un utilisateur
+     * Supprime le cooldown d'un membre
      * @param {string} memberId identifiant du membre Discord
      */
     async remove(memberId) {
@@ -57,7 +59,7 @@ export default {
     /**
      * Retourne la liste des cooldowns depuis la base de données
      * @param {number} page page à retourner
-     * @returns {Promise<string>} liste des cooldowns
+     * @returns {Promise<{items: Array<MemberCooldown>, page: number, pageCount: number}>} liste des cooldowns
      */
     async list(page) {
         const itemsPerPage = 10
@@ -65,12 +67,12 @@ export default {
         const cooldownsCount = await Cooldowns.count()
 
         if(cooldownsCount == 0)
-            throw new CooldownError('Il n\'y a aucun cooldown pour le moment.')
+            throw new CooldownEmptyError()
         
         const pageCount = Math.ceil(cooldownsCount / itemsPerPage)
 
         if(page > pageCount)
-            throw new CooldownError('La page demandée n\'existe pas.')
+            throw new PageNotFoundError()
 
         const cooldowns = await Cooldowns.findAll({
             order: [
@@ -80,18 +82,15 @@ export default {
             limit: itemsPerPage
         })
 
-        let cooldownList = ''
-        for(const cooldown of cooldowns) {
-            cooldownList += `${userMention(cooldown.memberId)} (Seuil temps: **${cooldown.timeThreshold}s**, Seuil nombre: **${cooldown.countThreshold}**, Durée mute: **${cooldown.muteDuration}s**)\n`
+        return {
+            items: cooldowns,
+            page,
+            pageCount
         }
-
-        const pageInfo = `Page \`${page}\` sur \`${pageCount}\``
-
-        return cooldownList + '\n' + pageInfo
     },
 
     /**
-     * Vérifie si l'utilisateur est en cooldown,
+     * Vérifie si le membre est en cooldown,
      * et si celui-ci spam, il est mute
      * @param {Message} message The created message
      */
@@ -134,25 +133,27 @@ export default {
                 const guild = message.guild
                 const muteRole = guild.roles.cache.find(r => r.id === config.guild.roles['Muted'])
 
-                const logsChannel = guild.channels.cache.get(config.guild.channels.logs)
+                /** @type {TextChannel} */
+                const logsChannel = guild.channels.cache.get(config.guild.channels['logs'])
+
+                await member.roles.add(muteRole)
+
+                setTimeout(async () => {
+                    await member.roles.remove(muteRole)
+                }, muteDuration * 1000)
+
+                const embed = new Embed()
+                    .setColor('#2ECC71')
+                    .setTitle('⏳ Spam détécté !')
+                    .setThumbnail(member.displayAvatarURL({ dynamic: true }))
+                    .setDescription(`${userMention(member.id)} s'est pris un cooldown – ${hyperlink('Voir', message.url)}`)
+
+                await logsChannel.send({ embeds: [embed] })
 
                 try {
-                    await member.roles.add(muteRole)
                     await member.send({ content: `Mollo l'asticot ! Évites de spammer s'il te plaît.\nPour la peine, tu es mute pendant ${muteDuration} seconde${muteDuration > 1 ? 's' : ''}.` })
-
-                    const embed = new Embed()
-                            .setColor('#2ECC71')
-                            .setTitle('⏳ Spam détécté !')
-                            .setThumbnail(member.displayAvatarURL({ dynamic: true }))
-                            .setDescription(`${userMention(member.id)} s'est pris un cooldown – ${hyperlink('Voir', message.url)}`)
-
-                    await logsChannel.send({ embeds: [embed] })
-
-                    setTimeout(async () => {
-                        await member.roles.remove(muteRole)
-                    }, muteDuration * 1000)
-                } catch(e) {
-                    console.log(e)
+                } catch(error) {
+                    Logger.log('Cooldown', 'ERROR', `Le message privé à ${member.user.tag} n'a pas pu être envoyé`)
                 }
             }
         }

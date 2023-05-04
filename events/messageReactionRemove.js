@@ -16,7 +16,7 @@ export default {
         const r = await Reactions.findOne({
             where: {
                 [Op.and]: [
-                    { channelId: reaction.message.channelId },
+                    { 'interaction.channelId': reaction.message.channelId },
                     { messageId: reaction.message.id }
                 ]
             }

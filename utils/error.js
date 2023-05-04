@@ -3,7 +3,7 @@ import Logger from './logger.js'
 class DatabaseError extends Error {
     constructor(message) {
         super(message)
-        this.name = this.constructor.name
+        this.name = 'DATABASE_ERROR'
         Error.captureStackTrace(this, this.constructor)
     }
 }
@@ -11,7 +11,7 @@ class DatabaseError extends Error {
 class CommandError extends Error {
     constructor(message, commandName) {
         super(message)
-        this.name = this.constructor.name
+        this.name = 'COMMAND_ERROR'
         Error.captureStackTrace(this, this.constructor)
         Logger.log('CommandManager', 'INFO', `L'exécution de la commande "/${commandName}" a échoué : ${(message).replace(/:[^:]+:\s/g, '').replace('\n', ' ')}`)
     }
@@ -20,23 +20,31 @@ class CommandError extends Error {
 class CommandInteractionError extends Error {
     constructor(message) {
         super(message)
-        this.name = this.constructor.name
+        this.name = 'COMMAND_INTERACTION_ERROR'
         Error.captureStackTrace(this, this.constructor)
     }
 }
 
-class BirthdayMessagesError extends Error {
-    constructor(message) {
-        super(message)
-        this.name = this.constructor.name
+class PageNotFoundError extends Error {
+    constructor() {
+        super()
+        this.name = 'PAGE_NOT_FOUND_ERROR'
         Error.captureStackTrace(this, this.constructor)
     }
 }
 
-class MaliciousURLError extends Error {
+class BirthdayMessageEmptyError extends Error {
     constructor(message) {
         super(message)
-        this.name = this.constructor.name
+        this.name = 'BIRTHDAY_MESSAGE_EMPTY_ERROR'
+        Error.captureStackTrace(this, this.constructor)
+    }
+}
+
+class MaliciousURLEmptyError extends Error {
+    constructor(message) {
+        super(message)
+        this.name = 'MALICIOUS_URL_EMPTY_ERROR'
         Error.captureStackTrace(this, this.constructor)
     }
 }
@@ -44,7 +52,7 @@ class MaliciousURLError extends Error {
 class AntivirusError extends Error {
     constructor(message) {
         super(message)
-        this.name = this.constructor.name
+        this.name = 'ANTIVIRUS_ERROR'
         Error.captureStackTrace(this, this.constructor)
     }
 }
@@ -52,7 +60,7 @@ class AntivirusError extends Error {
 class TwitchError extends Error {
     constructor(message) {
         super(message)
-        this.name = this.constructor.name
+        this.name = 'TWITCH_ERROR'
         Error.captureStackTrace(this, this.constructor)
     }
 }
@@ -60,19 +68,19 @@ class TwitchError extends Error {
 class NextcloudError extends Error {
     constructor(message) {
         super(message)
-        this.name = this.constructor.name
+        this.name = 'NEXTCLOUD_ERROR'
         Error.captureStackTrace(this, this.constructor)
     }
 }
 
-class CooldownError extends Error {
+class CooldownEmptyError extends Error {
     constructor(message) {
         super(message)
-        this.name = this.constructor.name
+        this.name = 'COOLDOWN_EMPTY_ERROR'
         Error.captureStackTrace(this, this.constructor)
     }
 }
 
 export {
-    DatabaseError, CommandError, CommandInteractionError, BirthdayMessagesError, MaliciousURLError, TwitchError, NextcloudError, AntivirusError, CooldownError
+    DatabaseError, CommandError, CommandInteractionError, PageNotFoundError, BirthdayMessageEmptyError, MaliciousURLEmptyError, TwitchError, NextcloudError, AntivirusError, CooldownEmptyError
 }

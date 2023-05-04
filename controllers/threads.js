@@ -1,4 +1,4 @@
-import { GuildMember } from 'discord.js'
+import { GuildMember, TextChannel } from 'discord.js'
 import { Threads } from '../controllers/database.js'
 import { Op } from 'sequelize'
 import Logger from '../utils/logger.js'
@@ -67,14 +67,15 @@ export default {
      * @param {GuildMember} member membre à ajouter dans les threads
      */
     async addMember(type, member) {
-        const agentDmChannel = member.guild.channels.cache.get(config.guild.channels.agentDm)
+        /** @type {TextChannel} */
+        const agentDmChannel = member.guild.channels.cache.get(config.guild.channels['agent-dm'])
         const threads = await this.getByType(type)
 
         await agentDmChannel.threads.fetch()
         await agentDmChannel.threads.fetchArchived()
 
         for(const t of threads) {
-            const thread = await agentDmChannel.threads.cache.get(t.threadId)
+            const thread = agentDmChannel.threads.cache.get(t.threadId)
 
             let threadArchived = false
 
@@ -96,14 +97,15 @@ export default {
      * @param {GuildMember} member membre à supprimer des threads
      */
     async removeMember(type, member) {
-        const agentDmChannel = member.guild.channels.cache.get(config.guild.channels.agentDm)
+        /** @type {TextChannel} */
+        const agentDmChannel = member.guild.channels.cache.get(config.guild.channels['agent-dm'])
         const threads = await this.getByType(type)
 
         await agentDmChannel.threads.fetch()
         await agentDmChannel.threads.fetchArchived()
 
         for(const t of threads) {
-            const thread = await agentDmChannel.threads.cache.get(t.threadId)
+            const thread = agentDmChannel.threads.cache.get(t.threadId)
 
             let threadArchived = false
 

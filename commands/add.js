@@ -1,93 +1,85 @@
-import { CommandInteraction, ApplicationCommandOptionType, userMention } from 'discord.js'
+import { SlashCommandBuilder, PermissionFlagsBits, CommandInteraction, userMention } from 'discord.js'
 import Embed from '../utils/embed.js'
-import { CommandError, CommandInteractionError } from '../utils/error.js'
-import birthdayMessages from '../controllers/birthdayMessages.js'
+import { CommandError } from '../utils/error.js'
+import birthdayMessage from '../controllers/birthdayMessage.js'
 import maliciousURL from '../controllers/maliciousURL.js'
+import Locales from '../utils/locales.js'
 import Logger from '../utils/logger.js'
+import config from '../config.json' assert { type: 'json' }
 
 export default {
-    data: {
-        name: 'add',
-        description: 'Ajouts divers',
-        options: [
-            {
-                type: ApplicationCommandOptionType.String,
-                name: 'sujet',
-                description: 'Sujet',
-                choices: [
-                    {
-                        name: 'Message d\'anniversaire',
-                        value: 'birthdayMessage'
-                    },
-                    {
-                        name: 'URL malveillant',
-                        value: 'maliciousURL'
-                    }
-                ],
-                required: true
-            },
-            {
-                type: ApplicationCommandOptionType.String,
-                name: 'texte',
-                description: '/!\\ (Mots bannis uniquement) Si il y a plusieurs mots, merci de les séparer par un point virgule /!\\',
-                required: true
-            }
-        ],
-        default_member_permissions: '0'
-    },
-    roles: [ 'Admin', 'Modérateur' ],
-    channels: [ 'agentCommands' ],
+    data: new SlashCommandBuilder()
+        .setName('add')
+        .setNameLocalization('fr', 'ajouter')
+        .setDescription('Misc additions')
+        .setDescriptionLocalization('fr', 'Ajouts divers')
+        .addStringOption(option =>
+            option.setName('subject')
+                .setNameLocalization('fr', 'sujet')
+                .setDescription('Subject')
+                .setDescriptionLocalization('fr', 'Sujet')
+                .setChoices(
+                    { name: 'Birthday message', name_localizations: { fr: 'Message d\'anniversaire' }, value: 'birthday_message' },
+                    { name: 'Malicious URL', name_localizations: { fr: 'URL malveillant' }, value: 'malicious_url' }
+                )
+                .setRequired(true)
+        )
+        .addStringOption(option =>
+            option.setName('text')
+                .setNameLocalization('fr', 'texte')
+                .setDescription('Bithday message or malicious URL')
+                .setDescriptionLocalization('fr', 'Message d\'anniversaire ou URL malveillant')
+                .setRequired(true)
+        )
+        .setDMPermission(false)
+        .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles)
+    ,
+    allowedChannels: [
+        config.guild.channels['bot-setup']
+    ],
 
     /**
      * Exécution de la commande
-     * @param {CommandInteraction} interaction intéraction Discord
+     * @param {CommandInteraction} interaction interaction Discord
      */
     async execute(interaction) {
         try {
-            const subject = interaction.options.getString('sujet')
-            const text = interaction.options.getString('texte')
+            /** @type {string} */
+            const subject = interaction.options.getString('subject')
+            /** @type {string} */
+            const text = interaction.options.getString('text')
 
             const embed = new Embed()
                 .setColor('#2ECC71')
                 .setThumbnail(interaction.user.displayAvatarURL({ dynamic: true }))
-                .addFields({ name: 'Membre', value: userMention(interaction.user.id) })
+                .addFields({ name: Locales.get(interaction.locale, 'member'), value: userMention(interaction.user.id) })
 
             switch(subject) {
-                case 'birthdayMessage': {
-                    const messagesList = await birthdayMessages.add(text, interaction.user)
+                case 'birthday_message': {
+                    await birthdayMessage.add(text, interaction.user)
 
-                    Logger.log('BirthdayMessages', 'INFO', `${interaction.user.tag} a ajouté le message d'anniversaire suivant : ${text.trim()}`)
+                    Logger.log('BirthdayMessage', 'INFO', `${interaction.user.tag} a ajouté le message d'anniversaire suivant : ${text.trim()}`)
 
-                    embed.setTitle('🥳 Ajout d\'un message d\'anniversaire')
-
-                    for(const [action, message] of Object.entries(messagesList)) {
-                        if(message !== '') {
-                            embed.addFields({ name: action === 'new' ? 'Ajouté' : 'Déjà ajouté', value: message })
-                        }
-                    }
+                    embed.setTitle(Locales.get(interaction.locale, 'added_birthday_message'))
+                    embed.addFields({ name: Locales.get(interaction.locale, 'birthday_message'), value: text.trim() })
 
                     break
                 }
-                case 'maliciousURL': {
-                    const urlsList = await maliciousURL.add(text, interaction.user)
+                case 'malicious_url': {
+                    await maliciousURL.add(text, interaction.user)
 
                     Logger.log('MaliciousURL', 'INFO', `${interaction.user.tag} a ajouté l'URL malveillant suivant : ${text.trim()}`)
 
-                    embed.setTitle('☣️ Ajout d\'un URL malveillant')
-
-                    for(const [action, url] of Object.entries(urlsList)) {
-                        if(url !== '') {
-                            embed.addFields({ name: action === 'new' ? 'Ajouté' : 'Déjà ajouté', value: url })
-                        }
-                    }
+                    embed.setTitle(Locales.get(interaction.locale, 'added_malicious_url'))
+                    embed.addFields({ name: Locales.get(interaction.locale, 'malicious_url'), value: text.trim() })
 
                     break
                 }
             }
 
-            await interaction.reply({ embeds: [embed] })
+            await interaction.reply({ embeds: [embed], ephemeral: true })
         } catch(error) {
-            if(error instanceof CommandInteractionError) {
+            if(error.name === 'COMMAND_INTERACTION_ERROR') {
                 throw new CommandError(error.message, interaction.commandName)
             } else {
                 throw Error(error.message)

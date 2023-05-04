@@ -1,74 +1,81 @@
-import { CommandInteraction, ApplicationCommandOptionType } from 'discord.js'
+import { SlashCommandBuilder, PermissionFlagsBits, CommandInteraction } from 'discord.js'
 import { CommandError, CommandInteractionError } from '../utils/error.js'
 import birthday from '../controllers/birthday.js'
+import Locales from '../utils/locales.js'
 import Logger from '../utils/logger.js'
+import config from '../config.json' assert { type: 'json' }
 
 export default {
-    data: {
-        name: 'birthday',
-        description: 'Ajoute/Supprime une date d\'anniversaire',
-        options: [
-            {
-                type: ApplicationCommandOptionType.Subcommand,
-                name: 'set',
-                description: 'Ajoute une date d\'anniversaire',
-                options: [
-                    {
-                        type: ApplicationCommandOptionType.String,
-                        name: 'date',
-                        description: 'Ta date d\'anniversaire au format JJ/MM/AAAA (ex: 11/06/2000)',
-                        required: true
-                    }
-                ]
-            },
-            {
-                type: ApplicationCommandOptionType.Subcommand,
-                name: 'unset',
-                description: 'Supprime une date d\'anniversaire'
-            }
-        ],
-        default_member_permissions: '0'
-    },
-    channels: [ 'birthday' ],
+    data: new SlashCommandBuilder()
+        .setName('birthday')
+        .setNameLocalization('fr', 'anniversaire')
+        .setDescription('Adds/Removes your birthday date')
+        .setDescriptionLocalization('fr', 'Ajoute/Supprime ta date d\'anniversaire')
+        .addSubcommand(subcommand =>
+            subcommand.setName('add')
+                .setNameLocalization('fr', 'ajouter')
+                .setDescription('Add your birthday date')
+                .setDescriptionLocalization('fr', 'Ajouter ta date d\'anniversaire')
+                .addStringOption(option =>
+                    option.setName('date')
+                    .setDescription('Your date of birth in the format DD/MM/YYYY (ex: 11/06/2000)')
+                    .setDescriptionLocalization('fr', 'Ta date de naissance au format JJ/MM/AAAA (ex: 11/06/2000)')
+                    .setRequired(true)
+                )
+        )
+        .addSubcommand(subcommand =>
+            subcommand.setName('remove')
+                .setNameLocalization('fr', 'supprimer')
+                .setDescription('Remove your birthday date')
+                .setDescriptionLocalization('fr', 'Supprimer ta date d\'anniversaire')
+        )
+        .setDMPermission(false)
+        .setDefaultMemberPermissions(PermissionFlagsBits.SendMessages)
+    ,
+    allowedChannels: [
+        config.guild.channels['birthday']
+    ],
 
     /**
      * Exécution de la commande
-     * @param {CommandInteraction} interaction intéraction Discord
+     * @param {CommandInteraction} interaction interaction Discord
      */
     async execute(interaction) {
         try {
+            /** @type {string} */
             const action = interaction.options.getSubcommand()
 
             switch(action) {
-                case 'set': {
+                case 'add': {
+                    /** @type {string} */
                     const date = interaction.options.getString('date')
 
                     if(!date.match(/^(0?[1-9]|[12][0-9]|3[01])\/(0?[1-9]|1[0-2])\/\d{4}$/))
-                        throw new CommandInteractionError('Date invalide. La date doit être au format JJ/MM/AAAA.')
+                        throw new CommandInteractionError(Locales.get(interaction.locale, 'invalid_date'))
 
                     const bdDate = new Date(date.split('/')[2], date.split('/')[1] - 1, date.split('/')[0])
 
                     if(bdDate > new Date())
-                        throw new CommandInteractionError('Bien essayé petit malin 😉')
+                        throw new CommandInteractionError(Locales.get(interaction.locale, 'nice_try'))
 
                     await birthday.set(interaction.user.id, bdDate)
 
                     Logger.log('BirthdayCommand', 'INFO', `${interaction.user.tag} a enregistré sa date de naissance`)
 
-                    await interaction.reply({ content: 'Votre date de naissance a bien été enregistrée', ephemeral: true })
+                    await interaction.reply({ content: Locales.get(interaction.locale, 'birthday_date_added'), ephemeral: true })
                     break
                 }
-                case 'unset': {
+                case 'remove': {
                     await birthday.unset(interaction.user.id)
 
                     Logger.log('BirthdayCommand', 'INFO', `${interaction.user.tag} a supprimé sa date de naissance`)
 
-                    await interaction.reply({ content: 'Votre date de naissance a bien été supprimée', ephemeral: true })
+                    await interaction.reply({ content: Locales.get(interaction.locale, 'birthday_date_removed'), ephemeral: true })
                     break
                 }
             }
         } catch(error) {
-            if(error instanceof CommandInteractionError) {
+            if(error.name === 'COMMAND_INTERACTION_ERROR') {
                 throw new CommandError(error.message, interaction.commandName)
             } else {
                 throw Error(error.message)

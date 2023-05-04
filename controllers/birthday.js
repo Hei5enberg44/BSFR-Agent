@@ -1,4 +1,4 @@
-import { Client, userMention } from 'discord.js'
+import { Client, TextChannel, userMention } from 'discord.js'
 import { Birthdays, BirthdayMessages } from './database.js'
 import { Sequelize } from 'sequelize'
 import crypto from 'crypto'
@@ -55,7 +55,8 @@ export default {
         const bdMessages = await BirthdayMessages.findAll()
 
         const guild = client.guilds.cache.get(config.guild.id)
-        const happyBirthdayChannel = guild.channels.cache.get(config.guild.channels.happyBirthday)
+        /** @type {TextChannel} */
+        const happyBirthdayChannel = guild.channels.cache.get(config.guild.channels['happy-birthday'])
 
         for(const birthday of birthdays) {
             const member = guild.members.cache.get(birthday.memberId)

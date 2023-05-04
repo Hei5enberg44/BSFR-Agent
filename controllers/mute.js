@@ -1,7 +1,8 @@
-import { Client, GuildMember, userMention, bold } from 'discord.js'
+import { Client, GuildMember, TextChannel, userMention, time, TimestampStyles } from 'discord.js'
 import Embed from '../utils/embed.js'
 import { Mutes } from '../controllers/database.js'
 import { Op } from 'sequelize'
+import Locales from '../utils/locales.js'
 import Logger from '../utils/logger.js'
 import config from '../config.json' assert { type: 'json' }
 
@@ -36,9 +37,19 @@ export default {
     },
 
     /**
+     * @typedef {Object} MemberMute
+     * @property {number} id
+     * @property {string} memberId
+     * @property {string} mutedBy
+     * @property {string} reason
+     * @property {Date} muteDate
+     * @property {Date} unmuteDate
+     */
+
+    /**
      * Test si un membre est muted
      * @param {string} memberId identifiant du membre
-     * @returns {Promise<{id: number, memberId: string, mutedBy: string, reason: string, muteDate: Date, unmuteDate: Date}|null>} données concernant le mute
+     * @returns {Promise<MemberMute|null>} données concernant le mute
      */
     async isMuted(memberId) {
         const muted = await Mutes.findOne({
@@ -61,32 +72,32 @@ export default {
         const date = new Date()
     
         switch(unit) {
-            case "S":
+            case 'S':
                 date.setSeconds(date.getSeconds() + time)
                 break
-            case "I":
+            case 'I':
                 date.setMinutes(date.getMinutes() + time)
                 break
-            case "H":
+            case 'H':
                 date.setHours(date.getHours() + time)
                 break
-            case "D":
+            case 'D':
                 date.setDate(date.getDate() + time)
                 break
-            case "W":
+            case 'W':
                 date.setDate(date.getDate() + (time * 7))
                 break
-            case "M":
+            case 'M':
                 date.setMonth(date.getMonth() + time)
                 break
-            case "Y":
+            case 'Y':
                 date.setFullYear(date.getFullYear() + time)
                 break
             default:
                 return false
         }
     
-        if(date.toString().toLowerCase() === "invalid date")
+        if(date.toString().toLowerCase() === 'invalid date')
             return false
     
         return date
@@ -100,18 +111,19 @@ export default {
         const isMuted = await this.isMuted(member.user.id)
 
         if(isMuted && isMuted.unmuteDate > new Date()) {
-            const logsChannel = member.guild.channels.cache.get(config.guild.channels.logs)
+            /** @type {TextChannel} */
+            const logsChannel = member.guild.channels.cache.get(config.guild.channels['logs'])
             const muteRole = member.guild.roles.cache.get(config.guild.roles.Muted)
 
             const embed = new Embed()
                 .setColor('#2ECC71')
-                .setTitle('🔇 Re mute de ' + member.user.username)
+                .setTitle(`🔇 Re mute de ${member.user.username}`)
                 .setThumbnail(member.displayAvatarURL({ dynamic: true }))
                 .addFields(
                     { name: 'Le vilain', value: userMention(isMuted.memberId) },
-                    { name: 'La sanction a été prononcée par', value: userMention(isMuted.mutedBy) },
+                    { name: 'Mute réalisé par', value: userMention(isMuted.mutedBy) },
                     { name: 'Raison', value: isMuted.reason },
-                    { name: 'Date de démute', value: isMuted.unmuteDate.toLocaleString('fr-FR', { timeZone: 'Europe/Paris' }) }
+                    { name: 'Levée du mute', value: time(isMuted.unmuteDate, TimestampStyles.RelativeTime) }
                 )
 
             await member.roles.add(muteRole)
@@ -127,6 +139,7 @@ export default {
      */
     async unmute(client) {
         const guild = client.guilds.cache.get(config.guild.id)
+        /** @type {TextChannel} */
         const logsChannel = guild.channels.cache.get(config.guild.channels.logs)
         const muteRole = guild.roles.cache.get(config.guild.roles.Muted)
 
@@ -145,18 +158,21 @@ export default {
             if(memberToUnmute) {
                 embeds.push(new Embed()
                     .setColor('#2ECC71')
-                    .setTitle('🔇 Unmute de ' + memberToUnmute.user.username)
+                    .setTitle(`🔇 Unmute de ${memberToUnmute.user.username}`)
                     .setThumbnail(memberToUnmute.displayAvatarURL({ dynamic: true }))
                     .addFields(
                         { name: 'Le vilain', value: userMention(mutedMember.memberId), inline: true },
-                        { name: 'Prononcée par', value: userMention(mutedMember.mutedBy), inline: true },
+                        { name: 'Mute réalisé par', value: userMention(mutedMember.mutedBy), inline: true },
                         { name: 'Raison', value: mutedMember.reason }
                     ))
     
                 await memberToUnmute.roles.remove(muteRole)
     
                 try {
-                    await memberToUnmute.send({ content: `${bold('[BSFR]')}\n\nTu as été unmute.` })
+                    const unmuteMessage = `🇫🇷 ${Locales.get('fr', 'unmute_message')}`
+                        + '\n\n━━━━━━━━━━━━━━━\n\n'
+                        + `🇬🇧 ${Locales.get('en-US', 'unmute_message')}`
+                    await memberToUnmute.send({ content: unmuteMessage })
                 } catch(error) {
                     embeds.push(new Embed()
                         .setColor('#E74C3C')
@@ -167,11 +183,11 @@ export default {
             } else {
                 embeds.push(new Embed()
                     .setColor('#E74C3C')
-                    .setTitle('🔇 Unmute de ' + mutedMember.memberId)
+                    .setTitle(`🔇 Unmute de ${memberToUnmute.user.username}`)
                     .setDescription('Le membre n\'est plus présent sur le discord')
                     .addFields(
                         { name: 'Le vilain', value: userMention(mutedMember.memberId), inline: true },
-                        { name: 'La sanction avait été prononcée par', value: userMention(mutedMember.mutedBy), inline: true },
+                        { name: 'Mute réalisé par', value: userMention(mutedMember.mutedBy), inline: true },
                         { name: 'Raison', value: mutedMember.reason }
                     ))
 

@@ -54,8 +54,7 @@ const Reactions = sequelize.define('reactions', {
     },
     type: DataTypes.STRING(255),
     data: DataTypes.JSON(),
-    memberId: DataTypes.STRING(255),
-    channelId: DataTypes.STRING(255),
+    interaction: DataTypes.JSON(),
     messageId: DataTypes.STRING(255),
     date: DataTypes.DATE()
 })

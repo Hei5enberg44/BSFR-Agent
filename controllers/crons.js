@@ -26,7 +26,7 @@ export default {
      * @param {Client} client client Discord
      */
     async unmute(client) {
-        new CronJob('* * * * *', async function () {
+        new CronJob('*/30 * * * * *', async function () {
             await mute.unmute(client)
         }, null, true, 'Europe/Paris')
 
@@ -75,7 +75,7 @@ export default {
      * @param {Client} client client Discord
      */
     async checkBSUpdate(client) {
-        new CronJob('*/30 * * * *', async function () {
+        new CronJob('*/15 * * * *', async function () {
             const update = await checkBSUpdate.getLastUpdate()
             if(update) await checkBSUpdate.postUpdate(client, update)
         }, null, true, 'Europe/Paris')

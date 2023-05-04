@@ -1,8 +1,9 @@
+import * as fs from 'node:fs'
 import { Client, Collection, EmbedBuilder, InteractionType, ApplicationCommandOptionType, channelMention } from 'discord.js'
 import { CommandError } from '../utils/error.js'
+import Locales from '../utils/locales.js'
 import Logger from '../utils/logger.js'
 import config from '../config.json' assert { type: 'json' }
-import * as fs from 'node:fs'
 
 export default class Commands {
     /**
@@ -73,10 +74,10 @@ export default class Commands {
                 Logger.log('CommandManager', 'INFO', `${interaction.user.tag} a exécuté la commande "/${interaction.commandName}${commandOptions.length > 0 ? ` ${commandOptions.join(' ')}` : ''}"`)
 
                 // On test si la commande est exécutée depuis le bon channel
-                if(command.channels) {
-                    for(const channel of command.channels) {
-                        if(config.guild.channels[channel] !== interaction.channelId) {
-                            throw new CommandError('Merci d\'effectuer cette commande dans un des channels suivant :\n' + command.channels.map(channel => channelMention(config.guild.channels[channel])).join('\n'), interaction.commandName)
+                if(command.allowedChannels) {
+                    for(const channel of command.allowedChannels) {
+                        if(channel !== interaction.channelId) {
+                            throw new CommandError(Locales.get(interaction.locale, 'wrong_channel', command.allowedChannels.map(channel => channelMention(channel)).join('\n')), interaction.commandName)
                         }
                     }
                 }
@@ -84,10 +85,10 @@ export default class Commands {
                 await command.execute(interaction)
             } catch(error) {
                 let errMessage
-                if(error instanceof CommandError) {
+                if(error.name === 'COMMAND_ERROR') {
                     errMessage = error.message
                 } else {
-                    errMessage = 'Une erreur est survenue lors de l\'exécution de la commande'
+                    errMessage = Locales.get(interaction.locale, 'command_error')
                     Logger.log('CommandManager', 'ERROR', `L'exécution de la commande "/${interaction.commandName}" a échoué : ${error.message}`)
                 }
 

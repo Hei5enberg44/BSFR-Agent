@@ -1,4 +1,4 @@
-import { GuildMember, userMention } from 'discord.js'
+import { GuildMember, TextChannel, userMention } from 'discord.js'
 import Embed from '../utils/embed.js'
 import mute from '../controllers/mute.js'
 import { Reactions } from '../controllers/database.js'
@@ -21,11 +21,12 @@ export default {
      * @param {GuildMember} member The member that has joined a guild
      */
     async welcome(member) {
-        const logsChannel = member.guild.channels.cache.get(config.guild.channels.logs)
+        /** @type {TextChannel} */
+        const logsChannel = member.guild.channels.cache.get(config.guild.channels['logs'])
 
         const embed = new Embed()
             .setColor('#2ECC71')
-            .setTitle('📥 Arrivée de ' + member.user.username)
+            .setTitle(`📥 Arrivée de ${member.user.username}`)
             .setThumbnail(member.user.displayAvatarURL({ dynamic: true }))
             .addFields(
                 { name: 'Membre', value: userMention(member.user.id) },

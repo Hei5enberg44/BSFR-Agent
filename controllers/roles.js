@@ -2,14 +2,21 @@ import { Roles, RolesCategories } from '../controllers/database.js'
 
 export default {
     /**
-     * @typedef {Object} RoleGroup
+     * @typedef {Object} Role
+     * @property {string} name
+     * @property {boolean} multiple
+     * 
+     */
+
+    /**
+     * @typedef {Object} RoleCategory
      * @property {string} category
-     * @property {Array<{name: string, multiple: boolean}>} roles
+     * @property {Array<Role>} roles
      */
 
     /**
      * Retourne les groupes de rôles depuis la base de données
-     * @returns {Promise<Array<RoleGroup>>} liste des groupes de rôles
+     * @returns {Promise<Array<RoleCategory>>} liste des groupes de rôles
      */
     async list() {
         const roles = await Roles.findAll({
@@ -27,7 +34,7 @@ export default {
 
         const roleList = []
         for(const role of roles) {
-            const r = { "name": role.name, "multiple": role.multiple }
+            const r = { name: role.name, multiple: role.multiple ? true : false }
             const category = roleList.find(rl => rl.category === role.category)
             if(!category) {
                 roleList.push({

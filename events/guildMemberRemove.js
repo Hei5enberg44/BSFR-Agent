@@ -1,4 +1,4 @@
-import { GuildMember, userMention } from 'discord.js'
+import { GuildMember, TextChannel, userMention } from 'discord.js'
 import Embed from '../utils/embed.js'
 import { Birthdays, Cities, Twitch } from '../controllers/database.js'
 import threads from '../controllers/threads.js'
@@ -23,11 +23,12 @@ export default {
      * @param {GuildMember} member The member that has left/been kicked from the guild
      */
     async bye(member) {
-        const logsChannel = member.guild.channels.cache.get(config.guild.channels.logs)
+        /** @type {TextChannel} */
+        const logsChannel = member.guild.channels.cache.get(config.guild.channels['logs'])
 
         const embed = new Embed()
             .setColor('#E74C3C')
-            .setTitle('📤 Départ de ' + member.user.username)
+            .setTitle(`📤 Départ de ${member.user.username}`)
             .setThumbnail(member.user.displayAvatarURL({ dynamic: true }))
             .addFields({ name: 'Membre', value: userMention(member.user.id) })
         

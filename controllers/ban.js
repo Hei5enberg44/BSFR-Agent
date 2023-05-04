@@ -1,7 +1,8 @@
-import { Client, MessageReaction, User, userMention, roleMention, bold, inlineCode } from 'discord.js'
+import { Client, MessageReaction, User, TextChannel, userMention, roleMention, bold, italic, time, TimestampStyles, MessageFlags } from 'discord.js'
 import Embed from '../utils/embed.js'
 import { Bans, Reactions } from '../controllers/database.js'
 import { Op } from 'sequelize'
+import Locales from '../utils/locales.js'
 import Logger from '../utils/logger.js'
 import config from '../config.json' assert { type: 'json' }
 
@@ -34,8 +35,10 @@ export default {
                 data: {
                     banId: ban.id
                 },
-                memberId: bannedBy,
-                channelId: channelId,
+                interaction: {
+                    memberId: bannedBy,
+                    channelId: channelId
+                },
                 messageId: messageId
             })
         }
@@ -56,7 +59,7 @@ export default {
     },
 
     /**
-     * @typedef {object} MemberBan
+     * @typedef {Object} MemberBan
      * @property {number} id
      * @property {string} memberId
      * @property {string} bannedBy
@@ -135,32 +138,32 @@ export default {
         const date = new Date()
     
         switch(unit) {
-            case "S":
+            case 'S':
                 date.setSeconds(date.getSeconds() + time)
                 break
-            case "I":
+            case 'I':
                 date.setMinutes(date.getMinutes() + time)
                 break
-            case "H":
+            case 'H':
                 date.setHours(date.getHours() + time)
                 break
-            case "D":
+            case 'D':
                 date.setDate(date.getDate() + time)
                 break
-            case "W":
+            case 'W':
                 date.setDate(date.getDate() + (time * 7))
                 break
-            case "M":
+            case 'M':
                 date.setMonth(date.getMonth() + time)
                 break
-            case "Y":
+            case 'Y':
                 date.setFullYear(date.getFullYear() + time)
                 break
             default:
                 return false
         }
     
-        if(date.toString().toLowerCase() === "invalid date")
+        if(date.toString().toLowerCase() === 'invalid date')
             return false
     
         return date
@@ -171,8 +174,7 @@ export default {
      * @property {number} id
      * @property {string} type
      * @property {{banId: number}} data
-     * @property {string} memberId
-     * @property {string} channelId
+     * @property {{memberId: string, channelId: string}} interaction
      * @property {string} messageId
      * @property {Date} date
      */
@@ -188,7 +190,8 @@ export default {
         const banInfos = await this.get(banId)
 
         const guild = reaction.client.guilds.cache.get(config.guild.id)
-        const logsChannel = guild.channels.cache.get(config.guild.channels.logs)
+        /** @type {TextChannel} */
+        const logsChannel = guild.channels.cache.get(config.guild.channels['logs'])
         const muteRole = guild.roles.cache.get(config.guild.roles['Muted'])
         const member = guild.members.cache.get(banInfos.memberId)
 
@@ -198,16 +201,16 @@ export default {
             .setThumbnail(member.displayAvatarURL({ dynamic: true }))
             .addFields(
                 { name: 'Le vilain', value: userMention(banInfos.memberId) },
-                { name: 'La sanction a été demandée par', value: userMention(banInfos.bannedBy) }
+                { name: 'Ban demandé par', value: userMention(banInfos.bannedBy) }
             )
 
         if(reaction.emoji.name === '✅') {
             embeds.push(embed.setColor('#2ECC71')
-                .setTitle('🔨 [ACCEPTÉ] Demande de ban de ' + member.user.username)
+                .setTitle(`🔨 [ACCEPTÉ] Demande de ban de ${member.user.username}`)
                 .addFields(
-                    { name: 'La demande a été acceptée par', value: userMention(user.id), inline: true },
+                    { name: 'Demande approuvée par', value: userMention(user.id), inline: true },
                     { name: 'Raison', value: banInfos.reason },
-                    { name: 'Date de débannissement', value: banInfos.unbanDate.toLocaleString('fr-FR', { timeZone: 'Europe/Paris' }) }
+                    { name: 'Levée du ban', value: time(banInfos.unbanDate, TimestampStyles.RelativeTime) }
                 ))
 
             await this.approve(banId, user.id)
@@ -216,7 +219,10 @@ export default {
             await logsChannel.send({ embeds: embeds })
 
             try {
-                await member.send({ content: `${bold('[BSFR]')}\n\nTu as été banni pour la raison suivante :\n${inlineCode(banInfos.reason)}\n\nLorsque ton ban sera levé, tu recevras un message ici ou de la part du staff.` })
+                const banMessage = `🇫🇷 ${Locales.get('fr', 'ban_approved_message', time(banInfos.unbanDate, TimestampStyles.RelativeTime))}`
+                    + '\n\n━━━━━━━━━━━━━━━\n\n'
+                    + `🇬🇧 ${Locales.get('en-US', 'ban_approved_message', time(banInfos.unbanDate, TimestampStyles.RelativeTime))}`
+                await member.send({ content: banMessage })
             } catch(error) {
                 embeds.push(new Embed()
                     .setColor('#E74C3C')
@@ -228,14 +234,14 @@ export default {
             await reaction.message.reactions.removeAll()
             await reaction.message.edit({ embeds: embeds })
 
-            Logger.log('BanCommand', 'INFO', `La demande de ban de ${member.user.tag} a été acceptée par ${user.tag}`)
+            Logger.log('BanCommand', 'INFO', `La demande de ban pour ${member.user.tag} a été acceptée par ${user.tag}`)
         } else if(reaction.emoji.name === '❌') {
             embeds.push(embed.setColor('#2ECC71')
-                .setTitle('🔨 [REFUSÉ] Demande de ban de ' + member.user.username)
+                .setTitle(`🔨 [REFUSÉ] Demande de ban de ${member.user.username}`)
                 .addFields(
-                    { name: 'La demande a été refusée par', value: userMention(user.id), inline: true },
+                    { name: 'Demande refusée par', value: userMention(user.id), inline: true },
                     { name: 'Raison', value: banInfos.reason },
-                    { name: 'Date de débannissement', value: banInfos.unbanDate.toLocaleString('fr-FR', { timeZone: 'Europe/Paris' }) },
+                    { name: 'Levée du ban', value: time(banInfos.unbanDate, TimestampStyles.RelativeTime) },
                 ))
 
             await member.roles.remove(muteRole)
@@ -246,7 +252,10 @@ export default {
             await logsChannel.send({ embeds: embeds })
 
             try {
-                await member.send({ content: `${bold('[BSFR]')}\n\nLa demande de bannissement n'a pas été approuvée.\nTu es désormais unmute.` })
+                const banMessage = `🇫🇷 ${Locales.get('fr', 'ban_not_approved_message')}`
+                    + '\n\n━━━━━━━━━━━━━━━\n\n'
+                    + `🇬🇧 ${Locales.get('en-US', 'ban_not_approved_message')}`
+                await member.send({ content: banMessage })
             } catch(error) {
                 embeds.push(new Embed()
                     .setColor('#E74C3C')
@@ -256,7 +265,7 @@ export default {
             await reaction.message.reactions.removeAll()
             await reaction.message.edit({ embeds: embeds })
 
-            Logger.log('BanCommand', 'INFO', `La demande de ban de ${member.user.tag} a été refusée par ${user.tag}`)
+            Logger.log('BanCommand', 'INFO', `La demande de ban pour ${member.user.tag} a été refusée par ${user.tag}`)
         }
     },
 
@@ -275,23 +284,19 @@ export default {
                 guildBan = await guild.bans.fetch(ban.memberId)
             } catch(error) {
                 await this.remove(ban.id)
-                Logger.log('Unban', 'ERROR', `L'utilisateur "${ban.memberId}" est introuvable dans la liste des bannissements`)
+                Logger.log('Unban', 'ERROR', `Le membre "${ban.memberId}" est introuvable dans la liste des bans`)
             }
 
             if(guildBan) {
-                // On envoie un message privé à l'utilisateur afin de le prévenir que son ban est levé
-                // Si cela n'est pas possible, on envoie un message aux modérateur pour leur demander d'envoyer le lien d'invitation du serveur au membre
-                try {
-                    await guildBan.user.send({ content: `${bold('[BSFR]')}\n\nTu as été débanni.\nTâche d'être plus sage à l'avenir.\n\nVoici le lien d'invitation du serveur : ${config.links.discordInvite}` })
-                } catch(error) {
-                    const moderationChannel = guild.channels.cache.get(config.guild.channels.moderation)
-                    await moderationChannel.send({ content: `${roleMention(config.guild.roles["Modérateur"])} - ${bold('Déban de')} ${userMention(guildBan.user.id)}\n\nImpossible d'envoyer le lien d'invitation automatiquement.\nMerci de réinviter l'utilisateur manuellement.\n\nLien d'invitation : ${config.links.discordInvite}` })
-                }
+                // On envoie un message aux modérateurs pour leur demander d'envoyer le lien d'invitation du serveur au membre
+                /** @type {TextChannel} */
+                const moderationChannel = guild.channels.cache.get(config.guild.channels['modération'])
+                await moderationChannel.send({ content: `${roleMention(config.guild.roles["Modérateur"])} — ${bold('Fin du ban pour')} ${userMention(guildBan.user.id)}\n\nMerci de prévenir le membre ainsi que de lui envoyer le lien d'invitation pour le serveur.\n\n${italic(`Lien d'invitation : ${config.links.discordInvite}`)}`, flags: MessageFlags.SuppressEmbeds })
 
                 await guild.members.unban(guildBan.user.id)
                 await this.remove(ban.id)
 
-                Logger.log('Unban', 'INFO', `L'utilisateur ${guildBan.user.tag} a été débanni du serveur`)
+                Logger.log('Unban', 'INFO', `Le ban pour ${guildBan.user.tag} est terminé`)
             }
         }
     }

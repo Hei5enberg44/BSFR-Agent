@@ -1,54 +1,61 @@
-import { CommandInteraction, ApplicationCommandOptionType, userMention } from 'discord.js'
+import { SlashCommandBuilder, PermissionFlagsBits, CommandInteraction, TextChannel, ThreadAutoArchiveDuration, userMention } from 'discord.js'
 import { CommandError, CommandInteractionError } from '../utils/error.js'
 import threads from '../controllers/threads.js'
+import Locales from '../utils/locales.js'
 import Logger from '../utils/logger.js'
 import config from '../config.json' assert { type: 'json' }
 
 export default {
-    data: {
-        name: 'dm',
-        description: 'Envoie un message privé à un membre',
-        options: [
-            {
-                type: ApplicationCommandOptionType.User,
-                name: 'membre',
-                description: 'Membre à qui envoyer un message privé',
-                required: true
-            },
-            {
-                type: ApplicationCommandOptionType.String,
-                name: 'message',
-                description: 'Message',
-                required: true
-            }
-        ],
-        default_member_permissions: '0'
-    },
-    roles: [ 'Admin', 'Modérateur' ],
-    channels: [ 'agentDm' ],
+    data: new SlashCommandBuilder()
+        .setName('dm')
+        .setDescription('Sends a private message to a member')
+        .setDescriptionLocalization('fr', 'Envoie un message privé à un membre')
+        .addUserOption(option =>
+            option.setName('member')
+                .setNameLocalization('fr', 'membre')
+                .setDescription('Member to send a private message to')
+                .setDescriptionLocalization('fr', 'Membre à qui envoyer un message privé')
+                .setRequired(true)
+        )
+        .addStringOption(option =>
+            option.setName('message')
+                .setDescription('Message to send')
+                .setDescriptionLocalization('fr', 'Massage à envoyer')
+                .setRequired(true)
+        )
+        .setDMPermission(false)
+        .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles)
+    ,
+    allowedChannels: [
+        config.guild.channels['agent-dm']
+    ],
 
     /**
      * Exécution de la commande
-     * @param {CommandInteraction} interaction intéraction Discord
+     * @param {CommandInteraction} interaction interaction Discord
      */
     async execute(interaction) {
         try {
-            const member = interaction.options.getUser('membre')
+            const member = interaction.options.getUser('member')
+            /** @type {string} */
             const message = interaction.options.getString('message')
+
             const createdThread = await threads.get('dm', null, member.id)
-            const agentDmChannel = interaction.guild.channels.cache.get(config.guild.channels.agentDm)
+
+            /** @type {TextChannel} */
+            const agentDmChannel = interaction.guild.channels.cache.get(config.guild.channels['agent-dm'])
 
             let thread
             if(!createdThread) {
                 thread = await agentDmChannel.threads.create({
                     name: member.username,
-                    autoArchiveDuration: 1440,
-                    reason: 'DM de ' + member.tag
+                    autoArchiveDuration: ThreadAutoArchiveDuration.OneDay,
+                    reason: `DM de ${member.tag}`
                 })
 
                 if(!thread.id) {
                     Logger.log('DMCommand', 'ERROR', `Échec de la création du thread ${member.username}`)
-                    throw new CommandInteractionError('Échec de la création du thread. Le message n\'a pas été envoyé.')
+                    throw new CommandInteractionError(Locales.get(interaction.locale, 'thread_creation_error'))
                 } else {
                     Logger.log('DMCommand', 'INFO', `Thread "${member.username}" créé`)
 
@@ -66,12 +73,9 @@ export default {
                 }
             } else {
                 thread = await agentDmChannel.threads.fetch(createdThread.threadId)
-
-                if(thread) {
-                    Logger.log('DMCommand', 'INFO', `Thread "${member.username}" trouvé`)
-                } else {
+                if(!thread) {
                     Logger.log('DMCommand', 'ERROR', `Thread "${member.username}" introuvable`)
-                    throw new CommandInteractionError('Thread introuvable. Le message n\'a pas été envoyé.')
+                    throw new CommandInteractionError(Locales.get(interaction.locale, 'thread_not_found_error'))
                 }
             }
 
@@ -84,16 +88,16 @@ export default {
                 try {
                     await member.send({ content: `${userMention(interaction.user.id)}: ${message}` })
                     Logger.log('DMCommand', 'INFO', `Message privé envoyé à ${member.tag}`)
-                    await interaction.reply({ content: `Le message privé à ${userMention(member.id)} a bien été envoyé`, ephemeral: true })
+                    await interaction.reply({ content: Locales.get(interaction.locale, 'dm_sent', userMention(member.id)), ephemeral: true })
                 } catch(error) {
-                    Logger.log('RCommand', 'ERROR', `Le message privé à ${member.tag} n'a pas pu être envoyé`)
-                    await interaction.reply({ content: `Le message privé à ${userMention(member.id)} n'a pas pu être envoyé` })
+                    Logger.log('DMCommand', 'ERROR', `Le message privé à ${member.tag} n'a pas pu être envoyé`)
+                    await interaction.reply({ content: Locales.get(interaction.locale, 'dm_not_sent', userMention(member.id)), ephemeral: true })
                 }
             } else {
-                throw new CommandInteractionError('Une erreur est survenue lors de l\'envoi du message privé.')
+                throw new CommandInteractionError(Locales.get(interaction.locale, 'dm_error'))
             }
         } catch(error) {
-            if(error instanceof CommandInteractionError) {
+            if(error.name === 'COMMAND_INTERACTION_ERROR') {
                 throw new CommandError(error.message, interaction.commandName)
             } else {
                 throw Error(error.message)

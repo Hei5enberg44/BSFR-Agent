@@ -1,4 +1,4 @@
-import { Client, roleMention } from 'discord.js'
+import { Client, TextChannel, roleMention } from 'discord.js'
 import gapi from '../controllers/google.js'
 import { YoutubeVideos } from '../controllers/database.js'
 import Logger from '../utils/logger.js'
@@ -29,7 +29,8 @@ export default {
             Logger.log('YouTube', 'INFO', `Envoi des vidéos dans le channel #youtube`)
 
             const guild = client.guilds.cache.get(config.guild.id)
-            const youtubeChannel = guild.channels.cache.get(config.guild.channels.youtube)
+            /** @type {TextChannel} */
+            const youtubeChannel = guild.channels.cache.get(config.guild.channels['youtube'])
 
             await youtubeChannel.send({ content: `${roleMention(config.guild.roles['YouTube'])}\n${newVideos.map(video => 'https://youtu.be/' + video.videoId).join('\n')}` })
         }

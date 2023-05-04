@@ -98,7 +98,7 @@ export default {
     async postUpdate(client, update) {
         const guild = client.guilds.cache.get(config.guild.id)
         /** @type {TextChannel} */
-        const updateChannel = guild.channels.cache.get(config.guild.channels.bsUpdates)
+        const updateChannel = guild.channels.cache.get(config.guild.channels['bs-updates'])
 
         if(update.title && update.content) await updateChannel.send({ content: roleMention(config.guild.roles['Beat Saber Update']) })
 

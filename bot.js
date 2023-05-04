@@ -3,7 +3,6 @@ import Commands from './controllers/commands.js'
 import Events from './controllers/events.js'
 import crons from './controllers/crons.js'
 import Logger from './utils/logger.js'
-import { DatabaseError } from './utils/error.js'
 import database from './controllers/database.js'
 import * as fs from 'node:fs'
 
@@ -25,7 +24,7 @@ try {
                 GatewayIntentBits.DirectMessages,
                 GatewayIntentBits.DirectMessageReactions,
                 GatewayIntentBits.Guilds,
-                GatewayIntentBits.GuildBans,
+                GatewayIntentBits.GuildModeration,
                 GatewayIntentBits.GuildEmojisAndStickers,
                 GatewayIntentBits.GuildMembers,
                 GatewayIntentBits.GuildMessages,
@@ -50,7 +49,7 @@ try {
                 await database.test()
                 Logger.log('Database', 'INFO', 'Connexion à la base de données réussie')
             } catch(error) {
-                if(error instanceof DatabaseError) {
+                if(error.name === 'DATABASE_ERROR') {
                     Logger.log('Database', 'ERROR', error.message)
                     process.exit(1)
                 }

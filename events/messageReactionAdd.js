@@ -2,7 +2,7 @@ import { MessageReaction, User } from 'discord.js'
 import { Reactions } from '../controllers/database.js'
 import { Op } from 'sequelize'
 import rules from '../controllers/rules.js'
-import birthdayMessages from '../controllers/birthdayMessages.js'
+import birthdayMessage from '../controllers/birthdayMessage.js'
 import maliciousURL from '../controllers/maliciousURL.js'
 import ban from '../controllers/ban.js'
 import poll from '../controllers/poll.js'
@@ -20,7 +20,7 @@ export default {
         const r = await Reactions.findOne({
             where: {
                 [Op.and]: [
-                    { channelId: reaction.message.channelId },
+                    { 'interaction.channelId': reaction.message.channelId },
                     { messageId: reaction.message.id }
                 ]
             }
@@ -36,13 +36,13 @@ export default {
                     break
                 // Supression de messages d'anniversaire
                 case 'removeBirthdayMessage':
-                    await birthdayMessages.confirmRemove(reaction, user, r)
+                    await birthdayMessage.confirmRemove(reaction, user, r)
                     break
                 // Supression d'URL malveillants
                 case 'removeMaliciousURL':
                     await maliciousURL.confirmRemove(reaction, user, r)
                     break
-                // Confirmation de bannissement d'un membre
+                // Confirmation de ban d'un membre
                 case 'banRequest':
                     await ban.ban(reaction, user, r)
                     break

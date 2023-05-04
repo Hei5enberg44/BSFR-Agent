@@ -1,4 +1,4 @@
-import { Client, MessageReaction, User, time, TimestampStyles, userMention, bold } from 'discord.js'
+import { Client, MessageReaction, User, TextChannel, time, TimestampStyles, userMention, bold } from 'discord.js'
 import Embed from '../utils/embed.js'
 import { Reactions, Polls, PollsVotes } from './database.js'
 import { Op } from 'sequelize'
@@ -33,8 +33,10 @@ export default {
             data: {
                 pollId: poll.id
             },
-            memberId: memberId,
-            channelId: channelId,
+            interaction: {
+                memberId: memberId,
+                channelId: channelId
+            },
             messageId: messageId
         })
 
@@ -46,8 +48,7 @@ export default {
      * @property {number} id
      * @property {string} type
      * @property {{pollId: number}} data
-     * @property {string} memberId
-     * @property {string} channelId
+     * @property {{memberId: string, channelId: string}} interaction
      * @property {string} messageId
      * @property {Date} date
      */
@@ -136,7 +137,8 @@ export default {
                 }
             }
 
-            const logsChannel = guild.channels.cache.get(config.guild.channels.logs)
+            /** @type {TextChannel} */
+            const logsChannel = guild.channels.cache.get(config.guild.channels['logs'])
 
             const embed = new Embed()
                 .setColor('#F1C40F')
@@ -158,14 +160,8 @@ export default {
      * @param {number} pollId identifiant du sondage
      */
     async delete(pollId) {
-        await Reactions.destroy({
-            where: { 'data.pollId': pollId }
-        })
-        await PollsVotes.destroy({
-            where: { pollId: pollId }
-        })
-        await Polls.destroy({
-            where: { id: pollId }
-        })
+        await Reactions.destroy({ where: { 'data.pollId': pollId } })
+        await PollsVotes.destroy({ where: { pollId: pollId } })
+        await Polls.destroy({ where: { id: pollId } })
     }
 }

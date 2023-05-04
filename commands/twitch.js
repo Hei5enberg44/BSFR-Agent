@@ -1,39 +1,44 @@
-import { CommandInteraction, ApplicationCommandOptionType } from 'discord.js'
+import { SlashCommandBuilder, PermissionFlagsBits, CommandInteraction } from 'discord.js'
 import { CommandError, CommandInteractionError } from '../utils/error.js'
 import twitch from '../controllers/twitch.js'
+import Locales from '../utils/locales.js'
 import Logger from '../utils/logger.js'
+import config from '../config.json' assert { type: 'json' }
 
 export default {
-    data: {
-        name: 'twitch',
-        description: 'Lie votre compte Twitch afin d\'activer les notifications lorsque vous êtes en live',
-        options: [
-            {
-                type: ApplicationCommandOptionType.Subcommand,
-                name: 'link',
-                description: 'Lie votre compte Twitch',
-                options: [
-                    {
-                        type: ApplicationCommandOptionType.String,
-                        name: 'chaine',
-                        description: 'Nom de votre chaîne Twitch',
-                        required: true
-                    }
-                ]
-            },
-            {
-                type: ApplicationCommandOptionType.Subcommand,
-                name: 'unlink',
-                description: 'Délie votre compte Twitch'
-            }
-        ],
-        default_member_permissions: '0'
-    },
-    channels: [ 'twitch' ],
+    data: new SlashCommandBuilder()
+        .setName('twitch')
+        .setDescription('Links your Twitch account to enable notifications when you\'re live')
+        .setDescriptionLocalization('fr', 'Lie votre compte Twitch afin d\'activer les notifications lorsque vous êtes en live')
+        .addSubcommand(subcommand =>
+            subcommand.setName('link')
+                .setNameLocalization('fr', 'lier')
+                .setDescription('Link your Twitch channel')
+                .setDescriptionLocalization('fr', 'Lier votre chaîne Twitch')
+                .addStringOption(option =>
+                    option.setName('channel')
+                        .setNameLocalization('fr', 'chaine')
+                        .setDescription('Name of your Twitch channel')
+                        .setDescriptionLocalization('fr', 'Nom de votre chaîne Twitch')
+                        .setRequired(true)
+                )
+        )
+        .addSubcommand(subcommand =>
+            subcommand.setName('unlink')
+                .setNameLocalization('fr', 'délier')
+                .setDescription('Unlink your Twitch channel')
+                .setDescriptionLocalization('fr', 'Délier votre chaîne Twitch')
+        )
+        .setDMPermission(false)
+        .setDefaultMemberPermissions(PermissionFlagsBits.SendMessages)
+    ,
+    allowedChannels: [
+        config.guild.channels['twitch-youtube']
+    ],
 
     /**
      * Exécution de la commande
-     * @param {CommandInteraction} interaction intéraction Discord
+     * @param {CommandInteraction} interaction interaction Discord
      */
     async execute(interaction) {
         try {
@@ -41,15 +46,16 @@ export default {
 
             switch(action) {
                 case 'link': {
-                    const channelName = interaction.options.getString('chaine')
+                    /** @type {string} */
+                    const channelName = interaction.options.getString('channel')
 
-                    if(channelName.match(/^https?:\/\//)) throw new CommandInteractionError('Merci de renseigner le nom de votre chaîne Twitch et non son URL')
+                    if(channelName.match(/^https?:\/\//)) throw new CommandInteractionError(Locales.get(interaction.locale, 'twitch_channel_error'))
 
                     await twitch.link(interaction.user.id, channelName)
 
                     Logger.log('TwitchCommand', 'INFO', `${interaction.user.tag} a lié son compte Twitch`)
 
-                    await interaction.reply({ content: 'Votre compte Twitch a bien été lié à votre profil Discord', ephemeral: true })
+                    await interaction.reply({ content: Locales.get(interaction.locale, 'twitch_channel_linked'), ephemeral: true })
                     break
                 }
                 case 'unlink': {
@@ -57,12 +63,12 @@ export default {
 
                     Logger.log('TwitchCommand', 'INFO', `${interaction.user.tag} a délié son compte Twitch`)
 
-                    await interaction.reply({ content: 'Votre compte Twitch a bien été délié de votre profil Discord', ephemeral: true })
+                    await interaction.reply({ content: Locales.get(interaction.locale, 'twitch_channel_unlinked'), ephemeral: true })
                     break
                 }
             }
         } catch(error) {
-            if(error instanceof CommandInteractionError) {
+            if(error.name === 'COMMAND_INTERACTION_ERROR') {
                 throw new CommandError(error.message, interaction.commandName)
             } else {
                 throw Error(error.message)

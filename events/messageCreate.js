@@ -1,4 +1,4 @@
-import { Message, userMention } from 'discord.js'
+import { Message, TextChannel, ThreadAutoArchiveDuration, userMention } from 'discord.js'
 import maliciousURL from '../controllers/maliciousURL.js'
 import threads from '../controllers/threads.js'
 import antivirus from '../controllers/antivirus.js'
@@ -28,16 +28,16 @@ export default {
                     }
 
                     // Récupération des clips Twitch
-                    if(message.channel.id === config.guild.channels.clips) {
+                    if(message.channel.id === config.guild.channels['clips']) {
                         try {
                             await twitch.getClip(message)
                         } catch(error) {
-                            Logger.log('Clips', 'ERROR', 'Récupération du clip impossible : ' + error.message)
+                            Logger.log('Clips', 'ERROR', `Récupération du clip impossible : ${error.message}`)
                         }
                     }
                 } else {
                     // Récéption d'un webhook dans le channel #vote-run-bsfr
-                    if(message.channel.id === config.guild.channels.voteRun && message.webhookId) {
+                    if(message.channel.id === config.guild.channels['vote-run-bsfr'] && message.webhookId) {
                         await this.voteRunReactions(message)
                     }
                 }
@@ -73,7 +73,8 @@ export default {
     async dm(message) {
         if(message.author.id !== config.clientId) {
             const guild = message.client.guilds.cache.get(config.guild.id)
-            const agentDmChannel = guild.channels.cache.get(config.guild.channels.agentDm)
+            /** @type {TextChannel} */
+            const agentDmChannel = guild.channels.cache.get(config.guild.channels['agent-dm'])
 
             const createdThread = await threads.get('dm', null, message.author.id)
 
@@ -81,8 +82,8 @@ export default {
             if(!createdThread) {
                 thread = await agentDmChannel.threads.create({
                     name: message.author.username,
-                    autoArchiveDuration: 1440,
-                    reason: 'DM de ' + message.author.tag
+                    autoArchiveDuration: ThreadAutoArchiveDuration.OneDay,
+                    reason: `DM de ${message.author.tag}`
                 })
 
                 if(!thread.id) {
