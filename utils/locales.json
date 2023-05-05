@@ -88,13 +88,13 @@
         "role_added": "You now have the role %s",
         "role_remove": "Role deletion",
         "role_removed": "You no longer have the role %s",
-        "invalid_channel_error": "Please select a valid channel",
         "message_sent": "Message sent!",
         "twitch_channel_linked": "Your Twitch channel has been successfully linked to your Discord profile",
         "twitch_channel_unlinked": "Your Twitch channel has been successfully unlinked from your Discord profile",
         "twitch_channel_error": "Please enter the name of your Twitch channel and not its URL",
         "member_not_muted_error": "%s is not muted",
-        "member_unmuted": "%s has been unmute"
+        "member_unmuted": "%s has been unmute",
+        "vocal_message_sent": "Vocal message sent"
     },
     "fr": {
         "command_error": "Une erreur est survenue lors de l'exécution de la commande",
@@ -185,12 +185,12 @@
         "role_added": "Vous possédez maintenant le rôle %s",
         "role_remove": "Suppression de rôle",
         "role_removed": "Vous ne possédez plus le rôle %s",
-        "invalid_channel_error": "Merci de sélectionner un salon valide",
         "message_sent": "Message enoyé !",
         "twitch_channel_linked": "Votre chaîne Twitch a bien été liée à votre profil Discord",
         "twitch_channel_unlinked": "Votre chaîne Twitch a bien été déliée de votre profil Discord",
         "twitch_channel_error": "Merci de renseigner le nom de votre chaîne Twitch et non son URL",
         "member_not_muted_error": "%s n'est pas mute",
-        "member_unmuted": "%s a bien été unmute"
+        "member_unmuted": "%s a bien été unmute",
+        "vocal_message_sent": "Message vocal envoyé"
     }
 }

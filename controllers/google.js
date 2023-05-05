@@ -1,5 +1,6 @@
 import { google } from 'googleapis'
 import { OAuth2Client } from 'google-auth-library'
+import textToSpeech from '@google-cloud/text-to-speech'
 import config from '../config.json' assert { type: 'json' }
 
 const Auth = {
@@ -83,4 +84,31 @@ const YoutubeAPI = {
     }
 }
 
-export { YoutubeAPI }
+const ttsAPI = {
+    /**
+     * Synthétise un texte en voix
+     * @param {string} text texte à synthétiser
+     * @param {string} voice voix à utiliser pour la synthèse vocale
+     * @returns {Promise<Buffer>} synthèse vocale
+     */
+    async synthesize(text, voice) {
+        const client = new textToSpeech.TextToSpeechClient({
+            credentials: config.google.tts
+        })
+
+        const voiceSplit = voice.split('-')
+        const languageCode = `${voiceSplit[0]}-${voiceSplit[1]}`
+
+        const request = {
+            input: { text: text },
+            voice: { languageCode: languageCode, name: voice },
+            audioConfig: { audioEncoding: 'OGG_OPUS' }
+        }
+
+        const [ response ] = await client.synthesizeSpeech(request)
+
+        return response.audioContent
+    }
+}
+
+export { YoutubeAPI, ttsAPI }
