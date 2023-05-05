@@ -26,7 +26,6 @@ export default {
                 .setDescriptionLocalization('fr', 'Ajouter un rôle')
 
             for(const roleCategory of _roles) {
-                console.log(roleCategory.id)
                 subcommandgroup.addSubcommand(subcommand =>
                     subcommand.setName(roleCategory.id)
                         .setNameLocalizations(roleCategory.idLocalizations)
