@@ -1,6 +1,6 @@
 <h1>bsfr-agent</h1>
 <p>
-  <img alt="Version" src="https://img.shields.io/badge/version-2.19.1-blue.svg?cacheSeconds=2592000" />
+  <img alt="Version" src="https://img.shields.io/badge/version-2.20.0-blue.svg?cacheSeconds=2592000" />
   <a href="#" target="_blank">
     <img alt="License: ISC" src="https://img.shields.io/badge/License-ISC-yellow.svg" />
   </a>
@@ -472,6 +472,27 @@ __Exemples :__
 ```
 /cooldown liste
 /cooldown liste page:3
+```
+
+***
+
+- ### /parler : Parler dans un salon vocal
+
+Permet d'envoyer Agent dans un salon vocal afin de lui faire prononcer une phrase via tts.
+
+__Paramètres :__
+
+|    Nom    | Obligatoire | Contenu |
+| --------- |:-----------:| ------- |
+| **salon** | ☑ | Salon dans lequel envoyer le message vocal |
+| **message** | ☑ | Message vocal à envoyer |
+| **voix** |   | Voix à utiliser |
+
+__Exemples :__
+
+```
+/parler salon:🔊Vocal message:Coucou !
+/parler salon:🔊Vocal message:Bonjour à tous ! voix:Femme — Français
 ```
 
 ## Auteur
