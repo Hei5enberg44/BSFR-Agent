@@ -202,6 +202,7 @@ const Roles = sequelize.define('roles', {
     },
     categoryId: DataTypes.INTEGER(),
     name: DataTypes.STRING(255),
+    nameLocalizations: DataTypes.JSON(),
     multiple: DataTypes.BOOLEAN()
 })
 
@@ -211,7 +212,8 @@ const RolesCategories = sequelize.define('roles_categories', {
         autoIncrement: true,
         primaryKey: true
     },
-    name: DataTypes.STRING(255)
+    name: DataTypes.STRING(255),
+    nameLocalizations: DataTypes.JSON()
 })
 
 Roles.hasOne(RolesCategories, {

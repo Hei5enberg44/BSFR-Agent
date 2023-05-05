@@ -4,13 +4,17 @@ export default {
     /**
      * @typedef {Object} Role
      * @property {string} name
+     * @property {Object<string, string>} nameLocalizations
      * @property {boolean} multiple
      * 
      */
 
     /**
      * @typedef {Object} RoleCategory
-     * @property {string} category
+     * @property {string} id
+     * @property {Object<string, string>} idLocalizations
+     * @property {string} categoryName
+     * @property {Object<string, string>} categoryNameLocalizations
      * @property {Array<Role>} roles
      */
 
@@ -27,18 +31,30 @@ export default {
                 }
             ],
             attributes: [
-                'id', 'name', 'multiple', [ RolesCategories.sequelize.literal('`roles_category`.`name`'), 'category' ]
+                'id',
+                'name',
+                'nameLocalizations',
+                'multiple',
+                [ RolesCategories.sequelize.literal('`roles_category`.`name`'), 'categoryName' ],
+                [ RolesCategories.sequelize.literal('`roles_category`.`nameLocalizations`'), 'categoryNameLocalizations' ]
             ],
             raw: true
         })
 
         const roleList = []
         for(const role of roles) {
-            const r = { name: role.name, multiple: role.multiple ? true : false }
-            const category = roleList.find(rl => rl.category === role.category)
+            const r = { name: role.name, nameLocalizations: role.nameLocalizations, multiple: role.multiple ? true : false }
+            const category = roleList.find(rl => rl.categoryName === role.categoryName)
             if(!category) {
+                Object.keys(role.categoryNameLocalizations).forEach(c => {
+                    role.categoryNameLocalizations[c] = role.categoryNameLocalizations[c].toLowerCase().replace(/\s/g, '')
+                })
+
                 roleList.push({
-                    category: role.category,
+                    id: role.categoryNameLocalizations['en-US'],
+                    idLocalizations: role.categoryNameLocalizations,
+                    categoryName: role.categoryName,
+                    categoryNameLocalizations: role.categoryNameLocalizations,
                     roles: [ r ]
                 })
             } else {

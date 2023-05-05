@@ -25,19 +25,20 @@ export default {
                 .setDescription('Add a role')
                 .setDescriptionLocalization('fr', 'Ajouter un rôle')
 
-            for(const role of _roles) {
-                role.id = role.category.toLowerCase().replace(/\s/g, '')
+            for(const roleCategory of _roles) {
+                console.log(roleCategory.id)
                 subcommandgroup.addSubcommand(subcommand =>
-                    subcommand.setName(role.id)
-                        .setDescription(`Add a role for category « ${role.category} »`)
-                        .setDescriptionLocalization('fr', `Ajouter un rôle pour la catégorie « ${role.category} »`)
+                    subcommand.setName(roleCategory.id)
+                        .setNameLocalizations(roleCategory.idLocalizations)
+                        .setDescription(`Add a role for category « ${roleCategory.categoryNameLocalizations['en-US']} »`)
+                        .setDescriptionLocalization('fr', `Ajouter un rôle pour la catégorie « ${roleCategory.categoryNameLocalizations['fr']} »`)
                         .addStringOption(option =>
                             option.setName('role')
-                                .setDescription(`Role for category « ${role.category} » to add`)
-                                .setDescriptionLocalization('fr', `Rôle de la catégorie « ${role.category} » à ajouter`)
+                                .setDescription(`Role for category « ${roleCategory.categoryNameLocalizations['en-US']} » to add`)
+                                .setDescriptionLocalization('fr', `Rôle de la catégorie « ${roleCategory.categoryNameLocalizations['fr']} » à ajouter`)
                                 .addChoices(
-                                    ...role.roles.map(r => {
-                                        return { name: r.name, value: r.name }
+                                    ...roleCategory.roles.map(r => {
+                                        return { name: r.nameLocalizations['en-US'], name_localizations: { fr: r.nameLocalizations['fr'] }, value: r.name }
                                     })
                                 )
                                 .setRequired(true)
@@ -53,19 +54,19 @@ export default {
                 .setDescription('Remove a role')
                 .setDescriptionLocalization('fr', 'Supprimer un rôle')
 
-            for(const role of _roles) {
-                role.id = role.category.toLowerCase().replace(/\s/g, '')
+            for(const roleCategory of _roles) {
                 subcommandgroup.addSubcommand(subcommand =>
-                    subcommand.setName(role.id)
-                        .setDescription(`Remove a role for category « ${role.category} »`)
-                        .setDescriptionLocalization('fr', `Supprimer un rôle pour la catégorie « ${role.category} »`)
+                    subcommand.setName(roleCategory.id)
+                        .setNameLocalizations(roleCategory.idLocalizations)
+                        .setDescription(`Remove a role for category « ${roleCategory.categoryNameLocalizations['en-US']} »`)
+                        .setDescriptionLocalization('fr', `Supprimer un rôle pour la catégorie « ${roleCategory.categoryNameLocalizations['fr']} »`)
                         .addStringOption(option =>
                             option.setName('role')
-                                .setDescription(`Role for category « ${role.category} » to remove`)
-                                .setDescriptionLocalization('fr', `Rôle de la catégorie « ${role.category} » à supprimer`)
+                                .setDescription(`Role for category « ${roleCategory.categoryNameLocalizations['en-US']} » to remove`)
+                                .setDescriptionLocalization('fr', `Rôle de la catégorie « ${roleCategory.categoryNameLocalizations['fr']} » à supprimer`)
                                 .addChoices(
-                                    ...role.roles.map(r => {
-                                        return { name: r.name, value: r.name }
+                                    ...roleCategory.roles.map(r => {
+                                        return { name: r.nameLocalizations['en-US'], name_localizations: { fr: r.nameLocalizations['fr'] }, value: r.name }
                                     })
                                 )
                                 .setRequired(true)
@@ -100,12 +101,15 @@ export default {
             let roleGroupId, roleGroup, roleGrouproleList, role
             switch(action) {
                 case 'list':
+                    /** @type {Object<string, array>} */
                     const roleList = {}
                     for(const group of _roles) {
                         for(const role of group.roles) {
                             if(memberRoles.find(r => r.name === role.name)) {
-                                if(!roleList[group.category]) roleList[group.category] = []
-                                roleList[group.category].push(role.name)
+                                const roleCategory = group.categoryNameLocalizations[interaction.locale] ?? group.categoryName
+                                const roleName = role.nameLocalizations[interaction.locale] ?? role.name
+                                if(!roleList[roleCategory]) roleList[roleCategory] = []
+                                roleList[roleCategory].push(roleName)
                             }
                         }
                     }
@@ -113,7 +117,6 @@ export default {
                     embed.setColor('#F1C40F')
                         .setTitle(Locales.get(interaction.locale, 'list_roles'))
                         .setThumbnail(interaction.member.displayAvatarURL({ dynamic: true }))
-                        .setFooter({ text: `${config.appName} ${config.appVersion}`, iconURL: config.appLogo })
 
                     if(Object.keys(roleList).length > 0) {
                         for(const [group, roles] of Object.entries(roleList)) {
@@ -143,7 +146,7 @@ export default {
                             // On vérifie si plusieurs rôles de ce même groupe peuvent être attibués simultanément
                             const error = (!roleToAdd.multiple && roleGrouproleList.filter(rl => memberRoles.map(mr => mr.name).includes(rl.name)).find(r => !r.multiple)) ? true : false
                             if(error) {
-                                embed.setColor('#E74C3C').setDescription(Locales.get(interaction.locale, 'already_have_role_for_category_error', roleGroup.category, roleMention(role.id)))
+                                embed.setColor('#E74C3C').setDescription(Locales.get(interaction.locale, 'already_have_role_for_category_error', roleGroup.categoryNameLocalizations[interaction.locale] ?? roleGroup.categoryNameLocalizations['en-US'], roleMention(role.id)))
                             } else {
                                 Logger.log('RolesCommand', 'INFO', `Le membre ${interaction.user.tag} possède maintenant le rôle @${role.name}`)
                                 await interaction.member.roles.add(role)
