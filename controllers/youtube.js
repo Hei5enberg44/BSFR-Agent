@@ -7,7 +7,7 @@ import config from '../config.json' assert { type: 'json' }
 export default {
     /**
      * Publication des nouvelles vidéos de la chaîne YouTube Beat Saber FR
-     * dans le channel #youtube
+     * dans le salon #youtube
      * @param {Client} client client Discord
      */
     async publish(client) {
@@ -27,7 +27,7 @@ export default {
             }
 
             if(newVideos.length > 0) {
-                Logger.log('YouTube', 'INFO', 'Envoi des vidéos dans le channel #youtube')
+                Logger.log('YouTube', 'INFO', 'Envoi des vidéos dans le salon #youtube')
 
                 const guild = client.guilds.cache.get(config.guild.id)
                 /** @type {TextChannel} */

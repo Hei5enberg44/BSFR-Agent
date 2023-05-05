@@ -19,7 +19,7 @@ export default {
     },
 
     /**
-     * On log le départ du membre dans le channel logs
+     * On log le départ du membre dans le salon #logs
      * @param {GuildMember} member The member that has left/been kicked from the guild
      */
     async bye(member) {

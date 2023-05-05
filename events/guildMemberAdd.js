@@ -17,7 +17,7 @@ export default {
     },
 
     /**
-     * On log l'arrivée du membre dans le channel logs
+     * On log l'arrivée du membre dans le salon #logs
      * @param {GuildMember} member The member that has joined a guild
      */
     async welcome(member) {

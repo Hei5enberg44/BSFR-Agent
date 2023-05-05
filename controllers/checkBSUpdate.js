@@ -91,7 +91,7 @@ export default {
     },
 
     /**
-     * Publie le contenu de la mise à jour dans le channel #bs-updates
+     * Publie le contenu de la mise à jour dans le salon #bs-updates
      * @param {Client} client client Discord
      * @param {UpdateData} update contenu de la mise à jour
      */

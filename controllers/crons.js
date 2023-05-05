@@ -47,7 +47,7 @@ export default {
 
     /**
      * Publication des nouvelles vidéos de la chaîne YouTube Beat Saber FR
-     * dans le channel #youtube
+     * dans le salon #youtube
      * @param {Client} client client Discord
      */
     async publish(client) {
@@ -59,7 +59,7 @@ export default {
     },
 
     /**
-     * Recherche les membres en live sur Twitch et envoie une notification dans le channel #twitch-youtube
+     * Recherche les membres en live sur Twitch et envoie une notification dans le salon #twitch-youtube
      * @param {Client} client client Discord
      */
     async live(client) {
@@ -71,7 +71,7 @@ export default {
     },
 
     /**
-     * Vérifie la présence d'une nouvelle mise à jour de Beat Saber et publie son contenu dans le channel #bs-updates
+     * Vérifie la présence d'une nouvelle mise à jour de Beat Saber et publie son contenu dans le salon #bs-updates
      * @param {Client} client client Discord
      */
     async checkBSUpdate(client) {

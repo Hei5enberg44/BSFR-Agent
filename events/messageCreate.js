@@ -36,7 +36,7 @@ export default {
                         }
                     }
                 } else {
-                    // Récéption d'un webhook dans le channel #vote-run-bsfr
+                    // Récéption d'un webhook dans le salon #vote-run-bsfr
                     if(message.channel.id === config.guild.channels['vote-run-bsfr'] && message.webhookId) {
                         await this.voteRunReactions(message)
                     }

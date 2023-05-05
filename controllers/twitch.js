@@ -539,7 +539,7 @@ export default {
     },
 
     /**
-     * Recherche les membres en live sur Twitch et envoie une notification dans le channel #twitch-youtube
+     * Recherche les membres en live sur Twitch et envoie une notification dans le salon #twitch-youtube
      * @param {Client} client client Discord
      */
     async live(client) {

@@ -62,7 +62,7 @@ export default {
             
             await logsChannel.send({ embeds: [embed] })
 
-            Logger.log('SendCommand', 'INFO', `Message envoyé par ${interaction.user.tag} dans le channel #${channel.name}`)
+            Logger.log('SendCommand', 'INFO', `Message envoyé par ${interaction.user.tag} dans le salon #${channel.name}`)
 
             await interaction.reply({ content: Locales.get(interaction.locale, 'message_sent'), ephemeral: true })
         } catch(error) {
