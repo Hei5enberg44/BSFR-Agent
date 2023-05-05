@@ -46,13 +46,14 @@ export default {
             const r = { name: role.name, nameLocalizations: role.nameLocalizations, multiple: role.multiple ? true : false }
             const category = roleList.find(rl => rl.categoryName === role.categoryName)
             if(!category) {
+                const idLocalizations = {}
                 Object.keys(role.categoryNameLocalizations).forEach(c => {
-                    role.categoryNameLocalizations[c] = role.categoryNameLocalizations[c].toLowerCase().replace(/\s/g, '')
+                    idLocalizations[c] = role.categoryNameLocalizations[c].toLowerCase().replace(/\s/g, '')
                 })
 
                 roleList.push({
                     id: role.categoryNameLocalizations['en-US'],
-                    idLocalizations: role.categoryNameLocalizations,
+                    idLocalizations: idLocalizations,
                     categoryName: role.categoryName,
                     categoryNameLocalizations: role.categoryNameLocalizations,
                     roles: [ r ]
