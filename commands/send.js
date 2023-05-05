@@ -1,6 +1,6 @@
-import { SlashCommandBuilder, PermissionFlagsBits,CommandInteraction, TextChannel, hyperlink, userMention, channelMention } from 'discord.js'
+import { SlashCommandBuilder, PermissionFlagsBits, CommandInteraction, TextChannel, ChannelType, hyperlink, userMention, channelMention } from 'discord.js'
 import Embed from '../utils/embed.js'
-import { CommandError, CommandInteractionError } from '../utils/error.js'
+import { CommandError } from '../utils/error.js'
 import Locales from '../utils/locales.js'
 import Logger from '../utils/logger.js'
 import config from '../config.json' assert { type: 'json' }
@@ -16,6 +16,7 @@ export default {
                 .setNameLocalization('fr', 'salon')
                 .setDescription('Channel in which to send the message')
                 .setDescriptionLocalization('fr', 'Salon dans lequel envoyer le message')
+                .addChannelTypes(ChannelType.GuildText)
                 .setRequired(true)
         )
         .addStringOption(option =>
@@ -41,9 +42,6 @@ export default {
             const channel = interaction.options.getChannel('channel')
             /** @type {string} */
             const message = interaction.options.getString('message')
-
-            if(channel.type === 'GUILD_CATEGORY')
-                throw new CommandInteractionError(Locales.get(interaction.locale, 'invalid_channel_error'))
             
             /** @type {TextChannel} */
             const logsChannel = interaction.guild.channels.cache.get(config.guild.channels['logs'])
