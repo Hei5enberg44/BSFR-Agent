@@ -52,7 +52,7 @@ export default {
                 })
 
                 roleList.push({
-                    id: role.categoryNameLocalizations['en-US'],
+                    id: idLocalizations['en-US'],
                     idLocalizations: idLocalizations,
                     categoryName: role.categoryName,
                     categoryNameLocalizations: role.categoryNameLocalizations,
