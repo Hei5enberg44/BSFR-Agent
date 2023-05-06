@@ -2,8 +2,9 @@ import { Readable } from 'node:stream'
 import { SlashCommandBuilder, PermissionFlagsBits, ChannelType, VoiceChannel, CommandInteraction, userMention, channelMention, inlineCode } from 'discord.js'
 import { joinVoiceChannel, createAudioPlayer, createAudioResource, AudioPlayerStatus } from '@discordjs/voice'
 import Embed from '../utils/embed.js'
-import { CommandError } from '../utils/error.js'
+import { CommandError, QuotaLimitError } from '../utils/error.js'
 import { TextToSpeech } from '../controllers/google.js'
+import quotas from '../controllers/quotas.js'
 import Locales from '../utils/locales.js'
 import Logger from '../utils/logger.js'
 import config from '../config.json' assert { type: 'json' }
@@ -61,6 +62,18 @@ export default {
             /** @type {string} */
             const voice = interaction.options.getString('voice') ?? 'fr-FR-Wavenet-B'
 
+            const messageLength = message.length
+
+            // Vérification du quota disponible
+            const ttsQuota = await quotas.get('tts')
+            if(ttsQuota.current + messageLength > ttsQuota.max) {
+                throw new QuotaLimitError(Locales.get(interaction.locale, 'quota_reached'))
+            }
+
+            // Mise à jour du quota
+            ttsQuota.current += messageLength
+            ttsQuota.save()
+
             /** @type {TextChannel} */
             const logsChannel = interaction.guild.channels.cache.get(config.guild.channels['logs'])
 
@@ -108,7 +121,7 @@ export default {
 
             await interaction.reply({ content: Locales.get(interaction.locale, 'vocal_message_sent'), ephemeral: true })
         } catch(error) {
-            if(error.name === 'COMMAND_INTERACTION_ERROR') {
+            if(error.name === 'COMMAND_INTERACTION_ERROR' || error.name === 'QUOTA_LIMIT_ERROR') {
                 throw new CommandError(error.message, interaction.commandName)
             } else {
                 throw Error(error.message)

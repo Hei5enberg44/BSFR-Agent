@@ -94,7 +94,8 @@
         "twitch_channel_error": "Please enter the name of your Twitch channel and not its URL",
         "member_not_muted_error": "%s is not muted",
         "member_unmuted": "%s has been unmute",
-        "vocal_message_sent": "Vocal message sent"
+        "vocal_message_sent": "Vocal message sent",
+        "quota_reached": "The quota has been reached"
     },
     "fr": {
         "command_error": "Une erreur est survenue lors de l'exécution de la commande",
@@ -191,6 +192,7 @@
         "twitch_channel_error": "Merci de renseigner le nom de votre chaîne Twitch et non son URL",
         "member_not_muted_error": "%s n'est pas mute",
         "member_unmuted": "%s a bien été unmute",
-        "vocal_message_sent": "Message vocal envoyé"
+        "vocal_message_sent": "Message vocal envoyé",
+        "quota_reached": "Le quota à été atteint"
     }
 }

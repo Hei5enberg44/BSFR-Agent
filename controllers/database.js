@@ -237,6 +237,34 @@ const Cooldowns = sequelize.define('cooldowns', {
     count: DataTypes.INTEGER()
 })
 
+const Quotas = sequelize.define('quotas', {
+    id: {
+        type: DataTypes.INTEGER(),
+        autoIncrement: true,
+        primaryKey: true
+    },
+    name: DataTypes.STRING(255),
+    current: DataTypes.BIGINT(),
+    max: DataTypes.BIGINT()
+})
+
 export {
-    BirthdayMessages, MaliciousURL, Reactions, Birthdays, Mutes, Bans, Threads, YouTubeVideos, FranceCities, Cities, Twitch, BSUpdates, Polls, PollsVotes, Roles, RolesCategories, Cooldowns
+    BirthdayMessages,
+    MaliciousURL,
+    Reactions,
+    Birthdays,
+    Mutes,
+    Bans,
+    Threads,
+    YouTubeVideos,
+    FranceCities,
+    Cities,
+    Twitch,
+    BSUpdates,
+    Polls,
+    PollsVotes,
+    Roles,
+    RolesCategories,
+    Cooldowns,
+    Quotas
 }
