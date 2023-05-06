@@ -81,6 +81,24 @@ class CooldownEmptyError extends Error {
     }
 }
 
+class QuotaLimitError extends Error {
+    constructor(message) {
+        super(message)
+        this.name = 'QUOTA_LIMIT_ERROR'
+        Error.captureStackTrace(this, this.constructor)
+    }
+}
+
 export {
-    DatabaseError, CommandError, CommandInteractionError, PageNotFoundError, BirthdayMessageEmptyError, MaliciousURLEmptyError, TwitchError, NextcloudError, AntivirusError, CooldownEmptyError
+    DatabaseError,
+    CommandError,
+    CommandInteractionError,
+    PageNotFoundError,
+    BirthdayMessageEmptyError,
+    MaliciousURLEmptyError,
+    TwitchError,
+    NextcloudError,
+    AntivirusError,
+    CooldownEmptyError,
+    QuotaLimitError
 }
