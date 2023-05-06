@@ -74,6 +74,8 @@ export default {
             ttsQuota.current += messageLength
             ttsQuota.save()
 
+            const ttsQuotaUsage = Math.round((ttsQuota.current * 100) / ttsQuota.max)
+
             /** @type {TextChannel} */
             const logsChannel = interaction.guild.channels.cache.get(config.guild.channels['logs'])
 
@@ -85,7 +87,7 @@ export default {
 
             const speech = await TextToSpeech.synthesize(message, voice)
 
-            const audio = Readable.from(speech)
+            const audio = Readable.from(Buffer.from(speech, 'base64'))
 
             const player = createAudioPlayer()
             const resource = createAudioResource(audio, {
@@ -110,8 +112,11 @@ export default {
                 .setTitle('🎙️ Envoi de message vocal')
                 .addFields(
                     { name: 'Par', value: userMention(interaction.user.id), inline: true },
+                    { name: '\u200b', value: '\u200b', inline: true },
                     { name: 'Salon', value: channelMention(channel.id), inline: true },
                     { name: 'Voix', value: voiceChoice, inline: true },
+                    { name: '\u200b', value: '\u200b', inline: true },
+                    { name: 'Quota', value: `${ttsQuotaUsage}%`, inline: true },
                     { name: 'Message', value: inlineCode(message) }
                 )
 
