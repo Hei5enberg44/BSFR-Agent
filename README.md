@@ -1,6 +1,6 @@
 <h1>bsfr-agent</h1>
 <p>
-  <img alt="Version" src="https://img.shields.io/badge/version-2.20.3-blue.svg?cacheSeconds=2592000" />
+  <img alt="Version" src="https://img.shields.io/badge/version-2.20.4-blue.svg?cacheSeconds=2592000" />
   <a href="#" target="_blank">
     <img alt="License: ISC" src="https://img.shields.io/badge/License-ISC-yellow.svg" />
   </a>
@@ -476,21 +476,52 @@ __Exemples :__
 
 ***
 
-- ### /parler : Parler dans un salon vocal
+- ### /rejoindre : Rejoindre à salon vocal
 
-Permet d'envoyer Agent dans un salon vocal afin de lui faire prononcer une phrase via tts.
+Permet d'envoyer Agent dans un salon vocal.
 
 __Paramètres :__
 
 |    Nom    | Obligatoire | Contenu |
 | --------- |:-----------:| ------- |
-| **salon** | ☑ | Salon dans lequel envoyer le message vocal |
+| **salon** | ☑ | Salon dans lequel envoyer @Agent |
+
+__Exemples :__
+
+```
+/rejoindre salon:🔊Vocal
+```
+
+***
+
+- ### /partir : Partir d'un salon vocal
+
+Permet de faire partir Agent d'un salon vocal.
+
+__Exemples :__
+
+```
+/partir
+```
+
+***
+
+- ### /parler : Parler dans un salon vocal
+
+Permet de faire prononcer une phrase à @Agent via tts.
+
+__Paramètres :__
+
+|    Nom    | Obligatoire | Contenu |
+| --------- |:-----------:| ------- |
 | **message** | ☑ | Message vocal à envoyer |
+| **salon** |   | Salon dans lequel envoyer le message vocal |
 | **voix** |   | Voix à utiliser |
 
 __Exemples :__
 
 ```
+/parler message:Salut !
 /parler salon:🔊Vocal message:Coucou !
 /parler salon:🔊Vocal message:Bonjour à tous ! voix:Femme — Français
 ```
