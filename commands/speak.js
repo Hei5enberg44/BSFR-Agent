@@ -55,7 +55,7 @@ export default {
             /** @type {string} */
             const message = interaction.options.getString('message')
             /** @type {VoiceChannel} */
-            const channel = interaction.options.getChannel('channel')
+            let channel = interaction.options.getChannel('channel')
             /** @type {string} */
             const voice = interaction.options.getString('voice') ?? 'fr-FR-Wavenet-B'
 
@@ -79,6 +79,9 @@ export default {
             let voiceConnection
             if(!channel) {
                 voiceConnection = getVoiceConnection(interaction.guild.id)
+
+                const channelId = voiceConnection.joinConfig.channelId
+                channel = interaction.guild.channels.cache.get(channelId)
 
                 if(!voiceConnection) {
                     Logger.log('SpeakCommand', 'ERROR', `@${interaction.client.user.username} ne se trouve dans aucun salon vocal`)
