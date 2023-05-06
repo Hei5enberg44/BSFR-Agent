@@ -94,6 +94,9 @@
         "twitch_channel_error": "Please enter the name of your Twitch channel and not its URL",
         "member_not_muted_error": "%s is not muted",
         "member_unmuted": "%s has been unmute",
+        "voice_channel_joined": "%s joined %s",
+        "voice_channel_leaved": "%s leaved %s",
+        "voice_channel_leave_error": "%s ne se trouve dans aucun salon vocal",
         "vocal_message_sent": "Vocal message sent",
         "quota_reached": "The quota has been reached"
     },
@@ -192,6 +195,9 @@
         "twitch_channel_error": "Merci de renseigner le nom de votre chaîne Twitch et non son URL",
         "member_not_muted_error": "%s n'est pas mute",
         "member_unmuted": "%s a bien été unmute",
+        "voice_channel_joined": "%s a rejoint %s",
+        "voice_channel_leaved": "%s est parti de %s",
+        "voice_channel_leave_error": "%s ne se trouve dans aucun salon vocal",
         "vocal_message_sent": "Message vocal envoyé",
         "quota_reached": "Le quota à été atteint"
     }
