@@ -4,7 +4,6 @@ import { CommandError, CommandInteractionError } from '../utils/error.js'
 import cooldown from '../controllers/cooldown.js'
 import Locales from '../utils/locales.js'
 import Logger from '../utils/logger.js'
-import config from '../config.json' assert { type: 'json' }
 
 export default {
     data: new SlashCommandBuilder()
@@ -76,9 +75,6 @@ export default {
         .setDMPermission(false)
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles)
     ,
-    allowedChannels: [
-        config.guild.channels['bot-setup']
-    ],
 
     /**
      * Exécution de la commande

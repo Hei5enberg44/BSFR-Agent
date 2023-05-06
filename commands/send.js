@@ -28,9 +28,6 @@ export default {
         .setDMPermission(false)
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles)
     ,
-    allowedChannels: [
-        config.guild.channels['bot-setup']
-    ],
 
     /**
      * Exécution de la commande
