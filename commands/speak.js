@@ -1,8 +1,8 @@
 import { Readable } from 'node:stream'
 import { SlashCommandBuilder, PermissionFlagsBits, ChannelType, VoiceChannel, CommandInteraction, userMention, channelMention, inlineCode } from 'discord.js'
-import { joinVoiceChannel, createAudioPlayer, createAudioResource, AudioPlayerStatus } from '@discordjs/voice'
+import { joinVoiceChannel, getVoiceConnection, createAudioPlayer, createAudioResource } from '@discordjs/voice'
 import Embed from '../utils/embed.js'
-import { CommandError, QuotaLimitError } from '../utils/error.js'
+import { CommandError, CommandInteractionError, QuotaLimitError } from '../utils/error.js'
 import { TextToSpeech } from '../controllers/google.js'
 import quotas from '../controllers/quotas.js'
 import Locales from '../utils/locales.js'
@@ -15,19 +15,19 @@ export default {
         .setNameLocalization('fr', 'parler')
         .setDescription('Speak in a vocal channel')
         .setDescriptionLocalization('fr', 'Parler dans un salon vocal')
+        .addStringOption(option =>
+            option.setName('message')
+                .setDescription('Voice message to send')
+                .setDescriptionLocalization('fr', 'Message vocal à envoyer')
+                .setRequired(true)
+        )
         .addChannelOption(option =>
             option.setName('channel')
                 .setNameLocalization('fr', 'salon')
                 .setDescription('Channel in which to send the voice message')
                 .setDescriptionLocalization('fr', 'Salon dans lequel envoyer le message vocal')
                 .addChannelTypes(ChannelType.GuildVoice)
-                .setRequired(true)
-        )
-        .addStringOption(option =>
-            option.setName('message')
-                .setDescription('Voice message to send')
-                .setDescriptionLocalization('fr', 'Message vocal à envoyer')
-                .setRequired(true)
+                .setRequired(false)
         )
         .addStringOption(option =>
             option.setName('voice')
@@ -45,9 +45,6 @@ export default {
         .setDMPermission(false)
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles)
     ,
-    allowedChannels: [
-        config.guild.channels['bot-setup']
-    ],
 
     /**
      * Exécution de la commande
@@ -55,10 +52,10 @@ export default {
      */
     async execute(interaction) {
         try {
-            /** @type {VoiceChannel} */
-            const channel = interaction.options.getChannel('channel')
             /** @type {string} */
             const message = interaction.options.getString('message')
+            /** @type {VoiceChannel} */
+            const channel = interaction.options.getChannel('channel')
             /** @type {string} */
             const voice = interaction.options.getString('voice') ?? 'fr-FR-Wavenet-B'
 
@@ -79,11 +76,22 @@ export default {
             /** @type {TextChannel} */
             const logsChannel = interaction.guild.channels.cache.get(config.guild.channels['logs'])
 
-            const voiceConnection = joinVoiceChannel({
-                guildId: config.guild.id,
-                channelId: channel.id,
-                adapterCreator: interaction.guild.voiceAdapterCreator
-            })
+            let voiceConnection
+            if(!channel) {
+                voiceConnection = getVoiceConnection(interaction.guild.id)
+
+                if(!voiceConnection) {
+                    Logger.log('SpeakCommand', 'ERROR', `@${interaction.client.user.username} ne se trouve dans aucun salon vocal`)
+
+                    throw new CommandInteractionError(Locales.get(interaction.locale, 'voice_channel_leave_error', `@${interaction.client.user.username}`))
+                }
+            } else {
+                voiceConnection = joinVoiceChannel({
+                    guildId: config.guild.id,
+                    channelId: channel.id,
+                    adapterCreator: interaction.guild.voiceAdapterCreator
+                })
+            }
 
             const speech = await TextToSpeech.synthesize(message, voice)
 
@@ -96,10 +104,6 @@ export default {
 
             voiceConnection.subscribe(player)
             player.play(resource)
-
-            player.on(AudioPlayerStatus.Idle, () => {
-                voiceConnection.disconnect()
-            })
 
             // Récupération du choix de voix utilisé
             const commandOptions = this.data.toJSON().options
@@ -122,7 +126,7 @@ export default {
 
             await logsChannel.send({ embeds: [embed] })
 
-            Logger.log('SpeakCommand', 'INFO', `Message vocal envoyé par ${interaction.user.tag} dans le salon #${channel.name}`)
+            Logger.log('SpeakCommand', 'INFO', `Message vocal envoyé par ${interaction.user.tag} dans le salon 🔊${channel.name}`)
 
             await interaction.reply({ content: Locales.get(interaction.locale, 'vocal_message_sent'), ephemeral: true })
         } catch(error) {
