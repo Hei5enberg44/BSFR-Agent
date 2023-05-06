@@ -27,7 +27,7 @@ export default {
                 const channelId = voiceConnection.joinConfig.channelId
 
                 /** @type {VoiceChannel} */
-                const channel = interaction.guild.channels.cache.find(c => c.id === channelId)
+                const channel = interaction.guild.channels.cache.get(channelId)
 
                 voiceConnection.destroy()
     
