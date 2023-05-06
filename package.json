@@ -1,7 +1,7 @@
 {
   "name": "bsfr-agent",
   "displayName": "BSFR Agent",
-  "version": "2.20.3",
+  "version": "2.20.4",
   "description": "Admin agent bot for BSFR",
   "main": "bot.js",
   "type": "module",
@@ -20,7 +20,7 @@
     "@discordjs/voice": "^0.16.0",
     "chalk": "^5.2.0",
     "cron": "^2.3.0",
-    "discord.js": "^14.10.0",
+    "discord.js": "^14.11.0",
     "fluent-ffmpeg": "^2.1.2",
     "googleapis": "^118.0.0",
     "mariadb": "^3.1.1",
