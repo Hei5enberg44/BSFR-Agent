@@ -77,6 +77,7 @@ try {
             await crons.live(client)
             await crons.checkBSUpdate(client)
             await crons.finishPolls(client)
+            await crons.resetQuotas()
         
             Logger.log('Application', 'INFO', 'Le bot est prêt !')
         })

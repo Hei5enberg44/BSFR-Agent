@@ -6,6 +6,7 @@ import youtube from '../controllers/youtube.js'
 import twitch from '../controllers/twitch.js'
 import checkBSUpdate from '../controllers/checkBSUpdate.js'
 import poll from '../controllers/poll.js'
+import quotas from '../controllers/quotas.js'
 import Logger from '../utils/logger.js'
 
 export default {
@@ -93,5 +94,16 @@ export default {
         }, null, true, 'Europe/Paris')
 
         Logger.log('CronManager', 'INFO', 'Tâche "finishPolls" chargée')
+    },
+
+    /**
+     * Réinitialise tous les quotas
+     */
+    async resetQuotas() {
+        new CronJob('0 0 1 * *', async function () {
+            await quotas.resetAll()
+        }, null, true, 'Europe/Paris')
+
+        Logger.log('CronManager', 'INFO', 'Tâche "resetQuotas" chargée')
     }
 }

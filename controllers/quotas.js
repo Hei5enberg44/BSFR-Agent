@@ -1,4 +1,5 @@
 import { Quotas } from './database.js'
+import { Op } from 'sequelize'
 
 export default {
     /**
@@ -14,5 +15,20 @@ export default {
         })
 
         return quota
+    },
+
+    /**
+     * Réinitialise tous les quotas
+     */
+    async resetAll() {
+        await Quotas.update({
+            current: 0
+        }, {
+            where: {
+                current: {
+                    [Op.gt]: 0
+                }
+            }
+        })
     }
 }
