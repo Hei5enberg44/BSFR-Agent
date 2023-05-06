@@ -1,6 +1,6 @@
 import { Client, TextChannel, roleMention } from 'discord.js'
-import { YoutubeAPI } from '../controllers/google.js'
-import { YoutubeVideos } from '../controllers/database.js'
+import { YouTube } from '../controllers/google.js'
+import { YouTubeVideos } from '../controllers/database.js'
 import Logger from '../utils/logger.js'
 import config from '../config.json' assert { type: 'json' }
 
@@ -12,15 +12,15 @@ export default {
      */
     async publish(client) {
         try {
-            const videos = await YoutubeVideos.findAll()
-            const latestVideos = await YoutubeAPI.getLatestPublicsVideos()
+            const videos = await YouTubeVideos.findAll()
+            const latestVideos = await YouTube.getLatestPublicsVideos()
 
             const newVideos = latestVideos.filter(lv => !videos.map(v => v.videoId).includes(lv.videoId))
 
             Logger.log('YouTube', 'INFO', `${newVideos.length} nouvelle(s) vidéo(s) trouvée(s)`)
 
             for(const newVideo of newVideos) {
-                await YoutubeVideos.findOrCreate({
+                await YouTubeVideos.findOrCreate({
                     where: { videoId: newVideo.videoId },
                     defaults: newVideo
                 })

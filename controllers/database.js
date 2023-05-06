@@ -108,7 +108,7 @@ const Threads = sequelize.define('threads', {
     date: DataTypes.DATE()
 })
 
-const YoutubeVideos = sequelize.define('youtube_videos', {
+const YouTubeVideos = sequelize.define('youtube_videos', {
     id: {
         type: DataTypes.INTEGER(),
         autoIncrement: true,
@@ -238,5 +238,5 @@ const Cooldowns = sequelize.define('cooldowns', {
 })
 
 export {
-    BirthdayMessages, MaliciousURL, Reactions, Birthdays, Mutes, Bans, Threads, YoutubeVideos, FranceCities, Cities, Twitch, BSUpdates, Polls, PollsVotes, Roles, RolesCategories, Cooldowns
+    BirthdayMessages, MaliciousURL, Reactions, Birthdays, Mutes, Bans, Threads, YouTubeVideos, FranceCities, Cities, Twitch, BSUpdates, Polls, PollsVotes, Roles, RolesCategories, Cooldowns
 }

@@ -3,7 +3,7 @@ import { SlashCommandBuilder, PermissionFlagsBits, ChannelType, VoiceChannel, Co
 import { joinVoiceChannel, createAudioPlayer, createAudioResource, AudioPlayerStatus } from '@discordjs/voice'
 import Embed from '../utils/embed.js'
 import { CommandError } from '../utils/error.js'
-import { ttsAPI } from '../controllers/google.js'
+import { TextToSpeech } from '../controllers/google.js'
 import Locales from '../utils/locales.js'
 import Logger from '../utils/logger.js'
 import config from '../config.json' assert { type: 'json' }
@@ -70,7 +70,7 @@ export default {
                 adapterCreator: interaction.guild.voiceAdapterCreator
             })
 
-            const speech = await ttsAPI.synthesize(message, voice)
+            const speech = await TextToSpeech.synthesize(message, voice)
 
             const audio = Readable.from(speech)
 
