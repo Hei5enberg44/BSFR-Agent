@@ -80,14 +80,14 @@ export default {
             if(!channel) {
                 voiceConnection = getVoiceConnection(interaction.guild.id)
 
-                const channelId = voiceConnection.joinConfig.channelId
-                channel = interaction.guild.channels.cache.get(channelId)
-
                 if(!voiceConnection) {
                     Logger.log('SpeakCommand', 'ERROR', `@${interaction.client.user.username} ne se trouve dans aucun salon vocal`)
 
                     throw new CommandInteractionError(Locales.get(interaction.locale, 'voice_channel_leave_error', `@${interaction.client.user.username}`))
                 }
+
+                const channelId = voiceConnection.joinConfig.channelId
+                channel = interaction.guild.channels.cache.get(channelId)
             } else {
                 voiceConnection = joinVoiceChannel({
                     guildId: config.guild.id,
@@ -127,7 +127,7 @@ export default {
                     { name: 'Message', value: inlineCode(message) }
                 )
 
-            await logsChannel.send({ embeds: [embed] })
+            // await logsChannel.send({ embeds: [embed] })
 
             Logger.log('SpeakCommand', 'INFO', `Message vocal envoyé par ${interaction.user.tag} dans le salon 🔊${channel.name}`)
 
