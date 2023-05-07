@@ -1,5 +1,6 @@
 import { Quotas } from './database.js'
 import { Op } from 'sequelize'
+import Logger from '../utils/logger.js'
 
 export default {
     /**
@@ -30,5 +31,7 @@ export default {
                 }
             }
         })
+
+        Logger.log('Quotas', 'INFO', 'Les quotas ont été réinitialisés')
     }
 }
