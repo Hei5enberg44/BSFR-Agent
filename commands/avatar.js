@@ -25,14 +25,14 @@ export default {
                 )
                 .setRequired(false)
         )
-        .addStringOption(option =>
+        .addIntegerOption(option =>
             option.setName('size')
                 .setNameLocalization('fr', 'taille')
                 .setDescription('Image size')
                 .setDescriptionLocalization('fr', 'Taille de l\'image')
                 .setChoices(
                     ...ALLOWED_SIZES.map(size => {
-                        return { name: size.toString(), value: size.toString() }
+                        return { name: size.toString(), value: size }
                     })
                 )
                 .setRequired(false)
@@ -58,9 +58,9 @@ export default {
     async execute(interaction) {
         try {
             const member = interaction.options.getUser('member') ?? interaction.user
-            /** @type {string} */
+            /** @type {(typeof ALLOWED_EXTENSIONS)[number]} */
             const extension = interaction.options.getString('extension') ?? 'png'
-            /** @type {number} */
+            /** @type {(typeof ALLOWED_SIZES)[number]} */
             const size = interaction.options.getInteger('size') ?? 1024
             /** @type {boolean} */
             const forceStatic = interaction.options.getBoolean('static') ?? true
