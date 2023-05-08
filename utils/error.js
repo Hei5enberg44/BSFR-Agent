@@ -25,6 +25,23 @@ class CommandInteractionError extends Error {
     }
 }
 
+class ModalError extends Error {
+    constructor(message, modalName) {
+        super(message)
+        this.name = 'MODAL_ERROR'
+        Error.captureStackTrace(this, this.constructor)
+        Logger.log('ModalManager', 'INFO', `La soumission de la modale "${modalName}" a échoué : ${(message).replace(/:[^:]+:\s/g, '').replace('\n', ' ')}`)
+    }
+}
+
+class ModalSubmissionError extends Error {
+    constructor(message) {
+        super(message)
+        this.name = 'MODAL_SUBMISSION_ERROR'
+        Error.captureStackTrace(this, this.constructor)
+    }
+}
+
 class PageNotFoundError extends Error {
     constructor() {
         super()
@@ -93,6 +110,8 @@ export {
     DatabaseError,
     CommandError,
     CommandInteractionError,
+    ModalError,
+    ModalSubmissionError,
     PageNotFoundError,
     BirthdayMessageEmptyError,
     MaliciousURLEmptyError,

@@ -1,10 +1,11 @@
+import * as fs from 'node:fs'
 import { Client, GatewayIntentBits, Partials } from 'discord.js'
+import database from './controllers/database.js'
 import Commands from './controllers/commands.js'
+import Modals from './controllers/modals.js'
 import Events from './controllers/events.js'
 import crons from './controllers/crons.js'
 import Logger from './utils/logger.js'
-import database from './controllers/database.js'
-import * as fs from 'node:fs'
 
 try {
     Logger.log('Application', 'INFO', 'Démarrage du bot')
@@ -64,6 +65,11 @@ try {
             const commands = new Commands(client)
             await commands.load()
             await commands.listen()
+
+            // Chargement des modales
+            const modals = new Modals(client)
+            await modals.load()
+            await modals.listen()
 
             // Chargement des évènements
             const events = new Events(client)
