@@ -145,7 +145,7 @@ export default {
                 const embed = new Embed()
                     .setColor('#2ECC71')
                     .setTitle('⏳ Spam détécté !')
-                    .setThumbnail(member.displayAvatarURL({ dynamic: true }))
+                    .setThumbnail(member.displayAvatarURL({ forceStatic: false }))
                     .setDescription(`${userMention(member.id)} s'est pris un cooldown – ${hyperlink('Voir', message.url)}`)
 
                 await logsChannel.send({ embeds: [embed] })

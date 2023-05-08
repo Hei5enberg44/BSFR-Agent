@@ -118,7 +118,7 @@ export default {
             const embed = new Embed()
                 .setColor('#2ECC71')
                 .setTitle(`🔇 Re mute de ${member.user.username}`)
-                .setThumbnail(member.displayAvatarURL({ dynamic: true }))
+                .setThumbnail(member.displayAvatarURL({ forceStatic: false }))
                 .addFields(
                     { name: 'Le vilain', value: userMention(isMuted.memberId) },
                     { name: 'Mute réalisé par', value: userMention(isMuted.mutedBy) },
@@ -159,7 +159,7 @@ export default {
                 embeds.push(new Embed()
                     .setColor('#2ECC71')
                     .setTitle(`🔇 Unmute de ${memberToUnmute.user.username}`)
-                    .setThumbnail(memberToUnmute.displayAvatarURL({ dynamic: true }))
+                    .setThumbnail(memberToUnmute.displayAvatarURL({ forceStatic: false }))
                     .addFields(
                         { name: 'Le vilain', value: userMention(mutedMember.memberId), inline: true },
                         { name: 'Mute réalisé par', value: userMention(mutedMember.mutedBy), inline: true },

@@ -48,7 +48,7 @@ export default {
             const embed = new Embed()
                 .setColor('#2ECC71')
                 .setTitle('✍️ Envoi de message')
-                .setThumbnail(interaction.user.displayAvatarURL({ dynamic: true }))
+                .setThumbnail(interaction.user.displayAvatarURL({ forceStatic: false }))
                 .addFields(
                     { name: 'Par', value: userMention(interaction.user.id), inline: true },
                     { name: 'Salon', value: channelMention(channel.id), inline: true },

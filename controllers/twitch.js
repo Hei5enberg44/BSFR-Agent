@@ -600,7 +600,7 @@ export default {
                                 .setColor('#6441A5')
                                 .setTitle(`${member.displayName} est en live !`)
                                 .setDescription(`${hyperlink(title, `https://www.twitch.tv/${userLogin}`)}`)
-                                .setThumbnail(member.displayAvatarURL({ dynamic: true }))
+                                .setThumbnail(member.displayAvatarURL({ forceStatic: false }))
                                 .addFields(
                                     { name: 'Jeu', value: gameName, inline: true },
                                     { name: '\u200b', value: '\u200b', inline: true },

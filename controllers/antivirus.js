@@ -117,7 +117,7 @@ export default {
                         embeds.push(new Embed()
                             .setColor('#E74C3C')
                             .setTitle('❗ Fichier infecté')
-                            .setThumbnail(message.author.displayAvatarURL({ dynamic: true }))
+                            .setThumbnail(message.author.displayAvatarURL({ forceStatic: false }))
                             .addFields(
                                 { name: 'Le méchant', value: userMention(message.author.id), inline: true },
                                 { name: 'Nom du fichier', value: attachment.name, inline: true }

@@ -115,7 +115,7 @@ export default {
 
                     embed.setColor('#F1C40F')
                         .setTitle(Locales.get(interaction.locale, 'list_roles'))
-                        .setThumbnail(interaction.member.displayAvatarURL({ dynamic: true }))
+                        .setThumbnail(interaction.member.displayAvatarURL({ forceStatic: false }))
 
                     if(Object.keys(roleList).length > 0) {
                         for(const [group, roles] of Object.entries(roleList)) {

@@ -47,7 +47,7 @@ export default {
 
             const embed = new Embed()
                 .setColor('#9B59B6')
-                .setThumbnail(interaction.user.displayAvatarURL({ dynamic: true }))
+                .setThumbnail(interaction.user.displayAvatarURL({ forceStatic: false }))
                 .addFields({ name: Locales.get(interaction.locale, 'member'), value: userMention(interaction.user.id) })
             
             let reply

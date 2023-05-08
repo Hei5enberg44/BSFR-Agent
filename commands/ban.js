@@ -76,7 +76,7 @@ export default {
                 embeds.push(new Embed()
                     .setColor('#9B59B6')
                     .setTitle(`🔨 Demande de ban pour ${member.user.tag}`)
-                    .setThumbnail(member.displayAvatarURL({ dynamic: true }))
+                    .setThumbnail(member.displayAvatarURL({ forceStatic: false }))
                     .addFields(
                         { name: 'Le vilain', value: userMention(member.id), inline: true },
                         { name: 'Ban demandé par', value: userMention(interaction.user.id), inline: true },
@@ -114,7 +114,7 @@ export default {
                 embeds.push(new Embed()
                     .setColor('#2ECC71')
                     .setTitle(`🔨 Demande de ban pour ${member.user.tag}`)
-                    .setThumbnail(member.displayAvatarURL({ dynamic: true }))
+                    .setThumbnail(member.displayAvatarURL({ forceStatic: false }))
                     .addFields(
                         { name: 'Le vilain', value: userMention(member.id), inline: true },
                         { name: 'Ban réalisé par', value: userMention(interaction.user.id), inline: true },

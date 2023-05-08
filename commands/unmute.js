@@ -53,7 +53,7 @@ export default {
             embeds.push(new Embed()
                 .setColor('#2ECC71')
                 .setTitle(`🔇 Unmute manuel de ${member.username}`)
-                .setThumbnail(member.displayAvatarURL({ dynamic: true }))
+                .setThumbnail(member.displayAvatarURL({ forceStatic: false }))
                 .addFields(
                     { name: 'Le vilain', value: userMention(member.id), inline: true },
                     { name: 'Prononcé par', value: userMention(isMuted.mutedBy), inline: true },

@@ -115,7 +115,7 @@ export default {
     async confirmRemove(reaction, user, r) {
         if(r.interaction.memberId === user.id) {
             const embed = new Embed()
-                .setThumbnail(user.displayAvatarURL({ dynamic: true }))
+                .setThumbnail(user.displayAvatarURL({ forceStatic: false }))
                 .addFields({ name: Locales.get(r.interaction.locale, 'member'), value: userMention(user.id) })
 
             if(reaction.emoji.name === '✅') {

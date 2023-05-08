@@ -27,7 +27,7 @@ export default {
         const embed = new Embed()
             .setColor('#2ECC71')
             .setTitle(`📥 Arrivée de ${member.user.username}`)
-            .setThumbnail(member.user.displayAvatarURL({ dynamic: true }))
+            .setThumbnail(member.user.displayAvatarURL({ forceStatic: false }))
             .addFields(
                 { name: 'Membre', value: userMention(member.user.id) },
                 { name: 'Compte créé le', value: `${(new Date(member.user.createdTimestamp)).toLocaleString()}` }

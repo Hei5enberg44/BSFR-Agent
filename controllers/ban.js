@@ -198,7 +198,7 @@ export default {
         const embeds = []
 
         const embed = new Embed()
-            .setThumbnail(member.displayAvatarURL({ dynamic: true }))
+            .setThumbnail(member.displayAvatarURL({ forceStatic: false }))
             .addFields(
                 { name: 'Le vilain', value: userMention(banInfos.memberId) },
                 { name: 'Ban demandé par', value: userMention(banInfos.bannedBy) }

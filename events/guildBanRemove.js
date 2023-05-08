@@ -15,7 +15,7 @@ export default {
         const embed = new Embed()
             .setColor('#2ECC71')
             .setTitle(`🔨 Fin de ban pour ${ban.user.tag}`)
-            .setThumbnail(ban.user.displayAvatarURL({ dynamic: true }))
+            .setThumbnail(ban.user.displayAvatarURL({ forceStatic: false }))
             .addFields({ name: 'Membre', value: userMention(ban.user.id) })
 
         await logsChannel.send({ embeds: [embed] })

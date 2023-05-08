@@ -72,7 +72,7 @@ export default {
                 const embed = new Embed()
                     .setColor('#E74C3C')
                     .setTitle('⛔ Envoi d\'URL malveillant')
-                    .setThumbnail(message.author.displayAvatarURL({ dynamic: true }))
+                    .setThumbnail(message.author.displayAvatarURL({ forceStatic: false }))
                     .addFields(
                         { name: 'Le vilain', value: userMention(message.author.id) },
                         { name: 'Contenu du message', value: message.content }
@@ -159,7 +159,7 @@ export default {
     async confirmRemove(reaction, user, r) {
         if(r.interaction.memberId === user.id) {
             const embed = new Embed()
-                .setThumbnail(user.displayAvatarURL({ dynamic: true }))
+                .setThumbnail(user.displayAvatarURL({ forceStatic: false }))
                 .addFields({ name: Locales.get(r.interaction.locale, 'member'), value: userMention(user.id) })
 
             if(reaction.emoji.name === '✅') {

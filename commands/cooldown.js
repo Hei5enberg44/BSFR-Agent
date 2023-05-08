@@ -121,7 +121,7 @@ export default {
                     const embed = new Embed()
                         .setColor('#2ECC71')
                         .setTitle(Locales.get(interaction.locale, 'added_cooldown'))
-                        .setThumbnail(member.displayAvatarURL({ dynamic: true }))
+                        .setThumbnail(member.displayAvatarURL({ forceStatic: false }))
                         .addFields({ name: Locales.get(interaction.locale, 'member'), value: userMention(member.id) })
 
                     await interaction.reply({ embeds: [embed], ephemeral: true })
@@ -141,7 +141,7 @@ export default {
                     const embed = new Embed()
                         .setColor('#2ECC71')
                         .setTitle(Locales.get(interaction.locale, 'deleted_cooldown'))
-                        .setThumbnail(member.displayAvatarURL({ dynamic: true }))
+                        .setThumbnail(member.displayAvatarURL({ forceStatic: false }))
                         .addFields({ name: Locales.get(interaction.locale, 'member'), value: userMention(member.id) })
 
                     await interaction.reply({ embeds: [embed], ephemeral: true })
