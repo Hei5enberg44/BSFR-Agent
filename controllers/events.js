@@ -1,5 +1,5 @@
-import Logger from '../utils/logger.js'
 import * as fs from 'node:fs'
+import Logger from '../utils/logger.js'
 
 export default class Events {
     /**
