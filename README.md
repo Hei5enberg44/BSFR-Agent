@@ -1,6 +1,6 @@
 <h1>bsfr-agent</h1>
 <p>
-  <img alt="Version" src="https://img.shields.io/badge/version-2.20.6-blue.svg?cacheSeconds=2592000" />
+  <img alt="Version" src="https://img.shields.io/badge/version-2.21.0-blue.svg?cacheSeconds=2592000" />
   <a href="#" target="_blank">
     <img alt="License: ISC" src="https://img.shields.io/badge/License-ISC-yellow.svg" />
   </a>
@@ -22,11 +22,12 @@
 
 ```sh
 npm install
+npm run build
 ```
 
 ## Configuration
 
-Compléter le fichier `config.json` à la racine du projet avec les données correspondantes au serveur.
+Compléter le fichier `src/config.json` avec les données correspondantes au serveur.
 
 ## Liste des commandes
 
