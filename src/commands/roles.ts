@@ -89,7 +89,7 @@ export default {
     async execute(interaction: ChatInputCommandInteraction) {
         try {
             const subCommand = interaction.options.getSubcommand(true)
-            const subCommandGroup = interaction.options.getSubcommandGroup(true)
+            const subCommandGroup = interaction.options.getSubcommandGroup(false)
 
             const action = subCommand === 'list' ? subCommand : subCommandGroup
 
