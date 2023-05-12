@@ -1,13 +1,18 @@
 {
   "name": "bsfr-agent",
   "displayName": "BSFR Agent",
-  "version": "2.20.6",
+  "version": "2.21.0",
   "description": "Admin agent bot for BSFR",
-  "main": "bot.js",
+  "main": "dist/bot.js",
   "type": "module",
+  "engines": {
+    "node": ">=18.16.0"
+  },
   "scripts": {
-    "run": "node bot.js",
-    "lint": "eslint ."
+    "build": "tsc --project tsconfig.json",
+    "start": "npm run start:bot",
+    "start:bot": "npm run build && node --enable-source-maps dist/bot.js",
+    "lint": "eslint . --cache --ext .js,.jsx,.ts,.tsx"
   },
   "repository": {
     "type": "git",
@@ -29,9 +34,11 @@
     "p-limit": "^4.0.0",
     "sequelize": "^6.31.1",
     "sodium-native": "^4.0.1",
-    "tmp": "^0.2.1"
+    "tmp": "^0.2.1",
+    "ytdl-core": "^4.11.4"
   },
   "devDependencies": {
-    "eslint": "^8.39.0"
+    "eslint": "^8.39.0",
+    "typescript": "^5.0.4"
   }
 }
