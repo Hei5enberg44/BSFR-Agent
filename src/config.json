@@ -1,0 +1,77 @@
+{
+    "appName": "Agent",
+    "appVersion": "",
+    "appLogo": "",
+    "token": "",
+    "clientId": "",
+    "guild": {
+        "id": "",
+        "channels": {
+            "birthday": "",
+            "logs": "",
+            "admin": "",
+            "agent-dm": "",
+            "modération": "",
+            "happy-birthday": "",
+            "youtube": "",
+            "clips": "",
+            "twitch-youtube": "",
+            "bot-setup": "",
+            "rôles-auto-assignable": "",
+            "vote-run-bsfr": "",
+            "bs-updates": ""
+        },
+        "roles": {
+            "Admin": "",
+            "Modérateur": "",
+            "Muted": "",
+            "YouTube": "",
+            "Streamer": "",
+            "Membre": "",
+            "Not French Boi": "",
+            "Beat Saber Update": ""
+        }
+    },
+    "twitter": {
+        "appKey": "",
+        "appSecret": "",
+        "accessToken": "",
+        "accessSecret": ""
+    },
+    "google": {
+        "youtube": {
+            "clientId": "",
+            "clientSecret": "",
+            "accessToken": "",
+            "refreshToken": ""
+        },
+        "service-account": {
+            "type": "",
+            "project_id": "",
+            "private_key_id": "",
+            "private_key": "",
+            "client_email": "",
+            "client_id": ""
+        }
+    },
+    "twitch": {
+        "clientId": "",
+        "clientSecret": "",
+        "clipsLocation": ""
+    },
+    "database": {
+        "host": "",
+        "port": 3306,
+        "username": "",
+        "password": "",
+        "name": ""
+    },
+    "nextcloud": {
+        "username": "",
+        "password": "",
+        "url": ""
+    },
+    "links": {
+        "discordInvite": ""
+    }
+}
