@@ -38,6 +38,9 @@
     "ytdl-core": "^4.11.4"
   },
   "devDependencies": {
+    "@types/cron": "^2.0.1",
+    "@types/fluent-ffmpeg": "^2.1.21",
+    "@types/tmp": "^0.2.3",
     "eslint": "^8.39.0",
     "typescript": "^5.0.4"
   }
