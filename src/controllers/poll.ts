@@ -111,7 +111,7 @@ export default class Polls {
                 where: { pollId: poll.id }
             })
 
-            await ReactionModel.destroy({ where: { 'data.pollId': poll.id } })
+            await this.delete(poll.id)
 
             const pollChannel = <TextChannel>guild.channels.cache.get(poll.channelId)
             if(pollChannel) {
