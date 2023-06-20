@@ -1,7 +1,7 @@
 {
   "name": "bsfr-agent",
   "displayName": "BSFR Agent",
-  "version": "2.21.2",
+  "version": "2.22.0",
   "description": "Admin agent bot for BSFR",
   "main": "dist/bot.js",
   "type": "module",
