@@ -1,6 +1,6 @@
-import { GuildMember, TextChannel, userMention } from 'discord.js'
+import { GuildMember, Role, TextChannel, userMention } from 'discord.js'
 import Embed from '../utils/embed.js'
-import { BirthdayModel, CitieModel, TwitchModel } from '../controllers/database.js'
+import { BirthdayModel, CitieModel, TwitchModel, OldMemberRolesModel } from '../controllers/database.js'
 import threads from '../controllers/threads.js'
 import Logger from '../utils/logger.js'
 import config from '../config.json' assert { type: 'json' }
@@ -15,11 +15,33 @@ export default class guildMemberRemove {
     static async execute(member: GuildMember) {
         this.member = member
 
+        await this.saveOldMemberRoles()
         await this.bye()
         await this.removeBirthday()
         await this.removeCity()
         await this.removeTwitch()
         await this.updateThreads()
+    }
+
+    /**
+     * On enregistre les rôles du membre dans la base de données
+     * juste avant que celui-ci quitte le serveur
+     */
+    private static async saveOldMemberRoles() {
+        const member = this.member
+
+        const roles = member.roles.cache.map((role: Role, id: string) => { return { id, name: role.name } }).filter(role => role.name !== '@everyone')
+
+        const oldMemberRoles = await OldMemberRolesModel.findOne({ where: { memberId: member.id } })
+        if(oldMemberRoles) {
+            oldMemberRoles.roles = roles
+            await oldMemberRoles.save()
+        } else {
+            await OldMemberRolesModel.create({
+                memberId: member.id,
+                roles
+            })
+        }
     }
 
     /**

@@ -429,6 +429,27 @@ const QuotaModel = sequelize.define<QuotaModel>('quotas', {
     max: DataTypes.INTEGER()
 })
 
+interface OldMemberRole {
+    id: string,
+    name: string
+}
+
+interface OldMemberRolesModel extends Model<InferAttributes<OldMemberRolesModel>, InferCreationAttributes<OldMemberRolesModel>> {
+    id: CreationOptional<number>,
+    memberId: string,
+    roles: OldMemberRole[]
+}
+
+const OldMemberRolesModel = sequelize.define<OldMemberRolesModel>('old_member_roles', {
+    id: {
+        type: DataTypes.INTEGER(),
+        autoIncrement: true,
+        primaryKey: true
+    },
+    memberId: DataTypes.STRING(255),
+    roles: DataTypes.JSON()
+})
+
 export {
     BirthdayMessageModel,
     MaliciousURLModel,
@@ -453,5 +474,6 @@ export {
     RoleModel,
     RoleCategorieModel,
     CooldownModel,
-    QuotaModel
+    QuotaModel,
+    OldMemberRolesModel
 }
