@@ -53,7 +53,7 @@ export default {
     async execute(interaction: ChatInputCommandInteraction) {
         try {
             const message = interaction.options.getString('message', true)
-            let channel = <VoiceChannel>interaction.options.getChannel('channel', true)
+            let channel = <VoiceChannel>interaction.options.getChannel('channel')
             const voice = interaction.options.getString('voice') ?? 'fr-FR-Wavenet-B'
 
             const messageLength = message.length
