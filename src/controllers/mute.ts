@@ -1,8 +1,7 @@
-import { Client, Guild, GuildMember, TextChannel, userMention, time, TimestampStyles } from 'discord.js'
+import { Guild, GuildMember, TextChannel, userMention, time, TimestampStyles } from 'discord.js'
 import Embed from '../utils/embed.js'
+import { CronJob } from 'cron'
 import { MuteModel } from '../controllers/database.js'
-import { Op } from 'sequelize'
-import Locales from '../utils/locales.js'
 import Logger from '../utils/logger.js'
 import config from '../config.json' assert { type: 'json' }
 
@@ -37,6 +36,14 @@ export default class Mutes {
     }
 
     /**
+     * Récupère tous les membres mutés
+     */
+    static async getAll() {
+        const mutedMembers = await MuteModel.findAll()
+        return mutedMembers
+    }
+
+    /**
      * Test si un membre est muted
      * @param memberId identifiant du membre
      * @returns données concernant le mute
@@ -51,137 +58,72 @@ export default class Mutes {
     }
 
     /**
-     * Détermine la date d'unmute en fonction du choix réalisé par l'Administrateur ou le Modérateur
-     * @param duration durée du mute
-     * @returns date de d'unmute
+     * Mute d'un membre
+     * @param target Membre à muter
+     * @param author Auteur du mute
+     * @param reason Raison du mute
+     * @param unmuteDate Date de démute
      */
-    static getUnmuteDate(duration: string) {
-        const unit = duration.charAt(duration.length - 1).toUpperCase()
-        const time = parseInt(duration.slice(0, -1))
-        const date = new Date()
-    
-        switch(unit) {
-            case 'S':
-                date.setSeconds(date.getSeconds() + time)
-                break
-            case 'I':
-                date.setMinutes(date.getMinutes() + time)
-                break
-            case 'H':
-                date.setHours(date.getHours() + time)
-                break
-            case 'D':
-                date.setDate(date.getDate() + time)
-                break
-            case 'W':
-                date.setDate(date.getDate() + (time * 7))
-                break
-            case 'M':
-                date.setMonth(date.getMonth() + time)
-                break
-            case 'Y':
-                date.setFullYear(date.getFullYear() + time)
-                break
-            default:
-                return false
-        }
-    
-        if(date.toString().toLowerCase() === 'invalid date')
-            return false
-    
-        return date
-    }
+    static async mute(target: GuildMember, author: GuildMember, reason: string, unmuteDate: Date) {
+        if(!author.user.bot) {
+            const client = author.client
+            const guild = <Guild>client.guilds.cache.get(config.guild.id)
+            const logsChannel = <TextChannel>guild.channels.cache.get(config.guild.channels.logs)
 
-    /**
-     * Si le membre avait été mute avant son départ et que le mute n'est pas terminé, on le mute à nouveau
-     * @param member The member that has joined a guild
-     */
-    static async remute(member: GuildMember) {
-        const isMuted = await this.isMuted(member.user.id)
-
-        if(isMuted && isMuted.unmuteDate > new Date()) {
-            const logsChannel = <TextChannel>member.guild.channels.cache.get(config.guild.channels['logs'])
-            const muteRole = member.guild.roles.cache.get(config.guild.roles.Muted)
+            await this.add(target.id, author.id, reason, unmuteDate)
 
             const embed = new Embed()
                 .setColor('#2ECC71')
-                .setTitle(`🔇 Re mute de ${member.user.username}`)
-                .setThumbnail(member.displayAvatarURL({ forceStatic: false }))
+                .setTitle(`🔇 Mute de ${target.user.username}`)
+                .setThumbnail(target.displayAvatarURL({ forceStatic: false }))
                 .addFields(
-                    { name: 'Le vilain', value: userMention(isMuted.memberId) },
-                    { name: 'Mute réalisé par', value: userMention(isMuted.mutedBy) },
-                    { name: 'Raison', value: isMuted.reason },
-                    { name: 'Levée du mute', value: time(isMuted.unmuteDate, TimestampStyles.RelativeTime) }
+                    { name: 'Le vilain', value: userMention(target.id), inline: true },
+                    { name: 'Mute réalisé par', value: userMention(author.user.id), inline: true },
+                    { name: 'Raison', value: reason.trim() !== '' ? reason : 'Pas de raison' },
+                    { name: 'Levée du mute', value: time(unmuteDate, TimestampStyles.RelativeTime) }
                 )
 
-            if(muteRole) await member.roles.add(muteRole)
-            await logsChannel.send({ embeds: [embed] })
+            await logsChannel.send({ embeds: [ embed ] })
 
-            Logger.log('Mute', 'INFO', `Le membre ${member.user.tag} est toujours mute`)
+            new CronJob(unmuteDate, async () => {
+                await this.unmute(target)
+            }, null, true, 'Europe/Paris')
+
+            Logger.log('Mute', 'INFO', `Le membre ${target.user.tag} a été mute par ${author.user.tag}`)
         }
     }
 
     /**
-     * Démute un membre
-     * @param client client Discord
+     * Démute d'un membre
+     * @param target Membre à démuter
+     * @param author Auteur du démute
      */
-    static async unmute(client: Client) {
+    static async unmute(target: GuildMember, author?: GuildMember) {
+        const client = target.client
         const guild = <Guild>client.guilds.cache.get(config.guild.id)
         const logsChannel = <TextChannel>guild.channels.cache.get(config.guild.channels.logs)
-        const muteRole = guild.roles.cache.get(config.guild.roles.Muted)
 
-        const mutedMembers = await MuteModel.findAll({
-            where: {
-                unmuteDate: { [Op.lte]: new Date() }
-            }
-        })
+        const mutedMember = await this.isMuted(target.id)
+        if(mutedMember) {
+            await this.remove(target.id)
 
-        for(const mutedMember of mutedMembers) {
-            const embeds = []
-            const memberToUnmute = guild.members.cache.get(mutedMember.memberId)
+            const embed = new Embed()
+                .setColor('#2ECC71')
+                .setTitle(`🔇 Unmute de ${target.user.username}`)
+                .setThumbnail(target.displayAvatarURL({ forceStatic: false }))
+                .addFields(
+                    { name: 'Le vilain', value: userMention(mutedMember.memberId), inline: true },
+                    { name: 'Mute réalisé par', value: userMention(mutedMember.mutedBy), inline: true }
+                )
 
-            await this.remove(mutedMember.memberId)
+            if(author) embed.addFields({ name: 'Mute levé par', value: userMention(author.id), inline: true })
 
-            if(memberToUnmute) {
-                embeds.push(new Embed()
-                    .setColor('#2ECC71')
-                    .setTitle(`🔇 Unmute de ${memberToUnmute.user.username}`)
-                    .setThumbnail(memberToUnmute.displayAvatarURL({ forceStatic: false }))
-                    .addFields(
-                        { name: 'Le vilain', value: userMention(mutedMember.memberId), inline: true },
-                        { name: 'Mute réalisé par', value: userMention(mutedMember.mutedBy), inline: true },
-                        { name: 'Raison', value: mutedMember.reason }
-                    ))
-    
-                if(muteRole) await memberToUnmute.roles.remove(muteRole)
-    
-                try {
-                    const unmuteMessage = `🇫🇷 ${Locales.get('fr', 'unmute_message')}`
-                        + '\n\n━━━━━━━━━━━━━━━\n\n'
-                        + `🇬🇧 ${Locales.get('en-US', 'unmute_message')}`
-                    await memberToUnmute.send({ content: unmuteMessage })
-                } catch(error) {
-                    embeds.push(new Embed()
-                        .setColor('#E74C3C')
-                        .setDescription('Le message n\'a pas pu être envoyé au membre'))
-                }
+            await logsChannel.send({ embeds: [ embed ] })
 
-                Logger.log('UnmuteCommand', 'INFO', `Le membre ${memberToUnmute.user.tag} a été unmute`)
-            } else {
-                embeds.push(new Embed()
-                    .setColor('#E74C3C')
-                    .setTitle(`🔇 Unmute de ${userMention(mutedMember.memberId)}`)
-                    .setDescription('Le membre n\'est plus présent sur le discord')
-                    .addFields(
-                        { name: 'Le vilain', value: userMention(mutedMember.memberId), inline: true },
-                        { name: 'Mute réalisé par', value: userMention(mutedMember.mutedBy), inline: true },
-                        { name: 'Raison', value: mutedMember.reason }
-                    ))
-
-                Logger.log('UnmuteCommand', 'INFO', `Le membre "${mutedMember.memberId}" n'a pas été unmute car celui-ci n'est plus présent sur le serveur`)
-            }
-
-            await logsChannel.send({ embeds: embeds })
+            if(author)
+                Logger.log('Mute', 'INFO', `Le membre ${target.user.tag} a été unmute par ${author.user.tag}`)
+            else
+                Logger.log('Mute', 'INFO', `Le membre ${target.user.tag} a été unmute`)
         }
     }
 }

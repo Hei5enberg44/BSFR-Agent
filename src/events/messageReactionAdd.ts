@@ -1,6 +1,5 @@
 import { MessageReaction, User } from 'discord.js'
 import reactions from '../controllers/reactions.js'
-import rules from '../controllers/rules.js'
 import birthdayMessage from '../controllers/birthdayMessage.js'
 import maliciousURL from '../controllers/maliciousURL.js'
 import ban from '../controllers/ban.js'
@@ -25,7 +24,6 @@ export default class messageReactionAdd {
         const r = await reactions.get(reaction.message.channelId, reaction.message.id)
 
         if(r && !user.bot) {
-            if(r.isRules()) await rules.accept(reaction, user)
             if(r.isRemoveBirthdayMessage()) await birthdayMessage.confirmRemove(reaction, user, r)
             if(r.isRemoveMaliciousURL()) await maliciousURL.confirmRemove(reaction, user, r)
             if(r.isBanRequest()) await ban.ban(reaction, user, r)

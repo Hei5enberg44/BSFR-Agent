@@ -1,6 +1,5 @@
 import { MessageReaction, User } from 'discord.js'
 import reactions from '../controllers/reactions.js'
-import rules from '../controllers/rules.js'
 
 export default class messageReactionRemove {
     private static reaction: MessageReaction
@@ -21,7 +20,7 @@ export default class messageReactionRemove {
         const r = await reactions.get(reaction.message.channelId, reaction.message.id)
 
         if(r && !user.bot) {
-            if(r.isRules()) await rules.refuse(reaction, user)
+            
         }
     }
 }

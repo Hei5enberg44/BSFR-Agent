@@ -1,5 +1,5 @@
-import { Client } from 'discord.js'
-import { CronJob } from 'cron'
+import { Client, Guild } from 'discord.js'
+import cron, { CronJob } from 'cron'
 import birthday from '../controllers/birthday.js'
 import mute from '../controllers/mute.js'
 import ban from '../controllers/ban.js'
@@ -9,6 +9,7 @@ import checkBSUpdate from '../controllers/checkBSUpdate.js'
 import poll from '../controllers/poll.js'
 import quotas from '../controllers/quotas.js'
 import Logger from '../utils/logger.js'
+import config from '../config.json' assert { type: 'json' }
 
 export default class Crons {
     private client: Client
@@ -32,9 +33,16 @@ export default class Crons {
      * Démute les membres pour qui la date de démute est passée
      */
     async unmute() {
-        new CronJob('*/30 * * * * *', async () => {
-            await mute.unmute(this.client)
-        }, null, true, 'Europe/Paris')
+        const guild = <Guild>this.client.guilds.cache.get(config.guild.id)
+        const mutedMembers = await mute.getAll()
+        for(const mutedMember of mutedMembers) {
+            if(mutedMember.unmuteDate > new Date()) {
+                new CronJob(mutedMember.unmuteDate, async () => {
+                    const member = guild.members.cache.get(mutedMember.memberId)
+                    if(member) await mute.unmute(member)
+                }, null, true, 'Europe/Paris')
+            }
+        }
 
         Logger.log('CronManager', 'INFO', 'Tâche "unmute" chargée')
     }

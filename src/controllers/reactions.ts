@@ -2,7 +2,6 @@ import { ReactionModel, ReactionDataType, BirthdayMessageReactionData, Malicious
 import { Op } from 'sequelize'
 
 export enum ReactionType {
-    Rules = 'rules',
     RemoveBirthdayMessage = 'removeBirthdayMessage',
     RemoveMaliciousURL = 'removeMaliciousURL',
     BanRequest = 'banRequest',
@@ -48,10 +47,6 @@ export class BaseReaction {
         this.interaction = reaction.interaction
         this.messageId = reaction.messageId
         this.date = reaction.date
-    }
-
-    isRules(): boolean {
-        return this.reaction.type === ReactionType.Rules
     }
 
     isRemoveBirthdayMessage(): this is ReactionModel<BirthdayMessageReactionData[]> {

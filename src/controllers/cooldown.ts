@@ -125,17 +125,9 @@ export default class Cooldowns {
 
             if(cooldown) {
                 const guild = <Guild>message.guild
-                const muteRole = guild.roles.cache.find(r => r.id === config.guild.roles['Muted'])
-
                 const logsChannel = <TextChannel>guild.channels.cache.get(config.guild.channels['logs'])
 
-                if(muteRole) {
-                    await member.roles.add(muteRole)
-
-                    setTimeout(async () => {
-                        await member.roles.remove(muteRole)
-                    }, muteDuration * 1000)
-                }
+                await member.timeout(muteDuration * 1000, 'cooldown')
 
                 const embed = new Embed()
                     .setColor('#2ECC71')
@@ -146,7 +138,7 @@ export default class Cooldowns {
                 await logsChannel.send({ embeds: [embed] })
 
                 try {
-                    await member.send({ content: `Mollo l'asticot ! Évites de spammer s'il te plaît.\nPour la peine, tu es mute pendant ${muteDuration} seconde${muteDuration > 1 ? 's' : ''}.` })
+                    await member.send({ content: `Mollo l'asticot ! Évites de spammer s'il te plaît.\nPour la peine, tu es timeout pendant ${muteDuration} seconde${muteDuration > 1 ? 's' : ''}.` })
                 } catch(error) {
                     Logger.log('Cooldown', 'ERROR', `Le message privé à ${member.user.tag} n'a pas pu être envoyé`)
                 }
