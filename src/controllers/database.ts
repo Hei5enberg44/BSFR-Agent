@@ -293,7 +293,10 @@ const BSUpdateModel = sequelize.define<BSUpdateModel>('bs_updates', {
         autoIncrement: true,
         primaryKey: true
     },
-    image: DataTypes.BLOB(),
+    image: {
+        type: DataTypes.BLOB(),
+        allowNull: true
+    },
     title: DataTypes.TEXT(),
     content: DataTypes.TEXT()
 })

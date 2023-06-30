@@ -1,11 +1,11 @@
-import { Client, Guild, TextChannel, MessageFlags, roleMention } from 'discord.js'
+import { Client, Guild, TextChannel, Message, MessageFlags, roleMention, ChannelType } from 'discord.js'
 import { BSUpdateModel } from './database.js'
 import Logger from '../utils/logger.js'
 import config from '../config.json' assert { type: 'json' }
 
 const apiUrl = 'http://api.steampowered.com/ISteamNews/GetNewsForApp/v0002/?appid=620980&count=1&maxlength=0&format=json'
-const STEAM_CLAN_IMAGE = 'https://steamcdn-a.akamaihd.net/steamcommunity/public/images/clans'
-const STEAM_CLAN_LOC_IMAGE = 'https://cdn.akamai.steamstatic.com/steamcommunity/public/images/clans'
+const STEAM_CLAN_IMAGE = 'https://clan.cloudflare.steamstatic.com/images'
+const STEAM_CLAN_LOC_IMAGE = STEAM_CLAN_IMAGE
 
 interface AppNews {
     appnews?: NewsItems
@@ -40,7 +40,7 @@ export default {
             if(newsItems) {
                 const lastNews = newsItems[0]
                 
-                const updateTitle = `**${lastNews.title}**`
+                const updateTitle = `## ${lastNews.title}`
 
                 let image
                 let contents = []
@@ -112,20 +112,33 @@ export default {
         const guild = <Guild>client.guilds.cache.get(config.guild.id)
         const updateChannel = <TextChannel>guild.channels.cache.get(config.guild.channels['bs-updates'])
 
-        if(update.title && update.content) await updateChannel.send({ content: roleMention(config.guild.roles['Beat Saber Update']) })
+        if(update.title && update.content) {
+            await updateChannel.send({ content: roleMention(config.guild.roles['Beat Saber Update']) })
 
-        if(update.image) await updateChannel.send({ files: [update.image] })
-        if(update.title) await updateChannel.send({ content: update.title })
-        if(update.content) {
+            if(update.image) {
+                const m = await updateChannel.send({ files: [update.image] })
+                await this.publish(m)
+            }
+
             let message = []
+            message.push(update.title)
             const content = update.content.split('\n')
             for(let i = 0; i < content.length; i++) {
                 message.push(content[i])
                 if(message.join('\n').length + content[i].length >= 1500 || i === content.length - 1) {
-                    await updateChannel.send({ content: message.join('\n'), flags: MessageFlags.SuppressEmbeds })
+                    const m = await updateChannel.send({ content: message.join('\n'), flags: MessageFlags.SuppressEmbeds })
+                    await this.publish(m)
                     message = []
                 }
             }
+        }
+    },
+
+    async publish(message: Message) {
+        if(message.channel.type === ChannelType.GuildAnnouncement) {
+            try {
+                await message.crosspost()
+            } catch(err) {}
         }
     }
 }
