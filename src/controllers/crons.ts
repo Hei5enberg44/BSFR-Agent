@@ -1,5 +1,5 @@
 import { Client, Guild } from 'discord.js'
-import cron, { CronJob } from 'cron'
+import { CronJob } from 'cron'
 import birthday from '../controllers/birthday.js'
 import mute from '../controllers/mute.js'
 import ban from '../controllers/ban.js'
