@@ -1,4 +1,4 @@
-import { GuildMember, Role, TextChannel, userMention } from 'discord.js'
+import { GuildMember, Role, TextChannel, userMention, roleMention } from 'discord.js'
 import Embed from '../utils/embed.js'
 import { BirthdayModel, CitieModel, TwitchModel, OldMemberRolesModel } from '../controllers/database.js'
 import threads from '../controllers/threads.js'
@@ -52,11 +52,19 @@ export default class guildMemberRemove {
 
         const logsChannel = <TextChannel>member.guild.channels.cache.get(config.guild.channels['logs'])
 
+        // On récupère les rôles du membre depuis la base de données que celui-ci avait avant de quitter le serveur
+        const oldMemberRoles = await OldMemberRolesModel.findOne({ where: { memberId: member.id } })
+
         const embed = new Embed()
             .setColor('#E74C3C')
             .setTitle(`📤 Départ de ${member.user.username}`)
             .setThumbnail(member.user.displayAvatarURL({ forceStatic: false }))
             .addFields({ name: 'Membre', value: userMention(member.user.id) })
+
+        if(oldMemberRoles && oldMemberRoles.roles.length > 0)
+            embed.addFields(
+                { name: 'Anciens rôles', value: oldMemberRoles.roles.map(role => roleMention(role.id)).join(', ') }
+            )
         
         await logsChannel.send({ embeds: [embed] })
 
