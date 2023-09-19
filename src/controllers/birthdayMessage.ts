@@ -112,7 +112,7 @@ export default {
                 await BirthdayMessageModel.destroy({ where: { id: ids } })
                 await ReactionModel.destroy({ where: { id: r.id } })
 
-                Logger.log('BirthdayMessage', 'INFO', `${user.tag} a supprimé les messages d'anniversaire suivants : ${messages.join(', ')}`)
+                Logger.log('BirthdayMessage', 'INFO', `${user.username} a supprimé les messages d'anniversaire suivants : ${messages.join(', ')}`)
 
                 embed.setColor('#2ECC71')
                     .setTitle(Locales.get(<LocaleString>r.interaction.locale, 'delete_birthday_messages'))

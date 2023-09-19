@@ -89,7 +89,7 @@ export default class Mutes {
                 await this.unmute(target)
             }, null, true, 'Europe/Paris')
 
-            Logger.log('Mute', 'INFO', `Le membre ${target.user.tag} a été mute par ${author.user.tag}`)
+            Logger.log('Mute', 'INFO', `Le membre ${target.user.username} a été mute par ${author.user.username}`)
         }
     }
 
@@ -121,9 +121,9 @@ export default class Mutes {
             await logsChannel.send({ embeds: [ embed ] })
 
             if(author)
-                Logger.log('Mute', 'INFO', `Le membre ${target.user.tag} a été unmute par ${author.user.tag}`)
+                Logger.log('Mute', 'INFO', `Le membre ${target.user.username} a été unmute par ${author.user.username}`)
             else
-                Logger.log('Mute', 'INFO', `Le membre ${target.user.tag} a été unmute`)
+                Logger.log('Mute', 'INFO', `Le membre ${target.user.username} a été unmute`)
         }
     }
 }

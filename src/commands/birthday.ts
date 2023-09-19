@@ -58,7 +58,7 @@ export default {
 
                     await birthday.set(interaction.user.id, bdDate)
 
-                    Logger.log('BirthdayCommand', 'INFO', `${interaction.user.tag} a enregistré sa date de naissance`)
+                    Logger.log('BirthdayCommand', 'INFO', `${interaction.user.username} a enregistré sa date de naissance`)
 
                     await interaction.reply({ content: Locales.get(interaction.locale, 'birthday_date_added'), ephemeral: true })
                     break
@@ -66,7 +66,7 @@ export default {
                 case 'remove': {
                     await birthday.unset(interaction.user.id)
 
-                    Logger.log('BirthdayCommand', 'INFO', `${interaction.user.tag} a supprimé sa date de naissance`)
+                    Logger.log('BirthdayCommand', 'INFO', `${interaction.user.username} a supprimé sa date de naissance`)
 
                     await interaction.reply({ content: Locales.get(interaction.locale, 'birthday_date_removed'), ephemeral: true })
                     break

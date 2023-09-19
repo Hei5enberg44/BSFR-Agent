@@ -68,7 +68,7 @@ export default class guildMemberRemove {
         
         await logsChannel.send({ embeds: [embed] })
 
-        Logger.log('Leave', 'INFO', `Le membre ${member.user.tag} a quitté le serveur`)
+        Logger.log('Leave', 'INFO', `Le membre ${member.user.username} a quitté le serveur`)
     }
 
     /**
@@ -83,7 +83,7 @@ export default class guildMemberRemove {
             }
         })
 
-        if(del > 0) Logger.log('Birthday', 'INFO', `Le membre ${member.user.tag} a quitté le serveur, sa date d'anniversaire a été supprimée de la base de données`)
+        if(del > 0) Logger.log('Birthday', 'INFO', `Le membre ${member.user.username} a quitté le serveur, sa date d'anniversaire a été supprimée de la base de données`)
     }
 
     /**
@@ -98,7 +98,7 @@ export default class guildMemberRemove {
             }
         })
 
-        if(del > 0) Logger.log('City', 'INFO', `Le membre ${member.user.tag} a quitté le serveur, sa ville d'origine a été supprimée de la base de données`)
+        if(del > 0) Logger.log('City', 'INFO', `Le membre ${member.user.username} a quitté le serveur, sa ville d'origine a été supprimée de la base de données`)
     }
 
     /**
@@ -114,7 +114,7 @@ export default class guildMemberRemove {
             }
         })
 
-        if(del > 0) Logger.log('Twitch', 'INFO', `Le membre ${member.user.tag} a quitté le serveur, sa chaîne Twitch a été supprimée de la base de données`)
+        if(del > 0) Logger.log('Twitch', 'INFO', `Le membre ${member.user.username} a quitté le serveur, sa chaîne Twitch a été supprimée de la base de données`)
     }
 
     /**

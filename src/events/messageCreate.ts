@@ -88,7 +88,7 @@ export default class messageCreate {
                 thread = await agentDmChannel.threads.create({
                     name: message.author.username,
                     autoArchiveDuration: ThreadAutoArchiveDuration.OneDay,
-                    reason: `DM de ${message.author.tag}`
+                    reason: `DM de ${message.author.username}`
                 })
 
                 if(!thread.id) {
@@ -103,7 +103,7 @@ export default class messageCreate {
                     const members = adminsList.concat(modosList)
 
                     for(const [, member] of members) {
-                        Logger.log('DM', 'INFO', `Ajout de ${member.user.tag} au nouveau thread`)
+                        Logger.log('DM', 'INFO', `Ajout de ${member.user.username} au nouveau thread`)
                         await thread.members.add(member.user.id)
                     }
 

@@ -207,7 +207,7 @@ export default class Bans {
                     await reaction.message.reactions.removeAll()
                     await reaction.message.edit({ embeds: embeds })
 
-                    Logger.log('BanCommand', 'INFO', `La demande de ban pour ${member.user.tag} a été acceptée par ${user.tag}`)
+                    Logger.log('BanCommand', 'INFO', `La demande de ban pour ${member.user.username} a été acceptée par ${user.username}`)
                 } else if(reaction.emoji.name === '❌') {
                     embeds.push(embed.setColor('#2ECC71')
                         .setTitle(`🔨 [REFUSÉ] Demande de ban de ${member.user.username}`)
@@ -238,7 +238,7 @@ export default class Bans {
                     await reaction.message.reactions.removeAll()
                     await reaction.message.edit({ embeds: embeds })
 
-                    Logger.log('BanCommand', 'INFO', `La demande de ban pour ${member.user.tag} a été refusée par ${user.tag}`)
+                    Logger.log('BanCommand', 'INFO', `La demande de ban pour ${member.user.username} a été refusée par ${user.username}`)
                 }
             }
         }
@@ -265,7 +265,7 @@ export default class Bans {
                         await guild.members.unban(guildBan.user.id)
                         await this.remove(ban.id)
         
-                        Logger.log('Unban', 'INFO', `Le ban pour ${guildBan.user.tag} est terminé`)
+                        Logger.log('Unban', 'INFO', `Le ban pour ${guildBan.user.username} est terminé`)
                     }
                 }).catch(() => {
                     Logger.log('Unban', 'ERROR', `Le membre "${ban.memberId}" est introuvable dans la liste des bans`)

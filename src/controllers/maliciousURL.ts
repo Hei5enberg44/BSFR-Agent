@@ -60,7 +60,7 @@ export default class MaliciousURL {
             }
 
             if(usedMaliciousURL.length > 0) {
-                Logger.log('MaliciousURL', 'INFO', `URL(s) malveillant(s) trouvé(s) dans un message de ${message.author.tag} : ${usedMaliciousURL.join(', ')}`)
+                Logger.log('MaliciousURL', 'INFO', `URL(s) malveillant(s) trouvé(s) dans un message de ${message.author.username} : ${usedMaliciousURL.join(', ')}`)
 
                 const embed = new Embed()
                     .setColor('#E74C3C')
@@ -157,7 +157,7 @@ export default class MaliciousURL {
                 await MaliciousURLModel.destroy({ where: { id: ids } })
                 await ReactionModel.destroy({ where: { id: r.id } })
 
-                Logger.log('MaliciousURL', 'INFO', `${user.tag} a supprimé les URL malveillants suivants : ${urls.join(', ')}`)
+                Logger.log('MaliciousURL', 'INFO', `${user.username} a supprimé les URL malveillants suivants : ${urls.join(', ')}`)
 
                 embed.setColor('#2ECC71')
                     .setTitle(Locales.get(<LocaleString>r.interaction.locale, 'delete_malicious_urls'))

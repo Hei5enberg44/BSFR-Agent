@@ -60,7 +60,7 @@ export default {
                 thread = await agentDmChannel.threads.create({
                     name: member.username,
                     autoArchiveDuration: ThreadAutoArchiveDuration.OneDay,
-                    reason: `DM de ${member.tag}`
+                    reason: `DM de ${member.username}`
                 })
 
                 if(!thread.id) {
@@ -75,7 +75,7 @@ export default {
                     const members = adminsList.concat(modosList)
 
                     for(const [, member] of members) {
-                        Logger.log('DMCommand', 'INFO', `Ajout de ${member.user.tag} au nouveau thread`)
+                        Logger.log('DMCommand', 'INFO', `Ajout de ${member.user.username} au nouveau thread`)
                         await thread.members.add(member.user.id)
                     }
 
@@ -97,10 +97,10 @@ export default {
 
                 try {
                     await member.send({ content: `${userMention(interaction.user.id)}: ${message}` })
-                    Logger.log('DMCommand', 'INFO', `Message privé envoyé à ${member.tag}`)
+                    Logger.log('DMCommand', 'INFO', `Message privé envoyé à ${member.username}`)
                     await interaction.reply({ content: Locales.get(interaction.locale, 'dm_sent', userMention(member.id)), ephemeral: true })
                 } catch(error) {
-                    Logger.log('DMCommand', 'ERROR', `Le message privé à ${member.tag} n'a pas pu être envoyé`)
+                    Logger.log('DMCommand', 'ERROR', `Le message privé à ${member.username} n'a pas pu être envoyé`)
                     await interaction.reply({ content: Locales.get(interaction.locale, 'dm_not_sent', userMention(member.id)), ephemeral: true })
                 }
             } else {

@@ -23,7 +23,7 @@ export default {
 
             await maliciousURL.add(text, <GuildMember>interaction.member)
 
-            Logger.log('MaliciousURL', 'INFO', `${interaction.user.tag} a ajouté l'URL malveillant suivant : ${text.trim()}`)
+            Logger.log('MaliciousURL', 'INFO', `${interaction.user.username} a ajouté l'URL malveillant suivant : ${text.trim()}`)
 
             await interaction.reply({ embeds: [embed] })
         } catch(error) {

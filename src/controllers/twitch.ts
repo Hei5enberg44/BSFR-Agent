@@ -111,7 +111,7 @@ export default class Twitch {
             const logsChannel = <TextChannel>guild.channels.cache.get(config.guild.channels['logs'])
 
             for(const url of clipsList) {
-                Logger.log('Clips', 'INFO', 'Récupération d\'un clip Twitch de la part de ' + message.author.tag)
+                Logger.log('Clips', 'INFO', 'Récupération d\'un clip Twitch de la part de ' + message.author.username)
                 const result = await this.getClipByUrl(url)
                 if(result) {
                     uploadedClipsCount++
@@ -126,7 +126,7 @@ export default class Twitch {
 
             for(const [, attachment] of attachments.entries()) {
                 if(attachment.contentType && attachment.contentType.match(/(video)/i)) {
-                    Logger.log('Clips', 'INFO', 'Récupération d\'un clip Twitch de la part de ' + message.author.tag)
+                    Logger.log('Clips', 'INFO', 'Récupération d\'un clip Twitch de la part de ' + message.author.username)
                     const result = await this.getClipByAttachment(attachment, message.author.id)
                     if(result) {
                         uploadedClipsCount++
@@ -669,7 +669,7 @@ export default class Twitch {
                                 streamer.messageId = message.id
                                 await streamer.save()
 
-                                Logger.log('Twitch', 'INFO', `${member.user.tag} est en live !`)
+                                Logger.log('Twitch', 'INFO', `${member.user.username} est en live !`)
                             } else {
                                 if(streamer.messageId !== '') {
                                     const message = await twitchChannel.messages.fetch(streamer.messageId)

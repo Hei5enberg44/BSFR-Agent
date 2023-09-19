@@ -131,7 +131,7 @@ export default {
 
             // await logsChannel.send({ embeds: [embed] })
 
-            Logger.log('SpeakCommand', 'INFO', `Message vocal envoyé par ${interaction.user.tag} dans le salon 🔊${channel.name}`)
+            Logger.log('SpeakCommand', 'INFO', `Message vocal envoyé par ${interaction.user.username} dans le salon 🔊${channel.name}`)
             Logger.log('SpeakCommand', 'INFO', `Message: ${message}`)
             Logger.log('SpeakCommand', 'INFO', `Voix: ${voiceChoice}`)
             Logger.log('SpeakCommand', 'INFO', `Utilisation du quota: ${ttsQuotaUsage}%`)

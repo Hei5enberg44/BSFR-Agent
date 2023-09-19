@@ -12,7 +12,7 @@ export default {
         const random = crypto.randomInt(15)
         if(message.content.match(/(^|.+\s)quoi(\s\?|\?)?$/i) && random === 0) {
             message.reply({ content: 'feur', allowedMentions: { repliedUser: false } })
-            Logger.log('Feur', 'INFO', `Agent a répondu "feur" à ${message.author.tag}`)
+            Logger.log('Feur', 'INFO', `Agent a répondu "feur" à ${message.author.username}`)
         }
     }
 }

@@ -26,7 +26,7 @@ export default class guildBanRemove {
 
         const embed = new Embed()
             .setColor('#2ECC71')
-            .setTitle(`🔨 Fin de ban pour ${ban.user.tag}`)
+            .setTitle(`🔨 Fin de ban pour ${ban.user.username}`)
             .setThumbnail(ban.user.displayAvatarURL({ forceStatic: false }))
             .addFields({ name: 'Membre', value: userMention(ban.user.id) })
 

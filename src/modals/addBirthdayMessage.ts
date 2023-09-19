@@ -23,7 +23,7 @@ export default {
 
             await birthdayMessage.add(text, <GuildMember>interaction.member)
 
-            Logger.log('BirthdayMessage', 'INFO', `${interaction.user.tag} a ajouté le message d'anniversaire suivant : ${text.trim()}`)
+            Logger.log('BirthdayMessage', 'INFO', `${interaction.user.username} a ajouté le message d'anniversaire suivant : ${text.trim()}`)
 
             await interaction.reply({ embeds: [embed] })
         } catch(error) {

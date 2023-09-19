@@ -52,7 +52,7 @@ export default {
 
                     await twitch.link(interaction.user.id, channelName)
 
-                    Logger.log('TwitchCommand', 'INFO', `${interaction.user.tag} a lié son compte Twitch`)
+                    Logger.log('TwitchCommand', 'INFO', `${interaction.user.username} a lié son compte Twitch`)
 
                     await interaction.reply({ content: Locales.get(interaction.locale, 'twitch_channel_linked'), ephemeral: true })
                     break
@@ -60,7 +60,7 @@ export default {
                 case 'unlink': {
                     await twitch.unlink(interaction.user.id)
 
-                    Logger.log('TwitchCommand', 'INFO', `${interaction.user.tag} a délié son compte Twitch`)
+                    Logger.log('TwitchCommand', 'INFO', `${interaction.user.username} a délié son compte Twitch`)
 
                     await interaction.reply({ content: Locales.get(interaction.locale, 'twitch_channel_unlinked'), ephemeral: true })
                     break

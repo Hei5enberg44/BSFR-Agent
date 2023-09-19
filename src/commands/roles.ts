@@ -149,7 +149,7 @@ export default {
                             if(error) {
                                 embed.setColor('#E74C3C').setDescription(Locales.get(interaction.locale, 'already_have_role_for_category_error', roleGroup.categoryNameLocalizations[interaction.locale] ?? roleGroup.categoryNameLocalizations['en-US'], roleMention(role.id)))
                             } else {
-                                Logger.log('RolesCommand', 'INFO', `Le membre ${interaction.user.tag} possède maintenant le rôle @${role.name}`)
+                                Logger.log('RolesCommand', 'INFO', `Le membre ${interaction.user.username} possède maintenant le rôle @${role.name}`)
                                 await (<GuildMemberRoleManager>interaction.member?.roles).add(role)
                                 embed.setColor('#2ECC71').setDescription(Locales.get(interaction.locale, 'role_added', roleMention(role.id)))
                             }
@@ -177,7 +177,7 @@ export default {
                         if(!memberRoles.find(r => r.name === roleToRemove.name)) {
                             embed.setColor('#E74C3C').setDescription(Locales.get(interaction.locale, 'have_not_role_error', roleMention(role.id)))
                         } else {
-                            Logger.log('RolesCommand', 'INFO', `Le membre ${interaction.user.tag} ne possède plus le rôle @${role.name}.`)
+                            Logger.log('RolesCommand', 'INFO', `Le membre ${interaction.user.username} ne possède plus le rôle @${role.name}.`)
                             await (<GuildMemberRoleManager>interaction.member?.roles).remove(role)
                             embed.setColor('#2ECC71').setDescription(Locales.get(interaction.locale, 'role_removed', roleMention(role.id)))
                         }

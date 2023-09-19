@@ -72,7 +72,7 @@ export default class Threads {
                     await thread.setArchived(false)
                 }
     
-                Logger.log('DM', 'INFO', `Ajout de ${member.user.tag} au thread "${thread.name}"`)
+                Logger.log('DM', 'INFO', `Ajout de ${member.user.username} au thread "${thread.name}"`)
                 await thread.members.add(member.user.id)
     
                 if(threadArchived) await thread.setArchived(true)
@@ -103,7 +103,7 @@ export default class Threads {
                     await thread.setArchived(false)
                 }
 
-                Logger.log('DM', 'INFO', `Suppression de ${member.user.tag} du thread "${thread.name}"`)
+                Logger.log('DM', 'INFO', `Suppression de ${member.user.username} du thread "${thread.name}"`)
                 await thread.members.remove(member.user.id)
 
                 if(threadArchived) await thread.setArchived(true)

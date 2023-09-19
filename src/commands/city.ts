@@ -114,7 +114,7 @@ export default {
 
                                 await i.editReply({ content: Locales.get(interaction.locale, 'city_added'), components: [] })
 
-                                Logger.log('CityCommand', 'INFO', `${interaction.user.tag} a ajouté sa ville d'origine`)
+                                Logger.log('CityCommand', 'INFO', `${interaction.user.username} a ajouté sa ville d'origine`)
                             } else {
                                 collector.resetTimer()
                                 await i.deferUpdate()
@@ -139,7 +139,7 @@ export default {
                 case 'remove': {
                     await city.unset(interaction.user.id)
 
-                    Logger.log('CityCommand', 'INFO', `${interaction.user.tag} a supprimé sa ville d'origine`)
+                    Logger.log('CityCommand', 'INFO', `${interaction.user.username} a supprimé sa ville d'origine`)
 
                     await interaction.reply({ content: Locales.get(interaction.locale, 'city_removed'), ephemeral: true })
                     break

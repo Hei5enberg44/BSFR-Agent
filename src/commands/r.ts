@@ -35,10 +35,10 @@ export default {
             if(member) {
                 try {
                     await member.send({ content: `${userMention(interaction.user.id)}: ${message}` })
-                    Logger.log('RCommand', 'INFO', `Message privé envoyé à ${member.user.tag}`)
+                    Logger.log('RCommand', 'INFO', `Message privé envoyé à ${member.user.username}`)
                     await interaction.reply({ content: `${userMention(interaction.user.id)}: ${message}`, allowedMentions: { repliedUser: false } })
                 } catch(error) {
-                    Logger.log('RCommand', 'ERROR', `Le message privé à ${member.user.tag} n'a pas pu être envoyé`)
+                    Logger.log('RCommand', 'ERROR', `Le message privé à ${member.user.username} n'a pas pu être envoyé`)
                     await interaction.reply({ content: Locales.get(interaction.locale, 'dm_not_sent', userMention(member.id)), ephemeral: true })
                 }
             } else {

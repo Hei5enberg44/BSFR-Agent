@@ -44,6 +44,6 @@ export default class guildMemberAdd {
 
         await logsChannel.send({ embeds: [embed] })
 
-        Logger.log('Join', 'INFO', `Le membre ${member.user.tag} a rejoint le serveur`)
+        Logger.log('Join', 'INFO', `Le membre ${member.user.username} a rejoint le serveur`)
     }
 }

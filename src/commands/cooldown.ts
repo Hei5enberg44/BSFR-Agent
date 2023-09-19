@@ -114,7 +114,7 @@ export default {
 
                     await cooldown.add(member.id, timeThreshold, countThreshold, muteDuration)
 
-                    Logger.log('CooldownCommand', 'INFO', `${interaction.user.tag} a ajouté le membre ${member.tag} au cooldown`)
+                    Logger.log('CooldownCommand', 'INFO', `${interaction.user.username} a ajouté le membre ${member.username} au cooldown`)
 
                     const embed = new Embed()
                         .setColor('#2ECC71')
@@ -134,7 +134,7 @@ export default {
 
                     await cooldown.remove(member.id)
 
-                    Logger.log('CooldownCommand', 'INFO', `${interaction.user.tag} a supprimé le membre ${member.tag} du cooldown`)
+                    Logger.log('CooldownCommand', 'INFO', `${interaction.user.username} a supprimé le membre ${member.username} du cooldown`)
 
                     const embed = new Embed()
                         .setColor('#2ECC71')

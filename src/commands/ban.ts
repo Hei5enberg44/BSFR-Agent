@@ -78,7 +78,7 @@ export default {
             if(askForBan) {
                 embeds.push(new Embed()
                     .setColor('#9B59B6')
-                    .setTitle(`🔨 Demande de ban pour ${member.user.tag}`)
+                    .setTitle(`🔨 Demande de ban pour ${member.user.username}`)
                     .setThumbnail(member.displayAvatarURL({ forceStatic: false }))
                     .addFields(
                         { name: 'Le vilain', value: userMention(member.id), inline: true },
@@ -108,14 +108,14 @@ export default {
                 await banMessage.react('✅')
                 await banMessage.react('❌')
 
-                Logger.log('BanCommand', 'INFO', `${interaction.user.tag} a effectué une demande de ban à l'encontre de ${member.user.tag}`)
+                Logger.log('BanCommand', 'INFO', `${interaction.user.username} a effectué une demande de ban à l'encontre de ${member.user.username}`)
                 await interaction.editReply({ content: Locales.get(interaction.locale, 'ban_request_sent') })
             } else {
                 const logsChannel = <TextChannel>guild.channels.cache.get(config.guild.channels['logs'])
 
                 embeds.push(new Embed()
                     .setColor('#2ECC71')
-                    .setTitle(`🔨 Demande de ban pour ${member.user.tag}`)
+                    .setTitle(`🔨 Demande de ban pour ${member.user.username}`)
                     .setThumbnail(member.displayAvatarURL({ forceStatic: false }))
                     .addFields(
                         { name: 'Le vilain', value: userMention(member.id), inline: true },

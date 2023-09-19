@@ -140,7 +140,7 @@ export default class Cooldowns {
                 try {
                     await member.send({ content: `Mollo l'asticot ! Évites de spammer s'il te plaît.\nPour la peine, tu es timeout pendant ${muteDuration} seconde${muteDuration > 1 ? 's' : ''}.` })
                 } catch(error) {
-                    Logger.log('Cooldown', 'ERROR', `Le message privé à ${member.user.tag} n'a pas pu être envoyé`)
+                    Logger.log('Cooldown', 'ERROR', `Le message privé à ${member.user.username} n'a pas pu être envoyé`)
                 }
             }
         }
