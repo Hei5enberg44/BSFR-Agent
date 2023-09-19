@@ -1,6 +1,6 @@
 import { Client, Guild, TextChannel, userMention } from 'discord.js'
-import { BirthdayModel, BirthdayMessageModel } from './database.js'
-import { Sequelize } from 'sequelize'
+import { BirthdayModel, BirthdayMessageModel, BirthdayWishesModel } from './database.js'
+import { Sequelize, Op } from 'sequelize'
 import crypto from 'crypto'
 import Logger from '../utils/logger.js'
 import config from '../config.json' assert { type: 'json' }
@@ -47,12 +47,40 @@ export default {
     },
 
     /**
+     * Récupère un message d'anniversaire au hasard
+     * 
+     * @param history ne pas récupérer un message si celui-ci se trouve dans les x derniers messages envoyés
+     */
+    async getRandomBirthdayMessage(history: number = 5) {
+        const lastBirthdayWishes = (await BirthdayWishesModel.findAll({
+            order: [
+                [ 'id', 'desc' ]
+            ],
+            attributes: [ 'birthdayMessageId' ],
+            limit: history
+        })).map(bw => bw.birthdayMessageId)
+
+        const bdMessages = await BirthdayMessageModel.findAll({
+            where: {
+                id: {
+                    [Op.notIn]: lastBirthdayWishes
+                }
+            },
+            raw: true
+        })
+
+        if(bdMessages.length === 0) return 'Joyeux anniversaire !'
+
+        const random = crypto.randomInt(bdMessages.length)
+        return bdMessages[random].message
+    },
+
+    /**
      * Souhaite l'anniversaire aux membres pour qui c'est l'anniversaire ce jour
      * @param client client Discord
      */
     async wish(client: Client) {
         const birthdays = await this.get()
-        const bdMessages = await BirthdayMessageModel.findAll()
 
         const guild = <Guild>client.guilds.cache.get(config.guild.id)
         const happyBirthdayChannel = <TextChannel>guild.channels.cache.get(config.guild.channels['happy-birthday'])
@@ -62,19 +90,15 @@ export default {
 
             if(member) {
                 let mention = true
-                let message = 'Joyeux anniversaire !'
-                if(bdMessages.length > 0) {
-                    const random = crypto.randomInt(bdMessages.length)
-                    message = bdMessages[random].message
-                    if(message.match(/!p/)) {
-                        mention = false
-                        message = message.replace(/!p/g, userMention(member.user.id))
-                    }
+                let bdMessage = await this.getRandomBirthdayMessage()
+                if(bdMessage.match(/!p/)) {
+                    mention = false
+                    bdMessage = bdMessage.replace(/!p/g, userMention(member.user.id))
                 }
 
-                Logger.log('BirthdayWish', 'INFO', `Joyeux anniversaire ${member.user.tag} !`)
+                Logger.log('BirthdayWish', 'INFO', `Joyeux anniversaire ${member.user.username} !`)
 
-                await happyBirthdayChannel.send(`${message}${mention ? ` ${userMention(member.user.id)}` : ''}`)
+                await happyBirthdayChannel.send(`${bdMessage}${mention ? ` ${userMention(member.user.id)}` : ''}`)
             }
         }
     }
