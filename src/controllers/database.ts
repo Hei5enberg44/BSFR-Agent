@@ -45,6 +45,20 @@ const BirthdayMessageModel = sequelize.define<BirthdayMessageModel>('birthday_me
     date: DataTypes.DATE()
 })
 
+interface BirthdayWishesModel extends Model<InferAttributes<BirthdayWishesModel>, InferCreationAttributes<BirthdayWishesModel>> {
+    id: CreationOptional<number>,
+    birthdayMessageId: number
+}
+
+const BirthdayWishesModel = sequelize.define<BirthdayWishesModel>('birthday_wishes', {
+    id: {
+        type: DataTypes.INTEGER(),
+        autoIncrement: true,
+        primaryKey: true
+    },
+    birthdayMessageId: DataTypes.INTEGER()
+})
+
 interface MaliciousURLModel extends Model<InferAttributes<MaliciousURLModel>, InferCreationAttributes<MaliciousURLModel>> {
     id: CreationOptional<number>,
     url: string,
@@ -455,6 +469,7 @@ const OldMemberRolesModel = sequelize.define<OldMemberRolesModel>('old_member_ro
 
 export {
     BirthdayMessageModel,
+    BirthdayWishesModel,
     MaliciousURLModel,
     ReactionModel,
     ReactionDataType,
