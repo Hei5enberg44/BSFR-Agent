@@ -17,7 +17,8 @@ interface NewsItems {
 
 interface NewItem {
     title: string,
-    contents: string
+    contents: string,
+    feed_type: number
 }
 
 export default {
@@ -39,62 +40,64 @@ export default {
 
             if(newsItems) {
                 const lastNews = newsItems[0]
-                
-                const updateTitle = `## ${lastNews.title}`
 
-                let image
-                let contents = []
-                for(let line of lastNews.contents.split('\n')) {
-                    if(line.match(/\[\/?list\]/)) continue
-                    if(line.match(/(STEAM_CLAN_IMAGE|STEAM_CLAN_LOC_IMAGE)/)) {
-                        if(!image) {
-                            image = line.replace(/\[img\]\{STEAM_CLAN_IMAGE\}(.+)\[\/img\]/, `${STEAM_CLAN_IMAGE}$1`)
-                            image = image.replace(/\[img\]\{STEAM_CLAN_LOC_IMAGE\}(.+)\[\/img\]/, `${STEAM_CLAN_LOC_IMAGE}$1`)
+                if(lastNews.feed_type === 1) {
+                    const updateTitle = `## ${lastNews.title}`
+
+                    let image
+                    let contents = []
+                    for(let line of lastNews.contents.split('\n')) {
+                        if(line.match(/\[\/?list\]/)) continue
+                        if(line.match(/(STEAM_CLAN_IMAGE|STEAM_CLAN_LOC_IMAGE)/)) {
+                            if(!image) {
+                                image = line.replace(/\[img\]\{STEAM_CLAN_IMAGE\}(.+)\[\/img\]/, `${STEAM_CLAN_IMAGE}$1`)
+                                image = image.replace(/\[img\]\{STEAM_CLAN_LOC_IMAGE\}(.+)\[\/img\]/, `${STEAM_CLAN_LOC_IMAGE}$1`)
+                            }
+                            continue
                         }
-                        continue
-                    }
-                    line = line.replace(/\[previewyoutube=([a-zA-Z0-9-_]+)(?:;[a-z]+)?\]\[\/previewyoutube\]/g, 'https://youtu.be/$1')
-                    line = line.replace(/\[b\](.+)\[\/b\]/g, '**$1**')
-                    line = line.replace(/\[i\](.+)\[\/i\]/g, '*$1*')
-                    line = line.replace(/\[u\](.+)\[\/u\]/g, '__$1__')
-                    line = line.replace(/\[spoiler\](.+)\[\/spoiler\]/g, '||$1||')
-                    line = line.replace(/\[url=(.+)\](.+)\[\/url\]/g, '$2: $1')
-                    line = line.replace(/\[\*\]/g, '•')
-                    contents.push(line)
-                }
-
-                const updateContent = contents.join('\n')
-
-                if(lastNews.title) {
-                    const newUpdate = await BSUpdateModel.findOne({
-                        where: {
-                            title: updateTitle
-                        }
-                    })
-
-                    let updateImage
-        
-                    if(image) {
-                        try {
-                            const imageRequest = await fetch(image)
-                            if(!imageRequest.ok) throw new Error('Récupération de l\'image impossible')
-                            const imageData = await imageRequest.arrayBuffer()
-                            updateImage = Buffer.from(imageData)
-                        } catch(err) {
-                            updateImage = null
-                        }
+                        line = line.replace(/\[previewyoutube=([a-zA-Z0-9-_]+)(?:;[a-z]+)?\]\[\/previewyoutube\]/g, 'https://youtu.be/$1')
+                        line = line.replace(/\[b\](.+)\[\/b\]/g, '**$1**')
+                        line = line.replace(/\[i\](.+)\[\/i\]/g, '*$1*')
+                        line = line.replace(/\[u\](.+)\[\/u\]/g, '__$1__')
+                        line = line.replace(/\[spoiler\](.+)\[\/spoiler\]/g, '||$1||')
+                        line = line.replace(/\[url=(.+)\](.+)\[\/url\]/g, '$2: $1')
+                        line = line.replace(/\[\*\]/g, '•')
+                        contents.push(line)
                     }
 
-                    const updateData = {
-                        image: updateImage,
-                        title: updateTitle,
-                        content: updateContent
-                    }
-        
-                    if(!newUpdate) {
-                        Logger.log('BSUpdate', 'INFO', 'Nouvelle mise à jour de Beat Saber')
-                        const BSUpdate = await BSUpdateModel.create(updateData)
-                        return BSUpdate
+                    const updateContent = contents.join('\n')
+
+                    if(lastNews.title) {
+                        const newUpdate = await BSUpdateModel.findOne({
+                            where: {
+                                title: updateTitle
+                            }
+                        })
+
+                        let updateImage
+
+                        if(image) {
+                            try {
+                                const imageRequest = await fetch(image)
+                                if(!imageRequest.ok) throw new Error('Récupération de l\'image impossible')
+                                const imageData = await imageRequest.arrayBuffer()
+                                updateImage = Buffer.from(imageData)
+                            } catch(err) {
+                                updateImage = null
+                            }
+                        }
+
+                        const updateData = {
+                            image: updateImage,
+                            title: updateTitle,
+                            content: updateContent
+                        }
+
+                        if(!newUpdate) {
+                            Logger.log('BSUpdate', 'INFO', 'Nouvelle mise à jour de Beat Saber')
+                            const BSUpdate = await BSUpdateModel.create(updateData)
+                            return BSUpdate
+                        }
                     }
                 }
             }
