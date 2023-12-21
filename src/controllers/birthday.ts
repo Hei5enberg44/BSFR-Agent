@@ -72,7 +72,13 @@ export default {
         if(bdMessages.length === 0) return 'Joyeux anniversaire !'
 
         const random = crypto.randomInt(bdMessages.length)
-        return bdMessages[random].message
+        const bdMessage = bdMessages[random]
+
+        await BirthdayWishesModel.create({
+            birthdayMessageId: bdMessage.id
+        })
+
+        return bdMessage.message
     },
 
     /**
