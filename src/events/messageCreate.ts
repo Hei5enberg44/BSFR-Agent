@@ -5,6 +5,7 @@ import threads from '../controllers/threads.js'
 import twitch from '../controllers/twitch.js'
 import feur from '../controllers/feur.js'
 import cooldown from '../controllers/cooldown.js'
+import settings from '../controllers/settings.js'
 import Logger from '../utils/logger.js'
 import config from '../config.json' assert { type: 'json' }
 
@@ -78,6 +79,11 @@ export default class messageCreate {
         const message = this.message
 
         if(message.author.id !== config.clientId) {
+            const dmSettings = await settings.get('dm')
+            const dmEnabled = dmSettings?.enabled === true
+
+            if(!dmEnabled) return
+
             const guild = <Guild>message.client.guilds.cache.get(config.guild.id)
             const agentDmChannel = <TextChannel>guild.channels.cache.get(config.guild.channels['agent-dm'])
 

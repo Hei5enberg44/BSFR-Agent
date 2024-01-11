@@ -1,5 +1,6 @@
 import { SlashCommandBuilder, PermissionFlagsBits, ChatInputCommandInteraction, userMention } from 'discord.js'
 import { CommandError, CommandInteractionError } from '../utils/error.js'
+import settings from '../controllers/settings.js'
 import threads from '../controllers/threads.js'
 import Locales from '../utils/locales.js'
 import Logger from '../utils/logger.js'
@@ -29,6 +30,11 @@ export default {
             const thread = await threads.get('dm', interaction.channelId, null)
 
             if(!thread) throw new CommandInteractionError(Locales.get(interaction.locale, 'dm_wrong_channel_error'))
+
+            const dmSettings = await settings.get('dm')
+            const dmEnabled = dmSettings?.enabled === true
+
+            if(!dmEnabled) throw new CommandInteractionError('Les DM sont désactivés')
 
             const member = interaction.guild?.members.cache.get(thread.memberId)
 

@@ -467,6 +467,22 @@ const OldMemberRolesModel = sequelize.define<OldMemberRolesModel>('old_member_ro
     roles: DataTypes.JSON()
 })
 
+interface SettingsModel extends Model<InferAttributes<SettingsModel>, InferCreationAttributes<SettingsModel>> {
+    id: CreationOptional<number>,
+    name: string,
+    data: Record<string, any>
+}
+
+const SettingsModel = sequelize.define<SettingsModel>('settings', {
+    id: {
+        type: DataTypes.INTEGER(),
+        autoIncrement: true,
+        primaryKey: true
+    },
+    name: DataTypes.STRING(255),
+    data: DataTypes.JSON()
+})
+
 export {
     BirthdayMessageModel,
     BirthdayWishesModel,
@@ -493,5 +509,6 @@ export {
     RoleCategorieModel,
     CooldownModel,
     QuotaModel,
-    OldMemberRolesModel
+    OldMemberRolesModel,
+    SettingsModel
 }
