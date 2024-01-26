@@ -114,4 +114,16 @@ export default class Crons {
 
         Logger.log('CronManager', 'INFO', 'Tâche "resetQuotas" chargée')
     }
+
+    async alive() {
+        const apiURL = config.api.status
+        if(apiURL) {
+            new CronJob('* * * * *', async function() {
+                const params = new URLSearchParams({ status: 'up', msg: 'OK' }).toString()
+                await fetch(`${apiURL}?${params}`)
+            }, null, true, 'Europe/Paris')
+    
+            Logger.log('CronManager', 'INFO', 'Tâche "alive" chargée')
+        }
+    }
 }
