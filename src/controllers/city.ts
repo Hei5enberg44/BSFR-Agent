@@ -1,4 +1,5 @@
-import { CitieModel, FranceCitieModel } from './database.js'
+import opendatasoft from './opendatasoft.js'
+import { CitieModel } from './database.js'
 
 export default {
     /**
@@ -7,27 +8,15 @@ export default {
      * @param postalCode nom de la ville
      * @param cityName nom de la ville
      */
-    async set(memberId: string, postalCode: string, cityName: string) {
-        const memberCity = await CitieModel.findOne({ where: { memberId: memberId } })
+    async set(memberId: string, countryName: string, cityName: string, latitude: string, longitude: string) {
+        await this.unset(memberId)
 
-        if(memberCity) await this.unset(memberId)
-
-        const city = await FranceCitieModel.findOne({
-            where: {
-                code_postal: postalCode,
-                nom_de_la_commune: cityName
-            },
-            group: 'nom_de_la_commune'
+        await CitieModel.create({
+            memberId: memberId,
+            pays: countryName,
+            commune: cityName,
+            coordonnees_gps: `${latitude},${longitude}`
         })
-
-        if(city) {
-            await CitieModel.create({
-                memberId: memberId,
-                code_postal: city.code_postal,
-                nom_de_la_commune: city.nom_de_la_commune,
-                coordonnees_gps: city.coordonnees_gps
-            })
-        }
     },
 
     /**
@@ -41,15 +30,20 @@ export default {
     },
 
     /**
-     * Récupère des villes par rapport à un code postal
-     * @param postalCode code postal de la ville
+     * Récupère des villes en fonction d'un nom de ville
+     * @param cityName nom de la ville
      * @returns liste des villes
      */
-    async getCitiesByPostalCode(postalCode: number) {
-        const cities = await FranceCitieModel.findAll({
-            where: { code_postal: postalCode },
-            group: 'nom_de_la_commune'
-        })
-        return cities
+    async getCitiesByName(cityName: string) {
+        const params = {
+            select: 'name, country, coordinates',
+            where: `name LIKE \'%${cityName.replace('\'', '\\\'')}%\'`,
+            include_links: 'false',
+            include_app_metas: 'false',
+            offset: '0',
+            limit: '50'
+        }
+        const cities = await opendatasoft.getDatasetRecords('geonames-all-cities-with-a-population-500', params)
+        return cities.results
     }
 }

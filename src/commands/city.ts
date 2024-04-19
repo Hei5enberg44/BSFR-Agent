@@ -16,11 +16,11 @@ export default {
                 .setNameLocalization('fr', 'ajouter')
                 .setDescription('Add the city where you live')
                 .setDescriptionLocalization('fr', 'Ajouter ta ville de résidence')
-                .addIntegerOption(option =>
-                    option.setName('postal_code')
-                        .setNameLocalization('fr', 'code_postal')
-                        .setDescription('Postal code of your city')
-                        .setDescriptionLocalization('fr', 'Code postal de ta ville')
+                .addStringOption(option =>
+                    option.setName('city_name')
+                        .setNameLocalization('fr', 'nom_ville')
+                        .setDescription('Name of your city')
+                        .setDescriptionLocalization('fr', 'Nom de ta ville')
                         .setRequired(true)
                 )
         )
@@ -47,9 +47,9 @@ export default {
 
             switch(action) {
                 case 'add': {
-                    const postalCode = interaction.options.getInteger('postal_code', true)
+                    const cityName = interaction.options.getString('city_name', true)
 
-                    const cities = await city.getCitiesByPostalCode(postalCode)
+                    const cities = await city.getCitiesByName(cityName)
 
                     if(cities.length > 0) {
                         const customId = (new Date().getTime()).toString()
@@ -69,8 +69,8 @@ export default {
                                 for(const c of citiesRow) {
                                     citiesButtons.addComponents(
                                         new ButtonBuilder()
-                                            .setCustomId(`${c.code_postal}_${c.nom_de_la_commune}_${customId}`)
-                                            .setLabel(c.nom_de_la_commune)
+                                            .setCustomId(`${c.country}_${c.name}_${c.coordinates.lat}_${c.coordinates.lon}_${customId}`)
+                                            .setLabel(`${c.name} (${c.country})`)
                                             .setStyle(ButtonStyle.Secondary)
                                     )
                                 }
@@ -109,8 +109,8 @@ export default {
                             if(![`previous_${customId}`, `next_${customId}`].find(x => x === choice)) {
                                 await i.deferUpdate()
 
-                                const c = choice.split('_')
-                                await city.set(interaction.user.id, c[0], c[1])
+                                const [ countryName, cityName, latitude, longitude ] = choice.split('_')
+                                await city.set(interaction.user.id, countryName, cityName, latitude, longitude)
 
                                 await i.editReply({ content: Locales.get(interaction.locale, 'city_added'), components: [] })
 
@@ -132,7 +132,7 @@ export default {
                             }
                         })
                     } else {
-                        await interaction.reply({ content: Locales.get(interaction.locale, 'city_not_found_error', postalCode), ephemeral: true })
+                        await interaction.reply({ content: Locales.get(interaction.locale, 'city_not_found_error', cityName), ephemeral: true })
                     }
                     break
                 }

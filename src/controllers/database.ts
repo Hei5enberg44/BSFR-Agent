@@ -257,8 +257,8 @@ const FranceCitieModel = sequelize.define<FranceCitieModel>('france_cities', {
 interface CitieModel extends Model<InferAttributes<CitieModel>, InferCreationAttributes<CitieModel>> {
     id: CreationOptional<number>,
     memberId: string,
-    code_postal: number,
-    nom_de_la_commune: string,
+    pays: string,
+    commune: string,
     coordonnees_gps: string
 }
 
@@ -269,8 +269,8 @@ const CitieModel = sequelize.define<CitieModel>('cities', {
         primaryKey: true
     },
     memberId: DataTypes.STRING(255),
-    code_postal: DataTypes.INTEGER(),
-    nom_de_la_commune: DataTypes.STRING(255),
+    pays: DataTypes.STRING(255),
+    commune: DataTypes.STRING(255),
     coordonnees_gps: DataTypes.STRING(255)
 })
 
