@@ -23,18 +23,16 @@ interface ClipInfosData {
     }
 }
 
-interface VODTokenData {
-    videoPlaybackAccessToken: {
-        value: string,
-        signature: string
-    }
-}
-
 interface VODInfosData {
     video: {
         title: string,
         createdAt: string,
+        broadcastType: string,
+        seekPreviewsURL: string,
         creator:  {
+            login: string
+        },
+        owner: {
             login: string
         }
     }
@@ -291,7 +289,7 @@ export default class Twitch {
             const downloadUrl = clipLinks[0].data.clip.videoQualities[0].sourceURL + `?sig=${clipLinks[0].data.clip.playbackAccessToken.signature}&token=${encodeURIComponent(clipLinks[0].data.clip.playbackAccessToken.value)}`
             return downloadUrl
         } else {
-            throw new Error('Récupération de l\'URL de téléchargement du clip impossible')
+            throw new TwitchError('Récupération de l\'URL de téléchargement du clip impossible')
         }
     }
 
@@ -321,81 +319,129 @@ export default class Twitch {
             throw new TwitchError('Échec de téléchargement du clip')
         }
     }
-
-    /**
-     * Récupération du token d'une VOD
-     * @param videoId identifiant de la VOD
-     * @returns token de la VOD
-     */
-    private static async getVideoToken(videoId: string): Promise<VODTokenData> {
-        const videoTokenRequest = await fetch('https://gql.twitch.tv/gql', {
-            method: 'POST',
-            headers: {
-                'Client-ID': twitchGqlClientId
-            },
-            body: JSON.stringify({"operationName":"PlaybackAccessToken_Template","query":"query PlaybackAccessToken_Template($login: String!, $isLive: Boolean!, $vodID: ID!, $isVod: Boolean!, $playerType: String!) { streamPlaybackAccessToken(channelName: $login, params: {platform: \"web\", playerBackend: \"mediaplayer\", playerType: $playerType}) @include(if: $isLive) { value signature __typename } videoPlaybackAccessToken(id: $vodID, params: {platform: \"web\", playerBackend: \"mediaplayer\", playerType: $playerType}) @include(if: $isVod) { value signature __typename }}", "variables": {"isLive":false,"login":"","isVod":true,"vodID":videoId,"playerType":"site"}})
-        })
-
-        const videoToken = await videoTokenRequest.json()
-        return videoToken.data
+    
+    private static createServingID() {
+        const w = '0123456789abcdefghijklmnopqrstuvwxyz'.split('')
+        let id = ''
+    
+        for(let i = 0; i < 32; i++) {
+            id += w[Math.floor(Math.random() * w.length)]
+        }
+    
+        return id
+    }
+    
+    private static async isValidQuality(url: string) {
+        const response = await fetch(url)
+    
+        if(response.ok) {
+            const data = await response.text()
+            return data.includes('.ts')
+        }
+    
+        return false
     }
 
     /**
      * Récupération de la liste des chunks constituants une VOD
      * @param videoId identifiant de la VOD
-     * @param token token de la VOD
-     * @param sig signature de la VOD
      * @returns liste des chunks constituants la VOD
      */
-    private static async getVideoPlaylist(videoId: string, token: string, sig: string) {
-        const params = new URLSearchParams({
-            nauth: token,
-            nauthsig: sig,
-            allow_source: 'true',
-            player: 'twitchweb'
-        }).toString()
+    private static async getVideoPlaylist(videoId: string) {
+        const data = await this.getVideoInfos(videoId)
 
-        const videoPlaylistRequest = await fetch(`http://usher.ttvnw.net/vod/${videoId}?${params}`, {
-            method: 'GET',
-            headers: {
-                'Client-ID': twitchGqlClientId
+        const vodData = data.video
+        const channelData = vodData.owner
+
+        let resolutions: Record<string, {res: string, fps: number}> = {
+            '160p30': {
+                'res': '284x160',
+                'fps': 30
+            },
+            '360p30': {
+                'res': '640x360',
+                'fps': 30
+            },
+            '480p30': {
+                'res': '854x480',
+                'fps': 30
+            },
+            '720p60': {
+                'res': '1280x720',
+                'fps': 60
+            },
+            '1080p60': {
+                'res': '1920x1080',
+                'fps': 60
+            },
+            'chunked': {
+                'res': '1920x1080',
+                'fps': 60
             }
-        })
-        
-        if(!videoPlaylistRequest.ok) {
-            if(videoPlaylistRequest.status === 403) {
-                return null
+        }
+
+        let sorted_dict = Object.keys(resolutions)
+        sorted_dict = sorted_dict.reverse()
+
+        let ordered_resolutions: Record<string, {res: string, fps: number}> = {}
+
+        for(let key in sorted_dict) {
+            ordered_resolutions[sorted_dict[key]] = resolutions[sorted_dict[key]]
+        }
+
+        resolutions = ordered_resolutions
+
+        const currentURL = new URL(vodData.seekPreviewsURL)
+
+        const domain = currentURL.host
+        const paths = currentURL.pathname.split('/')
+        const vodSpecialID = paths[paths.findIndex(element => element.includes('storyboards')) - 1]
+
+        let fakePlaylist = `#EXTM3U
+    #EXT-X-TWITCH-INFO:ORIGIN="s3",B="false",REGION="EU",USER-IP="127.0.0.1",SERVING-ID="${this.createServingID()}",CLUSTER="cloudfront_vod",USER-COUNTRY="BE",MANIFEST-CLUSTER="cloudfront_vod"`
+
+        const now = new Date('2023-02-10')
+        const created = new Date(vodData.createdAt)
+
+        const time_difference = now.getTime() - created.getTime()
+        const days_difference = time_difference / (1000 * 3600 * 24)
+
+        const broadcastType = vodData.broadcastType.toLowerCase()
+
+        let startQuality = 8534030
+
+        for (let [resKey, resValue] of Object.entries(resolutions)) {
+            let url = undefined
+
+            if(broadcastType === 'highlight') {
+                url = `https://${domain}/${vodSpecialID}/${resKey}/highlight-${videoId}.m3u8`
+            } else if(broadcastType === "upload" && days_difference > 7) {
+                // Only old uploaded VOD works with this method now
+
+                url = `https://${domain}/${channelData.login}/${videoId}/${vodSpecialID}/${resKey}/index-dvr.m3u8`
             } else {
-                throw new Error(videoPlaylistRequest.statusText)
+                url = `https://${domain}/${vodSpecialID}/${resKey}/index-dvr.m3u8`
             }
-        } else {
-            const videoPlaylist = await videoPlaylistRequest.text()
-            return videoPlaylist
-        }
-    }
 
-    /**
-     * Récupération d'un fichier playlist contenant la liste des chunks constituants une VOD
-     * @param videoId identifiant de la VOD
-     * @returns URL du fichier playlist
-     */
-    private static async getRestrictedVideoPlaylist(videoId: string) {
-        const videoInfosRequest = await fetch(`https://api.twitch.tv/kraken/videos/${videoId}`, {
-            method: 'GET',
-            headers: {
-                'User-Agent': 'Mozilla/5.0',
-                'Client-ID': twitchGqlClientId,
-                'Accept': 'application/vnd.twitchtv.v5+json'
+            if (url == undefined) {
+                continue;
             }
-        })
 
-        if(!videoInfosRequest.ok) {
-            throw new Error(videoInfosRequest.statusText)
-        } else {
-            const videoInfos = await videoInfosRequest.json()
-            const domain = videoInfos.animated_preview_url.split('/storyboards')[0]
-            return domain + '/chunked/index-dvr.m3u8'
+            if(await this.isValidQuality(url)) {
+                const quality = resKey === 'chunked' ? resValue.res.split('x')[1] + 'p' : resKey
+                const enabled = resKey === 'chunked' ? 'YES' : 'NO'
+                const fps = resValue.fps
+
+                fakePlaylist += `
+#EXT-X-MEDIA:TYPE=VIDEO,GROUP-ID="${quality}",NAME="${quality}",AUTOSELECT=${enabled},DEFAULT=${enabled}
+#EXT-X-STREAM-INF:BANDWIDTH=${startQuality},CODECS="avc1.64002A,mp4a.40.2",RESOLUTION=${resValue.res},VIDEO="${quality}",FRAME-RATE=${fps}
+${url}`
+
+                startQuality -= 100
+            }
         }
+
+        return fakePlaylist
     }
 
     /**
@@ -406,10 +452,14 @@ export default class Twitch {
     private static async getVideoInfos(videoId: string): Promise<VODInfosData> {
         const videoInfosRequest = await fetch('https://gql.twitch.tv/gql', {
             method: 'POST',
+            body: JSON.stringify({
+                "query": "query {video(id: \"" + videoId + "\"){title,broadcastType,createdAt,seekPreviewsURL,owner{login},creator{login}}}"
+            }),
             headers: {
-                'Client-ID': twitchGqlClientId
-            },
-            body: JSON.stringify({"query":"query{video(id:\"" + videoId + "\"){title,createdAt,creator{login}}}","variables":{}})
+                'Client-Id': twitchGqlClientId,
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            }
         })
 
         if(videoInfosRequest.ok) {
@@ -464,17 +514,11 @@ export default class Twitch {
      * @returns fichier téléchargé
      */
     private static async downloadVideo(videoId: string): Promise<tmp.FileResult> {
-        const videoToken = await this.getVideoToken(videoId)
-        const videoPlaylistRaw = await this.getVideoPlaylist(videoId, videoToken.videoPlaybackAccessToken.value, videoToken.videoPlaybackAccessToken.signature)
+        const videoPlaylistRaw = await this.getVideoPlaylist(videoId)
         
         let vodAge = 25
-        let playlistUrl: string
-        if(videoPlaylistRaw) {
-            const videoPlaylist = videoPlaylistRaw.split('\n')
-            playlistUrl = videoPlaylist[videoPlaylist.findIndex(vp => vp.includes('#EXT-X-MEDIA')) + 2]
-        } else {
-            playlistUrl = await this.getRestrictedVideoPlaylist(videoId)
-        }
+        const videoPlaylist = videoPlaylistRaw.split('\n')
+        const playlistUrl = videoPlaylist[videoPlaylist.findIndex(vp => vp.includes('#EXT-X-MEDIA')) + 2]
 
         const baseUrl = playlistUrl.substring(0, playlistUrl.lastIndexOf('/') + 1)
         
@@ -561,10 +605,13 @@ export default class Twitch {
             const tmpChunk = tmpChunks.find(c => path.basename(c.name) === `${videoId}-${fileName}`)
             if(tmpChunk && fs.existsSync(tmpChunk.name)) {
                 const inputStream = fs.createReadStream(tmpChunk.name)
-                await new Promise(resolve => {
+                await new Promise((resolve, reject) => {
                     inputStream.pipe(outputStream, { end: false })
                     inputStream.on('end', () => {
                         resolve(null)
+                    })
+                    inputStream.on('error', (err) => {
+                        reject(err)
                     })
                 })
                 tmpChunk.removeCallback()
@@ -588,7 +635,7 @@ export default class Twitch {
                 .on('error', (err) => {
                     outputConvertedTmp.removeCallback()
                     outputTmp.removeCallback()
-                    reject()
+                    reject(err)
                 })
         })
     }
