@@ -95,7 +95,9 @@ export default class Cooldowns {
         const memberId = member.id
         const memberCooldown = await this.get(memberId)
 
-        if(memberCooldown) {
+        const isAttachment = message.attachments.size > 0 && message.content === ''
+
+        if(memberCooldown && !isAttachment) {
             const date = new Date()
 
             const { timeThreshold, countThreshold, muteDuration, messageDate } = memberCooldown
