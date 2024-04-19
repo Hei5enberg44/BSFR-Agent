@@ -1,6 +1,6 @@
 <h1>bsfr-agent</h1>
 <p>
-  <img alt="Version" src="https://img.shields.io/badge/version-2.27.0-blue.svg?cacheSeconds=2592000" />
+  <img alt="Version" src="https://img.shields.io/badge/version-2.28.0-blue.svg?cacheSeconds=2592000" />
   <a href="#" target="_blank">
     <img alt="License: ISC" src="https://img.shields.io/badge/License-ISC-yellow.svg" />
   </a>
@@ -344,12 +344,12 @@ __Paramètres :__
 
 |    Nom    | Obligatoire | Contenu |
 | --------- |:-----------:| ------- |
-| **code_postal** | ☑ | Code postal |
+| **nom_ville** | ☑ | Nom de la ville |
 
 __Exemples :__
 
 ```
-/ville ajouter code_postal:46800
+/ville ajouter nom_ville:Nantes
 ```
 
 ***
