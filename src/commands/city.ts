@@ -3,7 +3,6 @@ import { CommandError } from '../utils/error.js'
 import city from '../controllers/city.js'
 import Locales from '../utils/locales.js'
 import Logger from '../utils/logger.js'
-import config from '../config.json' assert { type: 'json' }
 
 export default {
     data: new SlashCommandBuilder()
@@ -33,9 +32,6 @@ export default {
         .setDMPermission(false)
         .setDefaultMemberPermissions(PermissionFlagsBits.SendMessages)
     ,
-    allowedChannels: [
-        config.guild.channels['rôles-auto-assignable']
-    ],
 
     /**
      * Exécution de la commande

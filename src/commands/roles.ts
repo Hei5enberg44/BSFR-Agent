@@ -4,7 +4,6 @@ import { CommandError } from '../utils/error.js'
 import roles, { RoleListItem, RoleItem } from '../controllers/roles.js'
 import Locales from '../utils/locales.js'
 import Logger from '../utils/logger.js'
-import config from '../config.json' assert { type: 'json' }
 
 const _roles = await roles.list()
 
@@ -78,9 +77,6 @@ export default {
         .setDMPermission(false)
         .setDefaultMemberPermissions(PermissionFlagsBits.SendMessages)
     ,
-    allowedChannels: [
-        config.guild.channels['rôles-auto-assignable']
-    ],
 
     /**
      * Exécution de la commande
