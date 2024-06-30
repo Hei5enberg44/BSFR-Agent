@@ -78,9 +78,8 @@ export default class MaliciousURL {
                 await logsChannel.send({ content: roleMention(config.guild.roles['Modérateur']), embeds: [embed] })
 
                 const member = message.member
-                const muteRole = guild.roles.cache.get(config.guild.roles['Muted'])
 
-                if(member && muteRole) await message.member.roles.add(muteRole)
+                if(member) await member.timeout(2_419_200_000)
             }
         }
     }
