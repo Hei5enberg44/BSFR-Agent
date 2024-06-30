@@ -68,10 +68,8 @@ export default {
             if(!date) throw new CommandInteractionError(Locales.get(interaction.locale, 'invalid_duration', duration))
 
             const adminChannel = <TextChannel>guild.channels.cache.get(config.guild.channels['admin'])
-            const muteRole = guild.roles.cache.get(config.guild.roles['Muted'])
 
-            let askForBan = true
-            if((<GuildMember>interaction.member).roles.cache.find(r => r.id === config.guild.roles['Admin'])) askForBan = false
+            const askForBan = (<GuildMember>interaction.member).roles.cache.find(r => r.id === config.guild.roles['Admin']) ? false : true
 
             const embeds = []
 
@@ -88,7 +86,7 @@ export default {
                     ))
 
                 const guildMember = guild.members.cache.get(member.id)
-                if(guildMember && muteRole) await guildMember.roles.add(muteRole)
+                if(guildMember) await guildMember.timeout(2_419_200_000, 'Demande de ban en attente') // Timeout 28 jours
 
                 try {
                     const banMessage = `🇫🇷 ${Locales.get('fr', 'ban_request_message', inlineCode(reason))}`

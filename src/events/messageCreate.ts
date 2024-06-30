@@ -1,7 +1,6 @@
 import { Guild, Message, Role, TextChannel, ThreadChannel, ThreadAutoArchiveDuration, userMention } from 'discord.js'
 import maliciousURL from '../controllers/maliciousURL.js'
 import threads from '../controllers/threads.js'
-// import antivirus from '../controllers/antivirus.js'
 import twitch from '../controllers/twitch.js'
 import feur from '../controllers/feur.js'
 import cooldown from '../controllers/cooldown.js'
@@ -49,15 +48,6 @@ export default class messageCreate {
             } else {
                 // Si c'est un dm
                 await this.dm()
-            }
-
-            // Scan antivirus des pièces jointes du message
-            if(message.attachments.size > 0 && !message.author.bot) {
-                // try {
-                //     await antivirus.scanFiles(message)
-                // } catch(error) {
-                //     Logger.log('Antivirus', 'ERROR', 'Scan impossible : ' + error.message)
-                // }
             }
         }
     }
