@@ -165,9 +165,8 @@ export default class Bans {
             const guild = <Guild>reaction.client.guilds.cache.get(config.guild.id)
             const logsChannel = <TextChannel>guild.channels.cache.get(config.guild.channels['logs'])
             const member = guild.members.cache.get(banInfos.memberId)
-            const muteRole = guild.roles.cache.get(config.guild.roles['Muted'])
 
-            if(member && muteRole) {
+            if(member) {
                 const embeds = []
 
                 const embed = new Embed()
@@ -202,6 +201,7 @@ export default class Bans {
                             .setDescription('Le message n\'a pas pu être envoyé au membre'))
                     }
 
+                    await member.timeout(null)
                     await member.ban({ reason: banInfos.reason })
 
                     await reaction.message.reactions.removeAll()
@@ -217,7 +217,7 @@ export default class Bans {
                             { name: 'Levée du ban', value: time(banInfos.unbanDate, TimestampStyles.RelativeTime) },
                         ))
 
-                    await member.roles.remove(muteRole)
+                    await member.timeout(null)
 
                     await this.remove(banId)
                     await ReactionModel.destroy({ where: { id: r.id } })
