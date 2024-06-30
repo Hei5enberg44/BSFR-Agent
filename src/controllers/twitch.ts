@@ -599,7 +599,7 @@ ${url}`
         }))
 
         const outputTmp = tmp.fileSync({ name: `${videoId}-output.ts` })
-        const outputStream = fs.createWriteStream(outputTmp.name)
+        const outputStream = fs.createWriteStream(outputTmp.name) as unknown as NodeJS.WritableStream
         for(const video of videoList) {
             const fileName = video.key.includes('?') ? video.key.split('?')[0] : video.key
             const tmpChunk = tmpChunks.find(c => path.basename(c.name) === `${videoId}-${fileName}`)
@@ -632,7 +632,7 @@ ${url}`
                     outputTmp.removeCallback()
                     resolve(outputConvertedTmp)
                 })
-                .on('error', (err) => {
+                .on('error', (err: Error) => {
                     outputConvertedTmp.removeCallback()
                     outputTmp.removeCallback()
                     reject(err)
