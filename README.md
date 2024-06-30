@@ -1,6 +1,6 @@
 <h1>bsfr-agent</h1>
 <p>
-  <img alt="Version" src="https://img.shields.io/badge/version-2.28.1-blue.svg?cacheSeconds=2592000" />
+  <img alt="Version" src="https://img.shields.io/badge/version-2.28.2-blue.svg?cacheSeconds=2592000" />
   <a href="#" target="_blank">
     <img alt="License: ISC" src="https://img.shields.io/badge/License-ISC-yellow.svg" />
   </a>
@@ -150,45 +150,6 @@ __Exemples :__
 
 ```
 /anniversaire supprimer
-```
-
-***
-
-- ### /mute : Mute un membre
-
-Permet de mute un membre sur une période définie.
-
-__Paramètres :__
-
-|    Nom    | Obligatoire | Contenu |
-| --------- |:-----------:| ------- |
-| **membre** | ☑ | Membre de la guild |
-| **raison** | ☑ | Raison du mute |
-| **durée** | ☑ | Durée du mute (s = secondes, i = minutes, h = heures, d = jours, w = semaines, m = mois, y = années) |
-
-__Exemples :__
-
-```
-/mute membre:@Hei5enberg#6969 raison:Spam durée:1d
-```
-
-***
-
-- ### /unmute : Unmute un membre
-
-Permet d'unmute un membre en cours de mute.
-
-__Paramètres :__
-
-|    Nom    | Obligatoire | Contenu |
-| --------- |:-----------:| ------- |
-| **membre** | ☑ | Membre de la guild |
-| **raison** | ☑ | Raison du unmute |
-
-__Exemples :__
-
-```
-/unmute membre:@Hei5enberg#6969 raison:S'est calmé
 ```
 
 ***
