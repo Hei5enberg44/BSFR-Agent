@@ -86,7 +86,7 @@ export default {
                     ))
 
                 const guildMember = guild.members.cache.get(member.id)
-                if(guildMember) await guildMember.timeout(2_419_200_000, 'Demande de ban en attente') // Timeout 28 jours
+                if(guildMember) await guildMember.timeout(5 * 24 * 60 * 60 * 1000, 'Demande de ban en attente') // Timeout 5 jours
 
                 try {
                     const banMessage = `🇫🇷 ${Locales.get('fr', 'ban_request_message', inlineCode(reason))}`
