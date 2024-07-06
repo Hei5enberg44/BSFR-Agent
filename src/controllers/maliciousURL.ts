@@ -47,17 +47,21 @@ export default class MaliciousURL {
      */
     static async test(message: Message) {
         if(!message.author.bot) {
-            const urlsList = await MaliciousURLModel.findAll()
-            
-            const urlsToTest = message.content.toLowerCase().replace('\n', ' ').split(' ').filter(w => w.match(/https?:\/\//))
+            const urlsToTest = message.content.toLowerCase().replace('\n', ' ').split(' ').filter(w => w.match(/^https?:\/\//))
 
             let usedMaliciousURL = []
             for(const url of urlsToTest) {
                 const domain = url.replace(/^(?:https?:\/\/)?(?:[^@\/\n]+@)?(?:www\.)?([^:\/\n]+).*$/, '$1')
-                if(urlsList.find(ul => ul.url === domain) && usedMaliciousURL.indexOf(url) === -1) {
+                const isMalicious = await MaliciousURLModel.findOne({ where: { url: domain } })
+                if(isMalicious !== null && usedMaliciousURL.indexOf(url) === -1) {
                     usedMaliciousURL.push(url)
                 }
             }
+
+            usedMaliciousURL = [
+                ...usedMaliciousURL,
+                ...(this.runSpecificTests(message))
+            ]
 
             if(usedMaliciousURL.length > 0) {
                 Logger.log('MaliciousURL', 'INFO', `URL(s) malveillant(s) trouvé(s) dans un message de ${message.author.username} : ${usedMaliciousURL.join(', ')}`)
@@ -74,14 +78,29 @@ export default class MaliciousURL {
                 await message.delete()
                 
                 const guild = <Guild>message.guild
-                const logsChannel = <TextChannel>guild.channels.cache.get(config.guild.channels['logs'])
-                await logsChannel.send({ content: roleMention(config.guild.roles['Modérateur']), embeds: [embed] })
+                const logsChannel = guild.channels.cache.get(config.guild.channels['logs']) as TextChannel | undefined
+                logsChannel && await logsChannel.send({ content: roleMention(config.guild.roles['Modérateur']), embeds: [embed] })
 
                 const member = message.member
 
-                if(member) await member.timeout(2_419_200_000)
+                if(member) {
+                    try {
+                        await member.timeout(5 * 24 * 60 * 60 * 1000, 'Envoi d\'URL malveillant') // Timeout 5 jours
+                    } catch(error) {
+                        Logger.log('MaliciousURL', 'ERROR', `Impossible de timeout le membre ${member.user.username} (${error.message})`)
+                    }
+                }
             }
         }
+    }
+
+    /**
+     * Tests spécifiques
+     * @param message The created message
+     */
+    private static runSpecificTests(message: Message) {
+        const usedMaliciousURL = message.content.toLowerCase().replace('\n', ' ').split(' ').filter(w => w.match(/^\[(https?:\/\/)?(steamcommunity\.com)[^\]]+\]\(https?:\/\/[^\)]+\)$/))
+        return usedMaliciousURL
     }
 
     /**
