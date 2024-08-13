@@ -90,15 +90,23 @@ export default {
 
                     if(page < 1) throw new CommandInteractionError(Locales.get(interaction.locale, 'page_error'))
 
-                    const cooldownList = await cooldown.list(page)
+                    try {
+                        const cooldownList = await cooldown.list(page)
 
-                    const embed = new Embed()
-                        .setColor('#F1C40F')
-                        .setTitle(Locales.get(interaction.locale, 'cooldown_list'))
-                        .setDescription(cooldownList.items.map(cooldown => Locales.get(interaction.locale, 'member_cooldown', userMention(cooldown.memberId), cooldown.timeThreshold, cooldown.countThreshold, cooldown.muteDuration)).join('\n'))
-                        .addFields({ name: 'Page', value: Locales.get(interaction.locale, 'page_info', cooldownList.page, cooldownList.pageCount) })
+                        const embed = new Embed()
+                            .setColor('#F1C40F')
+                            .setTitle(Locales.get(interaction.locale, 'cooldown_list'))
+                            .setDescription(cooldownList.items.map(cooldown => Locales.get(interaction.locale, 'member_cooldown', userMention(cooldown.memberId), cooldown.timeThreshold, cooldown.countThreshold, cooldown.muteDuration)).join('\n'))
+                            .addFields({ name: 'Page', value: Locales.get(interaction.locale, 'page_info', cooldownList.page, cooldownList.pageCount) })
 
-                    await interaction.reply({ embeds: [embed], ephemeral: true })
+                        await interaction.reply({ embeds: [embed], ephemeral: true })
+                    } catch(error) {
+                        if(error.name === 'PAGE_NOT_FOUND_ERROR') {
+                            throw new CommandInteractionError(Locales.get(interaction.locale, 'page_not_found'))
+                        } else if(error.name === 'COOLDOWN_EMPTY_ERROR') {
+                            throw new CommandInteractionError(Locales.get(interaction.locale, 'empty_cooldowns'))
+                        }
+                    }
 
                     break
                 }
