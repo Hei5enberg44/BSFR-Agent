@@ -86,7 +86,6 @@ try {
             await crons.checkBSUpdate()
             await crons.finishPolls()
             await crons.resetQuotas()
-            await crons.alive()
         
             Logger.log('Application', 'INFO', 'Le bot est prêt !')
         })
