@@ -33,7 +33,7 @@ export default {
         .setDefaultMemberPermissions(PermissionFlagsBits.SendMessages)
     ,
     allowedChannels: [
-        config.guild.channels['birthday']
+        config.guild.channels['rôles-auto-assignable']
     ],
 
     /**
