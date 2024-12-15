@@ -1,6 +1,6 @@
 <h1>bsfr-agent</h1>
 <p>
-  <img alt="Version" src="https://img.shields.io/badge/version-2.28.4-blue.svg?cacheSeconds=2592000" />
+  <img alt="Version" src="https://img.shields.io/badge/version-2.28.5-blue.svg?cacheSeconds=2592000" />
   <a href="#" target="_blank">
     <img alt="License: ISC" src="https://img.shields.io/badge/License-ISC-yellow.svg" />
   </a>
@@ -490,8 +490,9 @@ __Exemples :__
 
 ## Auteur
 
-👤 **Hei5enberg#6969**
+👤 **hei5enberg**
 
 * Site Web: [bsaber.fr](https://bsaber.fr)
 * Twitter: [@BltAntoine](https://twitter.com/BltAntoine)
+* BlueSky: [@hei5enberg.bsky.social](https://bsky.app/profile/hei5enberg.bsky.social)
 * Github: [@hei5enberg44](https://github.com/hei5enberg44)
