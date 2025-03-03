@@ -27,7 +27,7 @@ export default class AntiSpam {
                     .setColor('#E74C3C')
                     .setTitle('🚨 Hack de compte détécté !')
                     .setThumbnail(member.displayAvatarURL({ forceStatic: false }))
-                    .setDescription(`${userMention(member.id)} a été timeout pour une durée d'une heure.\nContenu du message :\n\n${codeBlock(memberMessages[memberMessages.length - 1].content)}`)
+                    .setDescription(`${userMention(member.id)} a été timeout pour une durée d'une heure.\n\nContenu du message :\n${codeBlock(memberMessages[memberMessages.length - 1].content)}`)
 
                 try {
                     await logsChannel.send({ embeds: [embed] })
