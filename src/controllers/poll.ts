@@ -4,7 +4,7 @@ import { PollModel, PollVoteModel, ReactionModel, PollReactionData } from './dat
 import reactions, { ReactionType } from './reactions.js'
 import { Op } from 'sequelize'
 import Logger from '../utils/logger.js'
-import config from '../config.json' assert { type: 'json' }
+import config from '../config.json' with { type: 'json' }
 
 export default class Polls {
     /**

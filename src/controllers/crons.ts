@@ -9,7 +9,7 @@ import checkBSUpdate from '../controllers/checkBSUpdate.js'
 import poll from '../controllers/poll.js'
 import quotas from '../controllers/quotas.js'
 import Logger from '../utils/logger.js'
-import config from '../config.json' assert { type: 'json' }
+import config from '../config.json' with { type: 'json' }
 
 export default class Crons {
     private client: Client

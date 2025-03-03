@@ -1,6 +1,6 @@
 import { Guild, GuildBan, TextChannel, userMention } from 'discord.js'
 import Embed from '../utils/embed.js'
-import config from '../config.json' assert { type: 'json' }
+import config from '../config.json' with { type: 'json' }
 
 export default class guildBanRemove {
     private static ban: GuildBan

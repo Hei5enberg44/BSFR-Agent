@@ -1,6 +1,6 @@
 import { NextcloudError } from '../utils/error.js'
 import { Client, Server, UploadFilesCommand, CommandStatus, Folder } from 'nextcloud-node-client'
-import config from '../config.json' assert { type: 'json' }
+import config from '../config.json' with { type: 'json' }
 
 export default class Nextcloud {
     /**

@@ -5,7 +5,7 @@ import { Op } from 'sequelize'
 import reactions, { ReactionType } from './reactions.js'
 import Locales from '../utils/locales.js'
 import Logger from '../utils/logger.js'
-import config from '../config.json' assert { type: 'json' }
+import config from '../config.json' with { type: 'json' }
 
 export default class Bans {
     /**

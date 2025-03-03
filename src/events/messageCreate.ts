@@ -4,9 +4,10 @@ import threads from '../controllers/threads.js'
 import twitch from '../controllers/twitch.js'
 import feur from '../controllers/feur.js'
 import cooldown from '../controllers/cooldown.js'
+import antispam from '../controllers/antispam.js'
 import settings from '../controllers/settings.js'
 import Logger from '../utils/logger.js'
-import config from '../config.json' assert { type: 'json' }
+import config from '../config.json' with { type: 'json' }
 
 export default class messageCreate {
     private static message: Message
@@ -30,6 +31,8 @@ export default class messageCreate {
                     if(message.content.match(/https?:\/\//)) {
                         await maliciousURL.test(message)
                     }
+
+                    await antispam.check(message)
 
                     // Récupération des clips Twitch
                     if(message.channel.id === config.guild.channels['clips']) {

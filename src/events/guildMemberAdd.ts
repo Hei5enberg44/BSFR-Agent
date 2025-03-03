@@ -2,7 +2,7 @@ import { GuildMember, TextChannel, userMention, roleMention } from 'discord.js'
 import Embed from '../utils/embed.js'
 import { OldMemberRolesModel } from '../controllers/database.js'
 import Logger from '../utils/logger.js'
-import config from '../config.json' assert { type: 'json' }
+import config from '../config.json' with { type: 'json' }
 
 export default class guildMemberAdd {
     private static member: GuildMember
