@@ -1,4 +1,4 @@
-import { LocaleString } from 'discord.js'
+import { Locale } from 'discord.js'
 import { Sequelize, DataTypes, Model, CreationOptional, InferAttributes, InferCreationAttributes, NonAttribute } from 'sequelize'
 import { DatabaseError } from '../utils/error.js'
 import config from '../config.json' with { type: 'json' }
@@ -102,7 +102,7 @@ interface PollReactionData {
 type ReactionDataType = BirthdayMessageReactionData[] | MaliciousURLReactionData[] | BanReactionData | PollReactionData
 
 interface ReactionInteraction {
-    locale: LocaleString,
+    locale: Locale,
     commandName: string,
     memberId: string,
     channelId: string

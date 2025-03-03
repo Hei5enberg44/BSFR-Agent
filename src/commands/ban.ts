@@ -1,4 +1,4 @@
-import { SlashCommandBuilder, PermissionFlagsBits, ChatInputCommandInteraction, Guild, GuildMember, TextChannel, inlineCode, userMention, roleMention, time, TimestampStyles } from 'discord.js'
+import { SlashCommandBuilder, PermissionFlagsBits, ChatInputCommandInteraction, Guild, GuildMember, TextChannel, inlineCode, userMention, roleMention, time, TimestampStyles, Locale } from 'discord.js'
 import Embed from '../utils/embed.js'
 import { CommandError, CommandInteractionError } from '../utils/error.js'
 import ban from '../controllers/ban.js'
@@ -89,9 +89,9 @@ export default {
                 if(guildMember) await guildMember.timeout(5 * 24 * 60 * 60 * 1000, 'Demande de ban en attente') // Timeout 5 jours
 
                 try {
-                    const banMessage = `🇫🇷 ${Locales.get('fr', 'ban_request_message', inlineCode(reason))}`
+                    const banMessage = `🇫🇷 ${Locales.get(Locale.French, 'ban_request_message', inlineCode(reason))}`
                         + '\n\n━━━━━━━━━━━━━━━\n\n'
-                        + `🇬🇧 ${Locales.get('en-US', 'ban_request_message', inlineCode(reason))}`
+                        + `🇬🇧 ${Locales.get(Locale.EnglishUS, 'ban_request_message', inlineCode(reason))}`
                     await member.send({ content: banMessage })
                 } catch(error) {
                     embeds.push(new Embed()
@@ -127,9 +127,9 @@ export default {
                 await logsChannel.send({ embeds: embeds })
 
                 try {
-                    const banMessage = `🇫🇷 ${Locales.get('fr', 'ban_message', inlineCode(reason))}`
+                    const banMessage = `🇫🇷 ${Locales.get(Locale.French, 'ban_message', inlineCode(reason))}`
                         + '\n\n━━━━━━━━━━━━━━━\n\n'
-                        + `🇬🇧 ${Locales.get('en-US', 'ban_message', inlineCode(reason))}`
+                        + `🇬🇧 ${Locales.get(Locale.EnglishUS, 'ban_message', inlineCode(reason))}`
                     await member.send({ content: banMessage })
                 } catch(error) {
                     embeds.push(new Embed()
