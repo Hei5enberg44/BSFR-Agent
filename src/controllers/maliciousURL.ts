@@ -1,4 +1,4 @@
-import { Guild, GuildMember, Message, MessageReaction, CommandInteraction, TextChannel, User, userMention, roleMention, LocaleString } from 'discord.js'
+import { Guild, GuildMember, Message, MessageReaction, CommandInteraction, TextChannel, User, userMention, roleMention, Locale } from 'discord.js'
 import Embed from '../utils/embed.js'
 import { MaliciousURLModel, ReactionModel, MaliciousURLReactionData } from './database.js'
 import reactions, { ReactionType } from './reactions.js'
@@ -166,7 +166,7 @@ export default class MaliciousURL {
         if(r.interaction.memberId === user.id) {
             const embed = new Embed()
                 .setThumbnail(user.displayAvatarURL({ forceStatic: false }))
-                .addFields({ name: Locales.get(<LocaleString>r.interaction.locale, 'member'), value: userMention(user.id) })
+                .addFields({ name: Locales.get(<Locale>r.interaction.locale, 'member'), value: userMention(user.id) })
 
             const ids = r.data.map(url => url.id)
             const urls = r.data.map(url => url.url)
@@ -178,8 +178,8 @@ export default class MaliciousURL {
                 Logger.log('MaliciousURL', 'INFO', `${user.username} a supprimé les URL malveillants suivants : ${urls.join(', ')}`)
 
                 embed.setColor('#2ECC71')
-                    .setTitle(Locales.get(<LocaleString>r.interaction.locale, 'delete_malicious_urls'))
-                    .addFields({ name: Locales.get(<LocaleString>r.interaction.locale, 'deleted_malicious_urls'), value: urls.join('\n') })
+                    .setTitle(Locales.get(<Locale>r.interaction.locale, 'delete_malicious_urls'))
+                    .addFields({ name: Locales.get(<Locale>r.interaction.locale, 'deleted_malicious_urls'), value: urls.join('\n') })
 
                 await reaction.message.reactions.removeAll()
                 await reaction.message.edit({ embeds: [embed] })
@@ -187,8 +187,8 @@ export default class MaliciousURL {
                 await ReactionModel.destroy({ where: { id: r.id } })
 
                 embed.setColor('#E74C3C')
-                    .setTitle(Locales.get(<LocaleString>r.interaction.locale, 'delete_malicious_urls_refusal'))
-                    .addFields({ name: Locales.get(<LocaleString>r.interaction.locale, 'undeleted_malicious_urls'), value: urls.join('\n') })
+                    .setTitle(Locales.get(<Locale>r.interaction.locale, 'delete_malicious_urls_refusal'))
+                    .addFields({ name: Locales.get(<Locale>r.interaction.locale, 'undeleted_malicious_urls'), value: urls.join('\n') })
 
                 await reaction.message.reactions.removeAll()
                 await reaction.message.edit({ embeds: [embed] })

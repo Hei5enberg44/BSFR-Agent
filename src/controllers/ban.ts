@@ -1,4 +1,4 @@
-import { Client, Guild, MessageReaction, User, TextChannel, userMention, roleMention, bold, italic, time, TimestampStyles, MessageFlags } from 'discord.js'
+import { Client, Guild, MessageReaction, User, TextChannel, userMention, roleMention, bold, italic, time, TimestampStyles, MessageFlags, Locale } from 'discord.js'
 import Embed from '../utils/embed.js'
 import { BanModel, ReactionModel, BanReactionData } from '../controllers/database.js'
 import { Op } from 'sequelize'
@@ -191,9 +191,9 @@ export default class Bans {
                     await logsChannel.send({ embeds: embeds })
 
                     try {
-                        const banMessage = `🇫🇷 ${Locales.get('fr', 'ban_approved_message', time(banInfos.unbanDate, TimestampStyles.RelativeTime))}`
+                        const banMessage = `🇫🇷 ${Locales.get(Locale.French, 'ban_approved_message', time(banInfos.unbanDate, TimestampStyles.RelativeTime))}`
                             + '\n\n━━━━━━━━━━━━━━━\n\n'
-                            + `🇬🇧 ${Locales.get('en-US', 'ban_approved_message', time(banInfos.unbanDate, TimestampStyles.RelativeTime))}`
+                            + `🇬🇧 ${Locales.get(Locale.EnglishUS, 'ban_approved_message', time(banInfos.unbanDate, TimestampStyles.RelativeTime))}`
                         await member.send({ content: banMessage })
                     } catch(error) {
                         embeds.push(new Embed()
@@ -225,9 +225,9 @@ export default class Bans {
                     await logsChannel.send({ embeds: embeds })
 
                     try {
-                        const banMessage = `🇫🇷 ${Locales.get('fr', 'ban_not_approved_message')}`
+                        const banMessage = `🇫🇷 ${Locales.get(Locale.French, 'ban_not_approved_message')}`
                             + '\n\n━━━━━━━━━━━━━━━\n\n'
-                            + `🇬🇧 ${Locales.get('en-US', 'ban_not_approved_message')}`
+                            + `🇬🇧 ${Locales.get(Locale.EnglishUS, 'ban_not_approved_message')}`
                         await member.send({ content: banMessage })
                     } catch(error) {
                         embeds.push(new Embed()

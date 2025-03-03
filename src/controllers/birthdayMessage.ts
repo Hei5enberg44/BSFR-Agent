@@ -1,4 +1,4 @@
-import { GuildMember, MessageReaction, CommandInteraction, User, TextChannel, userMention, LocaleString } from 'discord.js'
+import { GuildMember, MessageReaction, CommandInteraction, User, TextChannel, userMention, Locale } from 'discord.js'
 import Embed from '../utils/embed.js'
 import { BirthdayMessageModel, ReactionModel, BirthdayMessageReactionData } from './database.js'
 import reactions, { ReactionType } from './reactions.js'
@@ -103,7 +103,7 @@ export default {
         if(r.interaction.memberId === user.id) {
             const embed = new Embed()
                 .setThumbnail(user.displayAvatarURL({ forceStatic: false }))
-                .addFields({ name: Locales.get(<LocaleString>r.interaction.locale, 'member'), value: userMention(user.id) })
+                .addFields({ name: Locales.get(<Locale>r.interaction.locale, 'member'), value: userMention(user.id) })
 
             const ids = r.data.map(message => message.id)
             const messages = r.data.map(message => message.message)
@@ -115,8 +115,8 @@ export default {
                 Logger.log('BirthdayMessage', 'INFO', `${user.username} a supprimé les messages d'anniversaire suivants : ${messages.join(', ')}`)
 
                 embed.setColor('#2ECC71')
-                    .setTitle(Locales.get(<LocaleString>r.interaction.locale, 'delete_birthday_messages'))
-                    .addFields({ name: Locales.get(<LocaleString>r.interaction.locale, 'deleted_birthday_messages'), value: messages.join('\n') })
+                    .setTitle(Locales.get(<Locale>r.interaction.locale, 'delete_birthday_messages'))
+                    .addFields({ name: Locales.get(<Locale>r.interaction.locale, 'deleted_birthday_messages'), value: messages.join('\n') })
 
                 await reaction.message.reactions.removeAll()
                 await reaction.message.edit({ embeds: [embed] })
@@ -124,8 +124,8 @@ export default {
                 await ReactionModel.destroy({ where: { id: r.id } })
 
                 embed.setColor('#E74C3C')
-                    .setTitle(Locales.get(<LocaleString>r.interaction.locale, 'delete_birthday_messages_refusal'))
-                    .addFields({ name: Locales.get(<LocaleString>r.interaction.locale, 'undeleted_birthday_messages'), value: messages.join('\n') })
+                    .setTitle(Locales.get(<Locale>r.interaction.locale, 'delete_birthday_messages_refusal'))
+                    .addFields({ name: Locales.get(<Locale>r.interaction.locale, 'undeleted_birthday_messages'), value: messages.join('\n') })
 
                 await reaction.message.reactions.removeAll()
                 await reaction.message.edit({ embeds: [embed] })
