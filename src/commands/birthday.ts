@@ -3,7 +3,7 @@ import { CommandError, CommandInteractionError } from '../utils/error.js'
 import birthday from '../controllers/birthday.js'
 import Locales from '../utils/locales.js'
 import Logger from '../utils/logger.js'
-import config from '../config.json' assert { type: 'json' }
+import config from '../config.json' with { type: 'json' }
 
 export default {
     data: new SlashCommandBuilder()

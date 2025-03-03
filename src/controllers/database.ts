@@ -1,7 +1,7 @@
 import { LocaleString } from 'discord.js'
 import { Sequelize, DataTypes, Model, CreationOptional, InferAttributes, InferCreationAttributes, NonAttribute } from 'sequelize'
 import { DatabaseError } from '../utils/error.js'
-import config from '../config.json' assert { type: 'json' }
+import config from '../config.json' with { type: 'json' }
 
 const sequelize = new Sequelize(config.database.name, config.database.username, config.database.password, {
     host: config.database.host,

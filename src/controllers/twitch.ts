@@ -10,7 +10,7 @@ import { TwitchModel } from './database.js'
 import nextcloud from '../controllers/nextcloud.js'
 import { TwitchError } from '../utils/error.js'
 import Logger from '../utils/logger.js'
-import config from '../config.json' assert { type: 'json' }
+import config from '../config.json' with { type: 'json' }
 
 interface ClipInfosData {
     clip: {

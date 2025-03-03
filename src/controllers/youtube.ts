@@ -2,7 +2,7 @@ import { Client, Guild, TextChannel, roleMention } from 'discord.js'
 import { YouTube } from '../controllers/google.js'
 import { YouTubeVideoModel } from '../controllers/database.js'
 import Logger from '../utils/logger.js'
-import config from '../config.json' assert { type: 'json' }
+import config from '../config.json' with { type: 'json' }
 
 export default {
     /**

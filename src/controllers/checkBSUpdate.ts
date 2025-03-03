@@ -1,7 +1,7 @@
 import { Client, Guild, TextChannel, Message, MessageFlags, roleMention, ChannelType } from 'discord.js'
 import { BSUpdateModel } from './database.js'
 import Logger from '../utils/logger.js'
-import config from '../config.json' assert { type: 'json' }
+import config from '../config.json' with { type: 'json' }
 
 const apiUrl = 'http://api.steampowered.com/ISteamNews/GetNewsForApp/v0002/?appid=620980&count=1&maxlength=0&format=json'
 const STEAM_CLAN_IMAGE = 'https://clan.cloudflare.steamstatic.com/images'

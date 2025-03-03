@@ -1,6 +1,6 @@
 import { GuildMember } from 'discord.js'
 import threads from '../controllers/threads.js'
-import config from '../config.json' assert { type: 'json' }
+import config from '../config.json' with { type: 'json' }
 
 export default class guildMemberUpdate {
     private static oldMember: GuildMember

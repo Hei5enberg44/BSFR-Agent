@@ -3,7 +3,7 @@ import { BirthdayModel, BirthdayMessageModel, BirthdayWishesModel } from './data
 import { Sequelize, Op } from 'sequelize'
 import crypto from 'crypto'
 import Logger from '../utils/logger.js'
-import config from '../config.json' assert { type: 'json' }
+import config from '../config.json' with { type: 'json' }
 
 export default {
     /**

@@ -4,7 +4,7 @@ import { CommandError, CommandInteractionError } from '../utils/error.js'
 import birthdayMessage from '../controllers/birthdayMessage.js'
 import maliciousURL from '../controllers/maliciousURL.js'
 import Locales from '../utils/locales.js'
-import config from '../config.json' assert { type: 'json' }
+import config from '../config.json' with { type: 'json' }
 
 export default {
     data: new SlashCommandBuilder()

@@ -3,7 +3,7 @@ import Embed from '../utils/embed.js'
 import { BirthdayModel, CitieModel, TwitchModel, OldMemberRolesModel } from '../controllers/database.js'
 import threads from '../controllers/threads.js'
 import Logger from '../utils/logger.js'
-import config from '../config.json' assert { type: 'json' }
+import config from '../config.json' with { type: 'json' }
 
 export default class guildMemberRemove {
     private static member: GuildMember

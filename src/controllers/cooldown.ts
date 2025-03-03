@@ -3,7 +3,7 @@ import Embed from '../utils/embed.js'
 import { CooldownModel } from './database.js'
 import { PageNotFoundError, CooldownEmptyError } from '../utils/error.js'
 import Logger from '../utils/logger.js'
-import config from '../config.json' assert { type: 'json' }
+import config from '../config.json' with { type: 'json' }
 
 interface CooldownItemsPage {
     items: CooldownModel[],

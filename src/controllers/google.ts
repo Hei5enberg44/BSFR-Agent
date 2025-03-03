@@ -1,5 +1,5 @@
 import { google, Auth } from 'googleapis'
-import config from '../config.json' assert { type: 'json' }
+import config from '../config.json' with { type: 'json' }
 
 interface OAuth2Credentials {
     clientId: string,

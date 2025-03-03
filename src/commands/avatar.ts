@@ -1,6 +1,6 @@
 import { SlashCommandBuilder, PermissionFlagsBits, ChatInputCommandInteraction, ALLOWED_EXTENSIONS, ImageExtension, ALLOWED_SIZES, ImageSize } from 'discord.js'
 import { CommandError } from '../utils/error.js'
-import config from '../config.json' assert { type: 'json' }
+import config from '../config.json' with { type: 'json' }
 
 export default {
     data: new SlashCommandBuilder()
