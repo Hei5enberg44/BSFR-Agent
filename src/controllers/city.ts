@@ -36,14 +36,14 @@ export default {
      */
     async getCitiesByName(cityName: string) {
         const params = {
-            select: 'name, country, coordinates',
+            select: 'name, cou_name_en AS country, coordinates',
             where: `name LIKE \'%${cityName.replace('\'', '\\\'')}%\'`,
             include_links: 'false',
             include_app_metas: 'false',
             offset: '0',
             limit: '50'
         }
-        const cities = await opendatasoft.getDatasetRecords('geonames-all-cities-with-a-population-500', params)
+        const cities = await opendatasoft.getDatasetRecords('geonames-all-cities-with-a-population-1000', params)
         return cities.results
     }
 }
