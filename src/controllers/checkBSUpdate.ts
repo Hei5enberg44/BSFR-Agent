@@ -5,7 +5,6 @@ import config from '../config.json' with { type: 'json' }
 
 const apiUrl = 'http://api.steampowered.com/ISteamNews/GetNewsForApp/v0002/?appid=620980&count=1&maxlength=0&format=json'
 const STEAM_CLAN_IMAGE = 'https://clan.cloudflare.steamstatic.com/images'
-const STEAM_CLAN_LOC_IMAGE = STEAM_CLAN_IMAGE
 
 interface AppNews {
     appnews?: NewsItems
@@ -44,28 +43,36 @@ export default {
                 if(lastNews.feed_type === 1) {
                     const updateTitle = `## ${lastNews.title}`
 
+                    let contents = lastNews.contents
+                    contents = contents.replace(/\[p\]/g, '')
+                    contents = contents.replace(/\[\/p\]/g, '\n')
+
                     let image
-                    let contents = []
-                    for(let line of lastNews.contents.split('\n')) {
-                        if(line.match(/\[\/?list\]/)) continue
-                        if(line.match(/(STEAM_CLAN_IMAGE|STEAM_CLAN_LOC_IMAGE)/)) {
+                    let contentsArray = []
+                    for(let line of contents.split('\n')) {
+                        if(line.match(/STEAM_CLAN_(LOC_)?IMAGE/)) {
                             if(!image) {
-                                image = line.replace(/\[img\]\{STEAM_CLAN_IMAGE\}(.+)\[\/img\]/, `${STEAM_CLAN_IMAGE}$1`)
-                                image = image.replace(/\[img\]\{STEAM_CLAN_LOC_IMAGE\}(.+)\[\/img\]/, `${STEAM_CLAN_LOC_IMAGE}$1`)
+                                if(line.match(/\[img\]\{STEAM_CLAN_(LOC_)?IMAGE\}.+\[\/img\]/)) {
+                                    image = line.replace(/\[img\]\{STEAM_CLAN_(?:LOC_)?IMAGE\}(.+)\[\/img\]/, `${STEAM_CLAN_IMAGE}$1`)
+                                } else if(line.match(/\[img src=\"{STEAM_CLAN_(LOC_)?IMAGE\}[^\"]+\"\]\[\/img\]/)) {
+                                    image = line.replace(/\[img src=\"{STEAM_CLAN_(?:LOC_)?IMAGE\}([^\"]+)\"\]\[\/img\]/, `${STEAM_CLAN_IMAGE}$1`)
+                                }
                             }
                             continue
                         }
+                        line = line.replace(/\[\/?list\]/g, '')
+                        line = line.replace(/\[\/\*\]/g, '')
                         line = line.replace(/\[previewyoutube=([a-zA-Z0-9-_]+)(?:;[a-z]+)?\]\[\/previewyoutube\]/g, 'https://youtu.be/$1')
                         line = line.replace(/\[b\](.+)\[\/b\]/g, '**$1**')
                         line = line.replace(/\[i\](.+)\[\/i\]/g, '*$1*')
                         line = line.replace(/\[u\](.+)\[\/u\]/g, '__$1__')
                         line = line.replace(/\[spoiler\](.+)\[\/spoiler\]/g, '||$1||')
                         line = line.replace(/\[url=(.+)\](.+)\[\/url\]/g, '$2: $1')
-                        line = line.replace(/\[\*\]/g, '•')
-                        contents.push(line)
+                        line = line.replace(/\[\*\]/g, ' - ')
+                        contentsArray.push(line)
                     }
 
-                    const updateContent = contents.join('\n')
+                    const updateContent = contentsArray.join('\n')
 
                     if(lastNews.title) {
                         const newUpdate = await BSUpdateModel.findOne({
