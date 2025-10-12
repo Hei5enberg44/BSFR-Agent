@@ -14,13 +14,14 @@ export default class messageReactionRemove {
         this.reaction = reaction
         this.user = user
 
-        if(reaction.partial)
-            await reaction.fetch()
+        if (reaction.partial) await reaction.fetch()
 
-        const r = await reactions.get(reaction.message.channelId, reaction.message.id)
+        const r = await reactions.get(
+            reaction.message.channelId,
+            reaction.message.id
+        )
 
-        if(r && !user.bot) {
-            
+        if (r && !user.bot) {
         }
     }
 }

@@ -1,13 +1,20 @@
-import { Guild, GuildMember, Message, TextChannel, userMention, hyperlink } from 'discord.js'
-import Embed from '../utils/embed.js'
-import { CooldownModel } from './database.js'
+import {
+    Guild,
+    GuildMember,
+    Message,
+    TextChannel,
+    userMention,
+    hyperlink,
+    EmbedBuilder
+} from 'discord.js'
+import { CooldownModel } from '../models/cooldown.model.js'
 import { PageNotFoundError, CooldownEmptyError } from '../utils/error.js'
 import Logger from '../utils/logger.js'
-import config from '../config.json' with { type: 'json' }
+import config from '../../config.json' with { type: 'json' }
 
 interface CooldownItemsPage {
-    items: CooldownModel[],
-    page: number,
+    items: CooldownModel[]
+    page: number
     pageCount: number
 }
 
@@ -19,7 +26,12 @@ export default class Cooldowns {
      * @param countThreshold nombre de messages envoyés dans le laps de temps
      * @param muteDuration durée du mute du membre (en secondes)
      */
-    static async add(memberId: string, timeThreshold: number, countThreshold: number, muteDuration: number) {
+    static async add(
+        memberId: string,
+        timeThreshold: number,
+        countThreshold: number,
+        muteDuration: number
+    ) {
         await CooldownModel.create({
             memberId,
             timeThreshold,
@@ -60,18 +72,14 @@ export default class Cooldowns {
 
         const cooldownsCount = await CooldownModel.count()
 
-        if(cooldownsCount == 0)
-            throw new CooldownEmptyError()
-        
+        if (cooldownsCount == 0) throw new CooldownEmptyError()
+
         const pageCount = Math.ceil(cooldownsCount / itemsPerPage)
 
-        if(page > pageCount)
-            throw new PageNotFoundError()
+        if (page > pageCount) throw new PageNotFoundError()
 
         const cooldowns = await CooldownModel.findAll({
-            order: [
-                [ 'id', 'ASC' ]
-            ],
+            order: [['id', 'ASC']],
             offset: (page - 1) * itemsPerPage,
             limit: itemsPerPage
         })
@@ -91,31 +99,35 @@ export default class Cooldowns {
     static async check(message: Message) {
         let cooldown = false
 
-        const member = <GuildMember>message.member
+        const member = message.member as GuildMember
         const memberId = member.id
         const memberCooldown = await this.get(memberId)
 
-        const isAttachment = message.attachments.size > 0 && message.content === ''
+        const isAttachment =
+            message.attachments.size > 0 && message.content === ''
 
-        if(memberCooldown && !isAttachment) {
+        if (memberCooldown && !isAttachment) {
             const date = new Date()
 
-            const { timeThreshold, countThreshold, muteDuration, messageDate } = memberCooldown
+            const { timeThreshold, countThreshold, muteDuration, messageDate } =
+                memberCooldown
 
-            if(!messageDate) {
+            if (!messageDate) {
                 memberCooldown.messageDate = date
                 memberCooldown.count = 1
                 await memberCooldown.save()
             } else {
-                const elapsedSeconds = Math.floor((date.getTime() - messageDate.getTime()) / 1000)
+                const elapsedSeconds = Math.floor(
+                    (date.getTime() - messageDate.getTime()) / 1000
+                )
 
-                if(elapsedSeconds > timeThreshold) {
+                if (elapsedSeconds > timeThreshold) {
                     memberCooldown.messageDate = date
                     memberCooldown.count = 1
                 } else {
                     memberCooldown.count++
 
-                    if(memberCooldown.count >= countThreshold) {
+                    if (memberCooldown.count >= countThreshold) {
                         memberCooldown.messageDate = null
                         memberCooldown.count = 0
                         cooldown = true
@@ -125,24 +137,36 @@ export default class Cooldowns {
                 await memberCooldown.save()
             }
 
-            if(cooldown) {
-                const guild = <Guild>message.guild
-                const logsChannel = <TextChannel>guild.channels.cache.get(config.guild.channels['logs'])
+            if (cooldown) {
+                const guild = message.guild as Guild
+                const logsChannel = guild.channels.cache.get(
+                    config.guild.channels['logs']
+                ) as TextChannel
 
                 await member.timeout(muteDuration * 1000, 'cooldown')
 
-                const embed = new Embed()
+                const embed = new EmbedBuilder()
                     .setColor('#2ECC71')
                     .setTitle('⏳ Spam détécté !')
-                    .setThumbnail(member.displayAvatarURL({ forceStatic: false }))
-                    .setDescription(`${userMention(member.id)} s'est pris un cooldown – ${hyperlink('Voir', message.url)}`)
+                    .setThumbnail(
+                        member.displayAvatarURL({ forceStatic: false })
+                    )
+                    .setDescription(
+                        `${userMention(member.id)} s'est pris un cooldown – ${hyperlink('Voir', message.url)}`
+                    )
 
                 await logsChannel.send({ embeds: [embed] })
 
                 try {
-                    await member.send({ content: `Mollo l'asticot ! Évites de spammer s'il te plaît.\nPour la peine, tu es timeout pendant ${muteDuration} seconde${muteDuration > 1 ? 's' : ''}.` })
-                } catch(error) {
-                    Logger.log('Cooldown', 'ERROR', `Le message privé à ${member.user.username} n'a pas pu être envoyé`)
+                    await member.send({
+                        content: `Mollo l'asticot ! Évites de spammer s'il te plaît.\nPour la peine, tu es timeout pendant ${muteDuration} seconde${muteDuration > 1 ? 's' : ''}.`
+                    })
+                } catch (error) {
+                    Logger.log(
+                        'Cooldown',
+                        'ERROR',
+                        `Le message privé à ${member.user.username} n'a pas pu être envoyé`
+                    )
                 }
             }
         }

@@ -1,5 +1,13 @@
-import { ReactionModel, ReactionDataType, BirthdayMessageReactionData, MaliciousURLReactionData, PollReactionData, BanReactionData, ReactionInteraction } from './database.js'
-import { Op } from 'sequelize'
+import { Op } from '@sequelize/core'
+import {
+    ReactionModel,
+    ReactionDataType,
+    BirthdayMessageReactionData,
+    MaliciousURLReactionData,
+    PollReactionData,
+    BanReactionData,
+    ReactionInteraction
+} from '../models/reaction.model.js'
 
 export enum ReactionType {
     RemoveBirthdayMessage = 'removeBirthdayMessage',
@@ -9,7 +17,12 @@ export enum ReactionType {
 }
 
 export default class Reactions {
-    static async add(type: ReactionType, data: ReactionDataType, interaction: Partial<ReactionInteraction>, messageId: string) {
+    static async add(
+        type: ReactionType,
+        data: ReactionDataType,
+        interaction: Partial<ReactionInteraction>,
+        messageId: string
+    ) {
         await ReactionModel.create({
             type: type,
             data: data,
@@ -27,7 +40,7 @@ export default class Reactions {
                 ]
             }
         })
-        if(!reaction) return null
+        if (!reaction) return null
         return new BaseReaction(reaction)
     }
 }
@@ -40,7 +53,7 @@ export class BaseReaction {
     public messageId
     public date
 
-    constructor(reaction: ReactionModel<ReactionDataType>) {
+    constructor(reaction: ReactionModel<unknown>) {
         this.reaction = reaction
         this.id = reaction.id
         this.data = reaction.data
@@ -49,7 +62,9 @@ export class BaseReaction {
         this.date = reaction.date
     }
 
-    isRemoveBirthdayMessage(): this is ReactionModel<BirthdayMessageReactionData[]> {
+    isRemoveBirthdayMessage(): this is ReactionModel<
+        BirthdayMessageReactionData[]
+    > {
         return this.reaction.type === ReactionType.RemoveBirthdayMessage
     }
 

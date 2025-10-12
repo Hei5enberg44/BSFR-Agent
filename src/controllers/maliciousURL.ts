@@ -1,15 +1,30 @@
-import { Guild, GuildMember, Message, MessageReaction, CommandInteraction, TextChannel, User, userMention, roleMention, Locale } from 'discord.js'
-import Embed from '../utils/embed.js'
-import { MaliciousURLModel, ReactionModel, MaliciousURLReactionData } from './database.js'
+import {
+    Guild,
+    GuildMember,
+    Message,
+    MessageReaction,
+    CommandInteraction,
+    TextChannel,
+    User,
+    userMention,
+    roleMention,
+    Locale,
+    EmbedBuilder
+} from 'discord.js'
+import { MaliciousURLModel } from '../models/maliciousUrl.model.js'
+import {
+    ReactionModel,
+    MaliciousURLReactionData
+} from '../models/reaction.model.js'
 import reactions, { ReactionType } from './reactions.js'
 import { PageNotFoundError, MaliciousURLEmptyError } from '../utils/error.js'
 import Locales from '../utils/locales.js'
 import Logger from '../utils/logger.js'
-import config from '../config.json' with { type: 'json' }
+import config from '../../config.json' with { type: 'json' }
 
 interface MaliciousURLItemsPage {
-    items: MaliciousURLModel[],
-    page: number,
+    items: MaliciousURLModel[]
+    page: number
     pageCount: number
 }
 
@@ -32,7 +47,7 @@ export default class MaliciousURL {
      * @returns liste des URL malveillants
      */
     static async get(ids: string) {
-        const idList = ids.split(';').map(id => id.trim())
+        const idList = ids.split(';').map((id) => id.trim())
         const urlsList = await MaliciousURLModel.findAll({
             where: {
                 id: idList
@@ -46,48 +61,82 @@ export default class MaliciousURL {
      * @param message The created message
      */
     static async test(message: Message) {
-        if(!message.author.bot) {
-            const urlsToTest = message.content.toLowerCase().replace('\n', ' ').split(' ').filter(w => w.match(/^https?:\/\//))
+        if (!message.author.bot) {
+            const urlsToTest = message.content
+                .toLowerCase()
+                .replace('\n', ' ')
+                .split(' ')
+                .filter((w) => w.match(/^https?:\/\//))
 
             let usedMaliciousURL = []
-            for(const url of urlsToTest) {
-                const domain = url.replace(/^(?:https?:\/\/)?(?:[^@\/\n]+@)?(?:www\.)?([^:\/\n]+).*$/, '$1')
-                const isMalicious = await MaliciousURLModel.findOne({ where: { url: domain } })
-                if(isMalicious !== null && usedMaliciousURL.indexOf(url) === -1) {
+            for (const url of urlsToTest) {
+                const domain = url.replace(
+                    /^(?:https?:\/\/)?(?:[^@\/\n]+@)?(?:www\.)?([^:\/\n]+).*$/,
+                    '$1'
+                )
+                const isMalicious = await MaliciousURLModel.findOne({
+                    where: { url: domain }
+                })
+                if (
+                    isMalicious !== null &&
+                    usedMaliciousURL.indexOf(url) === -1
+                ) {
                     usedMaliciousURL.push(url)
                 }
             }
 
             usedMaliciousURL = [
                 ...usedMaliciousURL,
-                ...(this.runSpecificTests(message))
+                ...this.runSpecificTests(message)
             ]
 
-            if(usedMaliciousURL.length > 0) {
-                Logger.log('MaliciousURL', 'INFO', `URL(s) malveillant(s) trouvé(s) dans un message de ${message.author.username} : ${usedMaliciousURL.join(', ')}`)
+            if (usedMaliciousURL.length > 0) {
+                Logger.log(
+                    'MaliciousURL',
+                    'INFO',
+                    `URL(s) malveillant(s) trouvé(s) dans un message de ${message.author.username} : ${usedMaliciousURL.join(', ')}`
+                )
 
-                const embed = new Embed()
+                const embed = new EmbedBuilder()
                     .setColor('#E74C3C')
-                    .setTitle('⛔ Envoi d\'URL malveillant')
-                    .setThumbnail(message.author.displayAvatarURL({ forceStatic: false }))
+                    .setTitle("⛔ Envoi d'URL malveillant")
+                    .setThumbnail(
+                        message.author.displayAvatarURL({ forceStatic: false })
+                    )
                     .addFields(
-                        { name: 'Le vilain', value: userMention(message.author.id) },
+                        {
+                            name: 'Le vilain',
+                            value: userMention(message.author.id)
+                        },
                         { name: 'Contenu du message', value: message.content }
                     )
-                
+
                 await message.delete()
-                
-                const guild = <Guild>message.guild
-                const logsChannel = guild.channels.cache.get(config.guild.channels['logs']) as TextChannel | undefined
-                logsChannel && await logsChannel.send({ content: roleMention(config.guild.roles['Modérateur']), embeds: [embed] })
+
+                const guild = message.guild as Guild
+                const logsChannel = guild.channels.cache.get(
+                    config.guild.channels['logs']
+                ) as TextChannel | undefined
+                logsChannel &&
+                    (await logsChannel.send({
+                        content: roleMention(config.guild.roles['Modérateur']),
+                        embeds: [embed]
+                    }))
 
                 const member = message.member
 
-                if(member) {
+                if (member) {
                     try {
-                        await member.timeout(5 * 24 * 60 * 60 * 1000, 'Envoi d\'URL malveillant') // Timeout 5 jours
-                    } catch(error) {
-                        Logger.log('MaliciousURL', 'ERROR', `Impossible de timeout le membre ${member.user.username} (${error.message})`)
+                        await member.timeout(
+                            5 * 24 * 60 * 60 * 1000,
+                            "Envoi d'URL malveillant"
+                        ) // Timeout 5 jours
+                    } catch (error) {
+                        Logger.log(
+                            'MaliciousURL',
+                            'ERROR',
+                            `Impossible de timeout le membre ${member.user.username} (${error.message})`
+                        )
                     }
                 }
             }
@@ -99,7 +148,15 @@ export default class MaliciousURL {
      * @param message The created message
      */
     private static runSpecificTests(message: Message) {
-        const usedMaliciousURL = message.content.toLowerCase().replace('\n', ' ').split(' ').filter(w => w.match(/^\[(https?:\/\/)?(steamcommunity\.com)[^\]]+\]\(https?:\/\/[^\)]+\)$/))
+        const usedMaliciousURL = message.content
+            .toLowerCase()
+            .replace('\n', ' ')
+            .split(' ')
+            .filter((w) =>
+                w.match(
+                    /^\[(https?:\/\/)?(steamcommunity\.com)[^\]]+\]\(https?:\/\/[^\)]+\)$/
+                )
+            )
         return usedMaliciousURL
     }
 
@@ -113,18 +170,14 @@ export default class MaliciousURL {
 
         const urlCount = await MaliciousURLModel.count()
 
-        if(urlCount == 0)
-            throw new MaliciousURLEmptyError()
-        
+        if (urlCount == 0) throw new MaliciousURLEmptyError()
+
         const pageCount = Math.ceil(urlCount / itemsPerPage)
 
-        if(page > pageCount)
-            throw new PageNotFoundError()
+        if (page > pageCount) throw new PageNotFoundError()
 
         const urls = await MaliciousURLModel.findAll({
-            order: [
-                [ 'id', 'ASC' ]
-            ],
+            order: [['id', 'ASC']],
             offset: (page - 1) * itemsPerPage,
             limit: itemsPerPage
         })
@@ -142,7 +195,11 @@ export default class MaliciousURL {
      * @param interaction interaction Discord
      * @param messageId identifiant du message de confirmation de suppression
      */
-    static async remove(urlsList: MaliciousURLModel[], interaction: CommandInteraction, messageId: string) {
+    static async remove(
+        urlsList: MaliciousURLModel[],
+        interaction: CommandInteraction,
+        messageId: string
+    ) {
         await reactions.add(
             ReactionType.RemoveMaliciousURL,
             urlsList,
@@ -150,7 +207,7 @@ export default class MaliciousURL {
                 locale: interaction.locale,
                 commandName: interaction.commandName,
                 memberId: interaction.user.id,
-                channelId: (<TextChannel>interaction.channel).id
+                channelId: (interaction.channel as TextChannel).id
             },
             messageId
         )
@@ -162,33 +219,68 @@ export default class MaliciousURL {
      * @param user The user that applied the guild or reaction emoji
      * @param r données concernant la réaction
      */
-    static async confirmRemove(reaction: MessageReaction, user: User, r: ReactionModel<MaliciousURLReactionData[]>) {
-        if(r.interaction.memberId === user.id) {
-            const embed = new Embed()
+    static async confirmRemove(
+        reaction: MessageReaction,
+        user: User,
+        r: ReactionModel<MaliciousURLReactionData[]>
+    ) {
+        if (r.interaction.memberId === user.id) {
+            const embed = new EmbedBuilder()
                 .setThumbnail(user.displayAvatarURL({ forceStatic: false }))
-                .addFields({ name: Locales.get(<Locale>r.interaction.locale, 'member'), value: userMention(user.id) })
+                .addFields({
+                    name: Locales.get(r.interaction.locale as Locale, 'member'),
+                    value: userMention(user.id)
+                })
 
-            const ids = r.data.map(url => url.id)
-            const urls = r.data.map(url => url.url)
+            const ids = r.data.map((url) => url.id)
+            const urls = r.data.map((url) => url.url)
 
-            if(reaction.emoji.name === '✅') {
+            if (reaction.emoji.name === '✅') {
                 await MaliciousURLModel.destroy({ where: { id: ids } })
                 await ReactionModel.destroy({ where: { id: r.id } })
 
-                Logger.log('MaliciousURL', 'INFO', `${user.username} a supprimé les URL malveillants suivants : ${urls.join(', ')}`)
+                Logger.log(
+                    'MaliciousURL',
+                    'INFO',
+                    `${user.username} a supprimé les URL malveillants suivants : ${urls.join(', ')}`
+                )
 
-                embed.setColor('#2ECC71')
-                    .setTitle(Locales.get(<Locale>r.interaction.locale, 'delete_malicious_urls'))
-                    .addFields({ name: Locales.get(<Locale>r.interaction.locale, 'deleted_malicious_urls'), value: urls.join('\n') })
+                embed
+                    .setColor('#2ECC71')
+                    .setTitle(
+                        Locales.get(
+                            r.interaction.locale as Locale,
+                            'delete_malicious_urls'
+                        )
+                    )
+                    .addFields({
+                        name: Locales.get(
+                            r.interaction.locale as Locale,
+                            'deleted_malicious_urls'
+                        ),
+                        value: urls.join('\n')
+                    })
 
                 await reaction.message.reactions.removeAll()
                 await reaction.message.edit({ embeds: [embed] })
-            } else if(reaction.emoji.name === '❌') {
+            } else if (reaction.emoji.name === '❌') {
                 await ReactionModel.destroy({ where: { id: r.id } })
 
-                embed.setColor('#E74C3C')
-                    .setTitle(Locales.get(<Locale>r.interaction.locale, 'delete_malicious_urls_refusal'))
-                    .addFields({ name: Locales.get(<Locale>r.interaction.locale, 'undeleted_malicious_urls'), value: urls.join('\n') })
+                embed
+                    .setColor('#E74C3C')
+                    .setTitle(
+                        Locales.get(
+                            r.interaction.locale as Locale,
+                            'delete_malicious_urls_refusal'
+                        )
+                    )
+                    .addFields({
+                        name: Locales.get(
+                            r.interaction.locale as Locale,
+                            'undeleted_malicious_urls'
+                        ),
+                        value: urls.join('\n')
+                    })
 
                 await reaction.message.reactions.removeAll()
                 await reaction.message.edit({ embeds: [embed] })

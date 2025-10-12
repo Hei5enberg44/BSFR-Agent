@@ -1,4 +1,9 @@
-import { SlashCommandBuilder, PermissionFlagsBits, ChatInputCommandInteraction } from 'discord.js'
+import {
+    SlashCommandBuilder,
+    InteractionContextType,
+    PermissionFlagsBits,
+    ChatInputCommandInteraction
+} from 'discord.js'
 import { CommandError } from '../utils/error.js'
 import Logger from '../utils/logger.js'
 
@@ -7,10 +12,8 @@ export default {
         .setName('ping')
         .setDescription('Test if the bot is online')
         .setDescriptionLocalization('fr', 'Test si le bot est en ligne')
-        .setDMPermission(true)
-        .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles)
-    ,
-
+        .setContexts(InteractionContextType.Guild)
+        .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
     /**
      * Exécution de la commande
      * @param interaction interaction Discord
@@ -19,8 +22,8 @@ export default {
         try {
             Logger.log('PingCommand', 'INFO', 'Ping... Pong!')
             await interaction.reply({ content: 'Pong! 🏓', ephemeral: true })
-        } catch(error) {
-            if(error.name === 'COMMAND_INTERACTION_ERROR') {
+        } catch (error) {
+            if (error.name === 'COMMAND_INTERACTION_ERROR') {
                 throw new CommandError(error.message, interaction.commandName)
             } else {
                 throw Error(error.message)

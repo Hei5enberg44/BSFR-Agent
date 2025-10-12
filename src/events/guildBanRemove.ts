@@ -1,13 +1,18 @@
-import { Guild, GuildBan, TextChannel, userMention } from 'discord.js'
-import Embed from '../utils/embed.js'
-import config from '../config.json' with { type: 'json' }
+import {
+    EmbedBuilder,
+    Guild,
+    GuildBan,
+    TextChannel,
+    userMention
+} from 'discord.js'
+import config from '../../config.json' with { type: 'json' }
 
 export default class guildBanRemove {
     private static ban: GuildBan
 
     /**
      * Emitted whenever a member is unbanned from a guild
-     * @param ban The ban that was removed
+     * @param ban Represents a ban in a guild on Discord
      */
     static async execute(ban: GuildBan) {
         this.ban = ban
@@ -21,10 +26,12 @@ export default class guildBanRemove {
     private static async remove() {
         const ban = this.ban
 
-        const guild = <Guild>ban.client.guilds.cache.get(config.guild.id)
-        const logsChannel = <TextChannel>guild.channels.cache.get(config.guild.channels['logs'])
+        const guild = ban.client.guilds.cache.get(config.guild.id) as Guild
+        const logsChannel = guild.channels.cache.get(
+            config.guild.channels['logs']
+        ) as TextChannel
 
-        const embed = new Embed()
+        const embed = new EmbedBuilder()
             .setColor('#2ECC71')
             .setTitle(`🔨 Fin de ban pour ${ban.user.username}`)
             .setThumbnail(ban.user.displayAvatarURL({ forceStatic: false }))

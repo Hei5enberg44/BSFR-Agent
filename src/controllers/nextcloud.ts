@@ -1,6 +1,12 @@
 import { NextcloudError } from '../utils/error.js'
-import { Client, Server, UploadFilesCommand, CommandStatus, Folder } from 'nextcloud-node-client'
-import config from '../config.json' with { type: 'json' }
+import {
+    Client,
+    Server,
+    UploadFilesCommand,
+    CommandStatus,
+    Folder
+} from 'nextcloud-node-client'
+import config from '../../config.json' with { type: 'json' }
 
 export default class Nextcloud {
     /**
@@ -41,8 +47,9 @@ export default class Nextcloud {
 
             await upload.execute()
 
-            if(upload.getStatus() !== CommandStatus.success) throw new NextcloudError('Impossible d\'uploader le fichier')
-        } catch(error) {
+            if (upload.getStatus() !== CommandStatus.success)
+                throw new NextcloudError("Impossible d'uploader le fichier")
+        } catch (error) {
             throw new NextcloudError(error.message)
         }
     }
@@ -58,14 +65,16 @@ export default class Nextcloud {
 
             const folder = await client.getFolder(folderName)
 
-            if(!folder) {
+            if (!folder) {
                 const newFolder = await client.createFolder(folderName)
                 return newFolder
             }
 
             return folder
-        } catch(error) {
-            throw new NextcloudError('Une erreur est survenue lors de la création du dossier')
+        } catch (error) {
+            throw new NextcloudError(
+                'Une erreur est survenue lors de la création du dossier'
+            )
         }
     }
 }

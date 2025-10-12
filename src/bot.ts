@@ -2,10 +2,11 @@ import { existsSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { Client, Guild, GatewayIntentBits, Partials } from 'discord.js'
-import database from './controllers/database.js'
+import Config from './controllers/config.js'
 import Commands from './controllers/commands.js'
 import Modals from './controllers/modals.js'
 import Events from './controllers/events.js'
+import db from './controllers/db.js'
 import Crons from './controllers/crons.js'
 import Logger from './utils/logger.js'
 
@@ -15,8 +16,11 @@ try {
     Logger.log('Application', 'INFO', 'Démarrage du bot')
 
     // Chargement de la configuration du bot
-    if(!existsSync(resolve(__dirname, './config.json'))) throw Error('Le fichier de configuration "config.json" est manquant')
-    const { default: config } = await import('./config.json', { with: { type: 'json' } })
+    if (!existsSync(resolve(__dirname, '../config.json')))
+        throw Error('Le fichier de configuration "config.json" est manquant')
+    const { default: config } = await import('../config.json', {
+        with: { type: 'json' }
+    })
 
     try {
         Logger.log('Discord', 'INFO', 'Initialisation...')
@@ -27,7 +31,7 @@ try {
                 GatewayIntentBits.DirectMessageReactions,
                 GatewayIntentBits.Guilds,
                 GatewayIntentBits.GuildModeration,
-                GatewayIntentBits.GuildEmojisAndStickers,
+                GatewayIntentBits.GuildExpressions,
                 GatewayIntentBits.GuildMembers,
                 GatewayIntentBits.GuildMessages,
                 GatewayIntentBits.GuildMessageReactions,
@@ -35,33 +39,41 @@ try {
                 GatewayIntentBits.GuildVoiceStates,
                 GatewayIntentBits.MessageContent
             ],
-            partials: [
-                Partials.Message,
-                Partials.Channel,
-                Partials.Reaction
-            ]
+            partials: [Partials.Message, Partials.Channel, Partials.Reaction],
+            closeTimeout: 5_000
         })
 
-        client.once('ready', async () => {
+        client.once('clientReady', async () => {
             Logger.log('Discord', 'INFO', 'Initialisation terminée')
 
             // Test de la connexion à la base de données
             try {
-                Logger.log('Database', 'INFO', 'Connexion à la base de données...')
-                await database.test()
-                Logger.log('Database', 'INFO', 'Connexion à la base de données réussie')
-            } catch(error) {
-                if(error.name === 'DATABASE_ERROR') {
+                Logger.log(
+                    'Database',
+                    'INFO',
+                    'Connexion à la base de données...'
+                )
+                await db.test()
+                Logger.log(
+                    'Database',
+                    'INFO',
+                    'Connexion à la base de données réussie'
+                )
+            } catch (error) {
+                if (error.name === 'DATABASE_ERROR') {
                     Logger.log('Database', 'ERROR', error.message)
                     process.exit(1)
                 }
             }
 
-            const guild = <Guild>client.guilds.cache.get(config.guild.id)
+            const guild = client.guilds.cache.get(config.guild.id) as Guild
             await guild.members.fetch()
             await guild.channels.fetch()
             await guild.roles.fetch()
-        
+
+            // Test de la configuration
+            Config.test(guild)
+
             // Chargement des commandes
             const commands = new Commands(client)
             await commands.load()
@@ -80,20 +92,27 @@ try {
             const crons = new Crons(client)
             await crons.birthdayWish()
             await crons.unmute()
-            await crons.unban()
             await crons.publish()
             await crons.live()
             await crons.checkBSUpdate()
             await crons.finishPolls()
             await crons.resetQuotas()
-        
+
             Logger.log('Application', 'INFO', 'Le bot est prêt !')
         })
-        
+
         client.login(config.token)
-    } catch(error) {
-        Logger.log('Discord', 'ERROR', `Une erreur est survenue : ${error.message}`)
+    } catch (error) {
+        Logger.log(
+            'Discord',
+            'ERROR',
+            `Une erreur est survenue : ${error.message}`
+        )
     }
-} catch(error) {
-    Logger.log('Application', 'ERROR', `Démarrage du bot impossible : ${error.message}`)
+} catch (error) {
+    Logger.log(
+        'Application',
+        'ERROR',
+        `Démarrage du bot impossible : ${error.message}`
+    )
 }

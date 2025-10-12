@@ -1,7 +1,7 @@
 import { GuildMember, TextChannel } from 'discord.js'
-import { ThreadModel } from '../controllers/database.js'
+import { ThreadModel } from '../models/thread.model.js'
 import Logger from '../utils/logger.js'
-import config from '../config.json' with { type: 'json' }
+import config from '../../config.json' with { type: 'json' }
 
 export default class Threads {
     /**
@@ -24,10 +24,14 @@ export default class Threads {
      * @param threadId identifiant du thread
      * @param memberId identifiant du membre
      */
-    static async get(type: string, threadId: string | null, memberId: string | null) {
-        let where: {threadId?: string, memberId?: string} = {}
-        if(threadId) where.threadId = threadId
-        if(memberId) where.memberId = memberId
+    static async get(
+        type: string,
+        threadId: string | null,
+        memberId: string | null
+    ) {
+        let where: { threadId?: string; memberId?: string } = {}
+        if (threadId) where.threadId = threadId
+        if (memberId) where.memberId = memberId
 
         const thread = await ThreadModel.findOne({
             where: {
@@ -55,27 +59,33 @@ export default class Threads {
      * @param member membre à ajouter dans les threads
      */
     static async addMember(type: string, member: GuildMember) {
-        const agentDmChannel = <TextChannel>member.guild.channels.cache.get(config.guild.channels['agent-dm'])
+        const agentDmChannel = member.guild.channels.cache.get(
+            config.guild.channels['agent-dm']
+        ) as TextChannel
         const threads = await this.getByType(type)
 
         await agentDmChannel.threads.fetch()
         await agentDmChannel.threads.fetchArchived()
 
-        for(const t of threads) {
+        for (const t of threads) {
             const thread = agentDmChannel.threads.cache.get(t.threadId)
 
-            if(thread) {
+            if (thread) {
                 let threadArchived = false
 
-                if(thread.archived) {
+                if (thread.archived) {
                     threadArchived = true
                     await thread.setArchived(false)
                 }
-    
-                Logger.log('DM', 'INFO', `Ajout de ${member.user.username} au thread "${thread.name}"`)
+
+                Logger.log(
+                    'DM',
+                    'INFO',
+                    `Ajout de ${member.user.username} au thread "${thread.name}"`
+                )
                 await thread.members.add(member.user.id)
-    
-                if(threadArchived) await thread.setArchived(true)
+
+                if (threadArchived) await thread.setArchived(true)
             }
         }
     }
@@ -86,27 +96,33 @@ export default class Threads {
      * @param member membre à supprimer des threads
      */
     static async removeMember(type: string, member: GuildMember) {
-        const agentDmChannel = <TextChannel>member.guild.channels.cache.get(config.guild.channels['agent-dm'])
+        const agentDmChannel = member.guild.channels.cache.get(
+            config.guild.channels['agent-dm']
+        ) as TextChannel
         const threads = await this.getByType(type)
 
         await agentDmChannel.threads.fetch()
         await agentDmChannel.threads.fetchArchived()
 
-        for(const t of threads) {
+        for (const t of threads) {
             const thread = agentDmChannel.threads.cache.get(t.threadId)
 
-            if(thread) {
+            if (thread) {
                 let threadArchived = false
 
-                if(thread.archived) {
+                if (thread.archived) {
                     threadArchived = true
                     await thread.setArchived(false)
                 }
 
-                Logger.log('DM', 'INFO', `Suppression de ${member.user.username} du thread "${thread.name}"`)
+                Logger.log(
+                    'DM',
+                    'INFO',
+                    `Suppression de ${member.user.username} du thread "${thread.name}"`
+                )
                 await thread.members.remove(member.user.id)
 
-                if(threadArchived) await thread.setArchived(true)
+                if (threadArchived) await thread.setArchived(true)
             }
         }
     }
