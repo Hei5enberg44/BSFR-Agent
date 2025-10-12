@@ -1,10 +1,23 @@
-import { Client, Guild, GuildMember, MessageReaction, User, TextChannel, time, TimestampStyles, userMention, bold } from 'discord.js'
-import Embed from '../utils/embed.js'
-import { PollModel, PollVoteModel, ReactionModel, PollReactionData } from './database.js'
+import {
+    Client,
+    Guild,
+    GuildMember,
+    MessageReaction,
+    User,
+    TextChannel,
+    time,
+    TimestampStyles,
+    userMention,
+    bold,
+    EmbedBuilder
+} from 'discord.js'
+import { Op } from '@sequelize/core'
+import { PollModel } from '../models/poll.model.js'
+import { PollVoteModel } from '../models/pollVote.model.js'
+import { ReactionModel, PollReactionData } from '../models/reaction.model.js'
 import reactions, { ReactionType } from './reactions.js'
-import { Op } from 'sequelize'
 import Logger from '../utils/logger.js'
-import config from '../config.json' with { type: 'json' }
+import config from '../../config.json' with { type: 'json' }
 
 export default class Polls {
     /**
@@ -18,7 +31,15 @@ export default class Polls {
      * @param messageId identifiant du message contenant le sondage
      * @returns identifiant du sondage créé
      */
-    static async create(title: string, propositions: string[], emojis: string[], dateEnd: Date, memberId: string, channelId: string, messageId: string): Promise<number> {
+    static async create(
+        title: string,
+        propositions: string[],
+        emojis: string[],
+        dateEnd: Date,
+        memberId: string,
+        channelId: string,
+        messageId: string
+    ): Promise<number> {
         const poll = await PollModel.create({
             title: title,
             propositions: propositions,
@@ -45,9 +66,15 @@ export default class Polls {
      * @param user The user that applied the guild or reaction emoji
      * @param r données concernant la réaction
      */
-    static async vote(reaction: MessageReaction, user: User, r: ReactionModel<PollReactionData>) {
+    static async vote(
+        reaction: MessageReaction,
+        user: User,
+        r: ReactionModel<PollReactionData>
+    ) {
         const pollId = r.data.pollId
-        const emoji = reaction.emoji.id ? `<${reaction.emoji.animated ? 'a' : ''}:${reaction.emoji.name}:${reaction.emoji.id}>` : reaction.emoji.name
+        const emoji = reaction.emoji.id
+            ? `<${reaction.emoji.animated ? 'a' : ''}:${reaction.emoji.name}:${reaction.emoji.id}>`
+            : reaction.emoji.name
 
         const poll = await PollModel.findOne({
             where: {
@@ -55,31 +82,40 @@ export default class Polls {
             }
         })
 
-        if(poll) {
-            if(poll.emojis.find(e => e === emoji)) {
+        if (poll) {
+            if (poll.emojis.find((e) => e === emoji)) {
                 const votes = await PollVoteModel.findAll({
                     where: {
                         pollId: pollId
                     }
                 })
 
-                if(!votes.find(v => v.memberId === user.id)) {
+                if (!votes.find((v) => v.memberId === user.id)) {
                     const vote = await PollVoteModel.create({
                         pollId: pollId,
                         memberId: user.id,
-                        vote: <string>emoji
+                        vote: emoji as string
                     })
 
                     votes.push(vote)
 
-                    const embed = new Embed()
+                    const embed = new EmbedBuilder()
                         .setColor('#F1C40F')
                         .setTitle(`🗳️ ${poll.title}`)
-                        .setDescription(poll.propositions.map((p, i) => {
-                            const nbVotes = votes.filter(v => v.vote === poll.emojis[i]).length
-                            const percent = Math.round(nbVotes * 100 / votes.length)
-                            return `${poll.emojis[i]} : ${p} (${percent}% - ${nbVotes} ${nbVotes > 1 ? 'votes' : 'vote'})`
-                        }).join('\n') + `\n\nFin ${time(poll.dateEnd, TimestampStyles.RelativeTime)}`)
+                        .setDescription(
+                            poll.propositions
+                                .map((p, i) => {
+                                    const nbVotes = votes.filter(
+                                        (v) => v.vote === poll.emojis[i]
+                                    ).length
+                                    const percent = Math.round(
+                                        (nbVotes * 100) / votes.length
+                                    )
+                                    return `${poll.emojis[i]} : ${p} (${percent}% - ${nbVotes} ${nbVotes > 1 ? 'votes' : 'vote'})`
+                                })
+                                .join('\n') +
+                                `\n\nFin ${time(poll.dateEnd, TimestampStyles.RelativeTime)}`
+                        )
 
                     await reaction.message.edit({ embeds: [embed] })
                 }
@@ -94,7 +130,7 @@ export default class Polls {
      * @param client client Discord
      */
     static async finish(client: Client) {
-        const guild = <Guild>client.guilds.cache.get(config.guild.id)
+        const guild = client.guilds.cache.get(config.guild.id) as Guild
 
         const polls = await PollModel.findAll({
             where: {
@@ -104,8 +140,10 @@ export default class Polls {
             }
         })
 
-        for(const poll of polls) {
-            const member = <GuildMember>guild.members.cache.get(poll.createdBy)
+        for (const poll of polls) {
+            const member = guild.members.cache.get(
+                poll.createdBy
+            ) as GuildMember
 
             const votes = await PollVoteModel.findAll({
                 where: { pollId: poll.id }
@@ -113,30 +151,57 @@ export default class Polls {
 
             await this.delete(poll.id)
 
-            const pollChannel = <TextChannel>guild.channels.cache.get(poll.channelId)
-            if(pollChannel) {
+            const pollChannel = guild.channels.cache.get(
+                poll.channelId
+            ) as TextChannel
+            if (pollChannel) {
                 try {
-                    const pollMessage = await pollChannel.messages.fetch(poll.messageId)
+                    const pollMessage = await pollChannel.messages.fetch(
+                        poll.messageId
+                    )
                     await pollMessage.reactions.removeAll()
-                } catch(error) {
-                    Logger.log('Poll', 'ERROR', 'Impossible de supprimer les réactions sur le message du sondage')
+                } catch (error) {
+                    Logger.log(
+                        'Poll',
+                        'ERROR',
+                        'Impossible de supprimer les réactions sur le message du sondage'
+                    )
                 }
             }
 
-            const logsChannel = <TextChannel>guild.channels.cache.get(config.guild.channels['logs'])
+            const logsChannel = guild.channels.cache.get(
+                config.guild.channels['logs']
+            ) as TextChannel
 
-            const embed = new Embed()
+            const embed = new EmbedBuilder()
                 .setColor('#F1C40F')
                 .setTitle(`🗳️ ${poll.title}`)
-                .setDescription(poll.propositions.map((p, i) => {
-                    const nbVotes = votes.filter(v => v.vote === poll.emojis[i]).length
-                    const percent = votes.length > 0 ? Math.round(nbVotes * 100 / votes.length) : 0
-                    return `${poll.emojis[i]} : ${p} (${percent}% - ${nbVotes} ${nbVotes > 1 ? 'votes' : 'vote'})`
-                }).join('\n'))
+                .setDescription(
+                    poll.propositions
+                        .map((p, i) => {
+                            const nbVotes = votes.filter(
+                                (v) => v.vote === poll.emojis[i]
+                            ).length
+                            const percent =
+                                votes.length > 0
+                                    ? Math.round((nbVotes * 100) / votes.length)
+                                    : 0
+                            return `${poll.emojis[i]} : ${p} (${percent}% - ${nbVotes} ${nbVotes > 1 ? 'votes' : 'vote'})`
+                        })
+                        .join('\n')
+                )
 
-            await logsChannel.send({ content: `Le sondage créé par ${userMention(member.id)} vient de se terminer avec ${bold(`${votes.length} ${votes.length > 1 ? 'votes' : 'vote'}`)} :`, embeds: [embed], allowedMentions: { repliedUser: false } })
+            await logsChannel.send({
+                content: `Le sondage créé par ${userMention(member.id)} vient de se terminer avec ${bold(`${votes.length} ${votes.length > 1 ? 'votes' : 'vote'}`)} :`,
+                embeds: [embed],
+                allowedMentions: { repliedUser: false }
+            })
 
-            Logger.log('Poll', 'INFO', `Le sondage créé par ${member.user.username}#${member.user.discriminator} vient de se terminer avec ${votes.length} ${votes.length > 1 ? 'votes' : 'vote'}`)
+            Logger.log(
+                'Poll',
+                'INFO',
+                `Le sondage créé par ${member.user.username}#${member.user.discriminator} vient de se terminer avec ${votes.length} ${votes.length > 1 ? 'votes' : 'vote'}`
+            )
         }
     }
 

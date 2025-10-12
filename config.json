@@ -1,7 +1,4 @@
 {
-    "appName": "Agent",
-    "appVersion": "",
-    "appLogo": "",
     "token": "",
     "clientId": "",
     "guild": {
@@ -19,16 +16,14 @@
             "bot-setup": "",
             "rôles-auto-assignable": "",
             "vote-run-bsfr": "",
-            "bs-updates": ""
+            "bs-updates": "",
+            "forbidden-channel": ""
         },
         "roles": {
             "Admin": "",
             "Modérateur": "",
-            "Muted": "",
             "YouTube": "",
             "Streamer": "",
-            "Membre": "",
-            "Not French Boi": "",
             "Beat Saber Update": ""
         }
     },
@@ -70,11 +65,5 @@
         "username": "",
         "password": "",
         "url": ""
-    },
-    "links": {
-        "discordInvite": ""
-    },
-    "api": {
-        "status": ""
     }
 }

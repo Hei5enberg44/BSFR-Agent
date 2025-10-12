@@ -2,7 +2,6 @@ import { MessageReaction, User } from 'discord.js'
 import reactions from '../controllers/reactions.js'
 import birthdayMessage from '../controllers/birthdayMessage.js'
 import maliciousURL from '../controllers/maliciousURL.js'
-import ban from '../controllers/ban.js'
 import poll from '../controllers/poll.js'
 
 export default class messageReactionAdd {
@@ -18,16 +17,19 @@ export default class messageReactionAdd {
         this.reaction = reaction
         this.user = user
 
-        if(reaction.partial)
-            await reaction.fetch()
+        if (reaction.partial) await reaction.fetch()
 
-        const r = await reactions.get(reaction.message.channelId, reaction.message.id)
+        const r = await reactions.get(
+            reaction.message.channelId,
+            reaction.message.id
+        )
 
-        if(r && !user.bot) {
-            if(r.isRemoveBirthdayMessage()) await birthdayMessage.confirmRemove(reaction, user, r)
-            if(r.isRemoveMaliciousURL()) await maliciousURL.confirmRemove(reaction, user, r)
-            if(r.isBanRequest()) await ban.ban(reaction, user, r)
-            if(r.isPollVote()) await poll.vote(reaction, user, r)
+        if (r && !user.bot) {
+            if (r.isRemoveBirthdayMessage())
+                await birthdayMessage.confirmRemove(reaction, user, r)
+            if (r.isRemoveMaliciousURL())
+                await maliciousURL.confirmRemove(reaction, user, r)
+            if (r.isPollVote()) await poll.vote(reaction, user, r)
         }
     }
 }

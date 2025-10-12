@@ -1,6 +1,6 @@
 <h1>bsfr-agent</h1>
 <p>
-  <img alt="Version" src="https://img.shields.io/badge/version-2.29.2-blue.svg?cacheSeconds=2592000" />
+  <img alt="Version" src="https://img.shields.io/badge/version-2.30.0-blue.svg?cacheSeconds=2592000" />
   <a href="#" target="_blank">
     <img alt="License: ISC" src="https://img.shields.io/badge/License-ISC-yellow.svg" />
   </a>
@@ -72,13 +72,12 @@ __Paramètres :__
 |    Nom    | Obligatoire | Contenu |
 | --------- |:-----------:| ------- |
 | **sujet** | ☑ | Choix parmis `Message d'anniversaire`, `URL malveillant` |
-| **texte** | ☑ | Message d'anniversaire ou URL malveillant |
 
 __Exemples :__
 
 ```
-/add sujet:Message d'anniversaire texte:Bon anniversaire !
-/add sujet:URL malveillant texte:app-discordc.com
+/add sujet:Message d'anniversaire
+/add sujet:URL malveillant
 ```
 
 ***
@@ -150,26 +149,6 @@ __Exemples :__
 
 ```
 /anniversaire supprimer
-```
-
-***
-
-- ### /ban : Ban un membre
-
-Permet de ban un membre sur une période définie.
-
-__Paramètres :__
-
-|    Nom    | Obligatoire | Contenu |
-| --------- |:-----------:| ------- |
-| **membre** | ☑ | Membre de la guild |
-| **raison** | ☑ | Raison du ban |
-| **durée** | ☑ | Durée du ban (s = secondes, i = minutes, h = heures, d = jours, w = semaines, m = mois, y = années) |
-
-__Exemples :__
-
-```
-/ban membre:@Hei5enberg#6969 raison:Fishing durée:10y
 ```
 
 ***

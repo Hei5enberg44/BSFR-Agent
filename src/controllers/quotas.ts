@@ -1,5 +1,5 @@
-import { QuotaModel } from './database.js'
-import { Op } from 'sequelize'
+import { Op } from '@sequelize/core'
+import { QuotaModel } from '../models/quota.model.js'
 import Logger from '../utils/logger.js'
 
 export default class Quotas {
@@ -21,16 +21,19 @@ export default class Quotas {
      * Réinitialise tous les quotas
      */
     static async resetAll() {
-        await QuotaModel.update({
-            current: 0
-        }, {
-            where: {
-                current: {
-                    [Op.gt]: 0
+        await QuotaModel.update(
+            {
+                current: 0
+            },
+            {
+                where: {
+                    current: {
+                        [Op.gt]: 0
+                    }
                 }
             }
-        })
-        
+        )
+
         Logger.log('Quotas', 'INFO', 'Les quotas ont été réinitialisés')
     }
 }

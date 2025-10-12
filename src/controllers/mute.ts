@@ -1,9 +1,16 @@
-import { Guild, GuildMember, TextChannel, userMention, time, TimestampStyles } from 'discord.js'
-import Embed from '../utils/embed.js'
+import {
+    Guild,
+    GuildMember,
+    TextChannel,
+    userMention,
+    time,
+    TimestampStyles,
+    EmbedBuilder
+} from 'discord.js'
 import { CronJob } from 'cron'
-import { MuteModel } from '../controllers/database.js'
+import { MuteModel } from '../models/mute.model.js'
 import Logger from '../utils/logger.js'
-import config from '../config.json' with { type: 'json' }
+import config from '../../config.json' with { type: 'json' }
 
 export default class Mutes {
     /**
@@ -13,7 +20,12 @@ export default class Mutes {
      * @param reason raison du mute
      * @param unmuteDate date d'unmute
      */
-    static async add(memberId: string, mutedBy: string, reason: string, unmuteDate: Date) {
+    static async add(
+        memberId: string,
+        mutedBy: string,
+        reason: string,
+        unmuteDate: Date
+    ) {
         await MuteModel.create({
             memberId: memberId,
             mutedBy: mutedBy,
@@ -64,32 +76,63 @@ export default class Mutes {
      * @param reason Raison du mute
      * @param unmuteDate Date de démute
      */
-    static async mute(target: GuildMember, author: GuildMember, reason: string, unmuteDate: Date) {
-        if(!author.user.bot) {
+    static async mute(
+        target: GuildMember,
+        author: GuildMember,
+        reason: string,
+        unmuteDate: Date
+    ) {
+        if (!author.user.bot) {
             const client = author.client
-            const guild = <Guild>client.guilds.cache.get(config.guild.id)
-            const logsChannel = <TextChannel>guild.channels.cache.get(config.guild.channels.logs)
+            const guild = client.guilds.cache.get(config.guild.id) as Guild
+            const logsChannel = guild.channels.cache.get(
+                config.guild.channels.logs
+            ) as TextChannel
 
             await this.add(target.id, author.id, reason, unmuteDate)
 
-            const embed = new Embed()
+            const embed = new EmbedBuilder()
                 .setColor('#2ECC71')
                 .setTitle(`🔇 Mute de ${target.user.username}`)
                 .setThumbnail(target.displayAvatarURL({ forceStatic: false }))
                 .addFields(
-                    { name: 'Le vilain', value: userMention(target.id), inline: true },
-                    { name: 'Mute réalisé par', value: userMention(author.user.id), inline: true },
-                    { name: 'Raison', value: reason.trim() !== '' ? reason : 'Pas de raison' },
-                    { name: 'Levée du mute', value: time(unmuteDate, TimestampStyles.RelativeTime) }
+                    {
+                        name: 'Le vilain',
+                        value: userMention(target.id),
+                        inline: true
+                    },
+                    {
+                        name: 'Mute réalisé par',
+                        value: userMention(author.user.id),
+                        inline: true
+                    },
+                    {
+                        name: 'Raison',
+                        value: reason.trim() !== '' ? reason : 'Pas de raison'
+                    },
+                    {
+                        name: 'Levée du mute',
+                        value: time(unmuteDate, TimestampStyles.RelativeTime)
+                    }
                 )
 
-            await logsChannel.send({ embeds: [ embed ] })
+            await logsChannel.send({ embeds: [embed] })
 
-            new CronJob(unmuteDate, async () => {
-                await this.unmute(target)
-            }, null, true, 'Europe/Paris')
+            new CronJob(
+                unmuteDate,
+                async () => {
+                    await this.unmute(target)
+                },
+                null,
+                true,
+                'Europe/Paris'
+            )
 
-            Logger.log('Mute', 'INFO', `Le membre ${target.user.username} a été mute par ${author.user.username}`)
+            Logger.log(
+                'Mute',
+                'INFO',
+                `Le membre ${target.user.username} a été mute par ${author.user.username}`
+            )
         }
     }
 
@@ -100,30 +143,53 @@ export default class Mutes {
      */
     static async unmute(target: GuildMember, author?: GuildMember) {
         const client = target.client
-        const guild = <Guild>client.guilds.cache.get(config.guild.id)
-        const logsChannel = <TextChannel>guild.channels.cache.get(config.guild.channels.logs)
+        const guild = client.guilds.cache.get(config.guild.id) as Guild
+        const logsChannel = guild.channels.cache.get(
+            config.guild.channels.logs
+        ) as TextChannel
 
         const mutedMember = await this.isMuted(target.id)
-        if(mutedMember) {
+        if (mutedMember) {
             await this.remove(target.id)
 
-            const embed = new Embed()
+            const embed = new EmbedBuilder()
                 .setColor('#2ECC71')
                 .setTitle(`🔇 Unmute de ${target.user.username}`)
                 .setThumbnail(target.displayAvatarURL({ forceStatic: false }))
                 .addFields(
-                    { name: 'Le vilain', value: userMention(mutedMember.memberId), inline: true },
-                    { name: 'Mute réalisé par', value: userMention(mutedMember.mutedBy), inline: true }
+                    {
+                        name: 'Le vilain',
+                        value: userMention(mutedMember.memberId),
+                        inline: true
+                    },
+                    {
+                        name: 'Mute réalisé par',
+                        value: userMention(mutedMember.mutedBy),
+                        inline: true
+                    }
                 )
 
-            if(author) embed.addFields({ name: 'Mute levé par', value: userMention(author.id), inline: true })
+            if (author)
+                embed.addFields({
+                    name: 'Mute levé par',
+                    value: userMention(author.id),
+                    inline: true
+                })
 
-            await logsChannel.send({ embeds: [ embed ] })
+            await logsChannel.send({ embeds: [embed] })
 
-            if(author)
-                Logger.log('Mute', 'INFO', `Le membre ${target.user.username} a été unmute par ${author.user.username}`)
+            if (author)
+                Logger.log(
+                    'Mute',
+                    'INFO',
+                    `Le membre ${target.user.username} a été unmute par ${author.user.username}`
+                )
             else
-                Logger.log('Mute', 'INFO', `Le membre ${target.user.username} a été unmute`)
+                Logger.log(
+                    'Mute',
+                    'INFO',
+                    `Le membre ${target.user.username} a été unmute`
+                )
         }
     }
 }

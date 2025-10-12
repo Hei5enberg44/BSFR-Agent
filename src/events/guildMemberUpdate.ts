@@ -1,6 +1,6 @@
 import { GuildMember } from 'discord.js'
 import threads from '../controllers/threads.js'
-import config from '../config.json' with { type: 'json' }
+import config from '../../config.json' with { type: 'json' }
 
 export default class guildMemberUpdate {
     private static oldMember: GuildMember
@@ -25,13 +25,23 @@ export default class guildMemberUpdate {
         const oldMember = this.oldMember
         const newMember = this.newMember
 
-        const wasInStaff = oldMember.roles.cache.find(r => [ config.guild.roles['Admin'], config.guild.roles['Modérateur'] ].includes(r.id))
-        const isInStaff = newMember.roles.cache.find(r => [ config.guild.roles['Admin'], config.guild.roles['Modérateur'] ].includes(r.id))
+        const wasInStaff = oldMember.roles.cache.find((r) =>
+            [
+                config.guild.roles['Admin'],
+                config.guild.roles['Modérateur']
+            ].includes(r.id)
+        )
+        const isInStaff = newMember.roles.cache.find((r) =>
+            [
+                config.guild.roles['Admin'],
+                config.guild.roles['Modérateur']
+            ].includes(r.id)
+        )
 
-        if(!wasInStaff && isInStaff) {
+        if (!wasInStaff && isInStaff) {
             // Si le membre a rejoint le staff
             await threads.addMember('dm', newMember)
-        } else if(wasInStaff && !isInStaff) {
+        } else if (wasInStaff && !isInStaff) {
             // Si le membre a quiité le staff
             await threads.removeMember('dm', newMember)
         }

@@ -1,8 +1,8 @@
 import { Client, Guild, TextChannel, roleMention } from 'discord.js'
 import { YouTube } from '../controllers/google.js'
-import { YouTubeVideoModel } from '../controllers/database.js'
+import { YouTubeVideoModel } from '../models/youtubeVideo.model.js'
 import Logger from '../utils/logger.js'
-import config from '../config.json' with { type: 'json' }
+import config from '../../config.json' with { type: 'json' }
 
 export default {
     /**
@@ -15,27 +15,45 @@ export default {
             const videos = await YouTubeVideoModel.findAll()
             const latestVideos = await YouTube.getLatestPublicsVideos()
 
-            const newVideos = latestVideos.filter(lv => !videos.map(v => v.videoId).includes(lv.videoId))
+            const newVideos = latestVideos.filter(
+                (lv) => !videos.map((v) => v.videoId).includes(lv.videoId)
+            )
 
-            Logger.log('YouTube', 'INFO', `${newVideos.length} nouvelle(s) vidéo(s) trouvée(s)`)
+            Logger.log(
+                'YouTube',
+                'INFO',
+                `${newVideos.length} nouvelle(s) vidéo(s) trouvée(s)`
+            )
 
-            for(const newVideo of newVideos) {
+            for (const newVideo of newVideos) {
                 await YouTubeVideoModel.findOrCreate({
                     where: { videoId: newVideo.videoId },
                     defaults: newVideo
                 })
             }
 
-            if(newVideos.length > 0) {
-                Logger.log('YouTube', 'INFO', 'Envoi des vidéos dans le salon #youtube')
+            if (newVideos.length > 0) {
+                Logger.log(
+                    'YouTube',
+                    'INFO',
+                    'Envoi des vidéos dans le salon #youtube'
+                )
 
-                const guild = <Guild>client.guilds.cache.get(config.guild.id)
-                const youtubeChannel = <TextChannel>guild.channels.cache.get(config.guild.channels['youtube'])
+                const guild = client.guilds.cache.get(config.guild.id) as Guild
+                const youtubeChannel = guild.channels.cache.get(
+                    config.guild.channels['youtube']
+                ) as TextChannel
 
-                await youtubeChannel.send({ content: `${roleMention(config.guild.roles['YouTube'])}\n${newVideos.map(video => `https://youtu.be/${video.videoId}`).join('\n')}` })
+                await youtubeChannel.send({
+                    content: `${roleMention(config.guild.roles['YouTube'])}\n${newVideos.map((video) => `https://youtu.be/${video.videoId}`).join('\n')}`
+                })
             }
-        } catch(error) {
-            Logger.log('YouTube', 'ERROR', 'Erreur lors de la récupération des dernières vidéos')
+        } catch (error) {
+            Logger.log(
+                'YouTube',
+                'ERROR',
+                'Erreur lors de la récupération des dernières vidéos'
+            )
         }
     }
 }

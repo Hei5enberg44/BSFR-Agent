@@ -1,9 +1,9 @@
 import { google, Auth } from 'googleapis'
-import config from '../config.json' with { type: 'json' }
+import config from '../../config.json' with { type: 'json' }
 
 interface OAuth2Credentials {
-    clientId: string,
-    clientSecret: string,
+    clientId: string
+    clientSecret: string
     refreshToken?: string
 }
 
@@ -29,7 +29,7 @@ const GoogleAuth = {
      */
     async getServiceAccountAuth(credentials: object) {
         const auth = new Auth.GoogleAuth({
-            scopes: [ 'https://www.googleapis.com/auth/cloud-platform' ],
+            scopes: ['https://www.googleapis.com/auth/cloud-platform'],
             credentials: credentials
         })
         return auth
@@ -37,8 +37,8 @@ const GoogleAuth = {
 }
 
 interface YouTubeVideo {
-    videoId: string,
-    publishedAt: Date,
+    videoId: string
+    publishedAt: Date
     title: string
 }
 
@@ -55,35 +55,44 @@ const YouTube = {
         const youtube = google.youtube({ version: 'v3', auth: auth })
 
         const videosList = await youtube.search.list({
-            part: [ 'snippet' ],
-            maxResults : 15,
-            order : 'date',
-            forMine : true,
-            type : [ 'video' ],
-            fields : 'items/id/videoId'
+            part: ['snippet'],
+            maxResults: 15,
+            order: 'date',
+            forMine: true,
+            type: ['video'],
+            fields: 'items/id/videoId'
         })
 
         const videoListItems = videosList.data.items
-        if(videoListItems) {
-            const latestVideos = <string[]>videoListItems.map(video => video.id?.videoId)
+        if (videoListItems) {
+            const latestVideos = <string[]>(
+                videoListItems.map((video) => video.id?.videoId)
+            )
 
             const videosInfos = await youtube.videos.list({
-                part : [ 'status', 'snippet', 'liveStreamingDetails' ],
+                part: ['status', 'snippet', 'liveStreamingDetails'],
                 id: latestVideos,
-                fields : 'items(id,status/privacyStatus,snippet(publishedAt,title,liveBroadcastContent),liveStreamingDetails/scheduledStartTime)'
+                fields: 'items(id,status/privacyStatus,snippet(publishedAt,title,liveBroadcastContent),liveStreamingDetails/scheduledStartTime)'
             })
 
             const videoInfosItems = videosInfos.data.items
-            if(videoInfosItems) {
-                for(const item of videoInfosItems) {
-                    if(item.status?.privacyStatus === 'public') {
-                        if(item.snippet?.liveBroadcastContent === 'upcoming') {
-                            if(!item?.liveStreamingDetails?.scheduledStartTime) continue
-                            const scheduledStartTime = new Date(item?.liveStreamingDetails?.scheduledStartTime).getTime()
-                            if(Date.now() < scheduledStartTime) continue
+            if (videoInfosItems) {
+                for (const item of videoInfosItems) {
+                    if (item.status?.privacyStatus === 'public') {
+                        if (item.snippet?.liveBroadcastContent === 'upcoming') {
+                            if (!item?.liveStreamingDetails?.scheduledStartTime)
+                                continue
+                            const scheduledStartTime = new Date(
+                                item?.liveStreamingDetails?.scheduledStartTime
+                            ).getTime()
+                            if (Date.now() < scheduledStartTime) continue
                         }
 
-                        if(item.id && item.snippet?.publishedAt && item.snippet?.title) {
+                        if (
+                            item.id &&
+                            item.snippet?.publishedAt &&
+                            item.snippet?.title
+                        ) {
                             latestPublicsVideos.push({
                                 videoId: item.id,
                                 publishedAt: new Date(item.snippet.publishedAt),
@@ -107,7 +116,9 @@ const TextToSpeech = {
      * @returns synthèse vocale
      */
     async synthesize(text: string, voice: string) {
-        const auth = await GoogleAuth.getServiceAccountAuth(config.google['service-account'])
+        const auth = await GoogleAuth.getServiceAccountAuth(
+            config.google['service-account']
+        )
 
         const tts = google.texttospeech({ version: 'v1', auth: auth })
 

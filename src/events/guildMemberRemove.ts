@@ -1,9 +1,18 @@
-import { GuildMember, Role, TextChannel, userMention, roleMention } from 'discord.js'
-import Embed from '../utils/embed.js'
-import { BirthdayModel, CitieModel, TwitchModel, OldMemberRolesModel } from '../controllers/database.js'
+import {
+    GuildMember,
+    Role,
+    TextChannel,
+    userMention,
+    roleMention,
+    EmbedBuilder
+} from 'discord.js'
+import { BirthdayModel } from '../models/birthday.model.js'
+import { CityModel } from '../models/city.model.js'
+import { TwitchModel } from '../models/twitch.model.js'
+import { OldMemberRoleModel } from '../models/oldMemberRole.model.js'
 import threads from '../controllers/threads.js'
 import Logger from '../utils/logger.js'
-import config from '../config.json' with { type: 'json' }
+import config from '../../config.json' with { type: 'json' }
 
 export default class guildMemberRemove {
     private static member: GuildMember
@@ -30,14 +39,20 @@ export default class guildMemberRemove {
     private static async saveOldMemberRoles() {
         const member = this.member
 
-        const roles = member.roles.cache.map((role: Role, id: string) => { return { id, name: role.name } }).filter(role => role.name !== '@everyone')
+        const roles = member.roles.cache
+            .map((role: Role, id: string) => {
+                return { id, name: role.name }
+            })
+            .filter((role) => role.name !== '@everyone')
 
-        const oldMemberRoles = await OldMemberRolesModel.findOne({ where: { memberId: member.id } })
-        if(oldMemberRoles) {
+        const oldMemberRoles = await OldMemberRoleModel.findOne({
+            where: { memberId: member.id }
+        })
+        if (oldMemberRoles) {
             oldMemberRoles.roles = roles
             await oldMemberRoles.save()
         } else {
-            await OldMemberRolesModel.create({
+            await OldMemberRoleModel.create({
                 memberId: member.id,
                 roles
             })
@@ -50,25 +65,36 @@ export default class guildMemberRemove {
     private static async bye() {
         const member = this.member
 
-        const logsChannel = <TextChannel>member.guild.channels.cache.get(config.guild.channels['logs'])
+        const logsChannel = member.guild.channels.cache.get(
+            config.guild.channels['logs']
+        ) as TextChannel
 
         // On récupère les rôles du membre depuis la base de données que celui-ci avait avant de quitter le serveur
-        const oldMemberRoles = await OldMemberRolesModel.findOne({ where: { memberId: member.id } })
+        const oldMemberRoles = await OldMemberRoleModel.findOne({
+            where: { memberId: member.id }
+        })
 
-        const embed = new Embed()
+        const embed = new EmbedBuilder()
             .setColor('#E74C3C')
             .setTitle(`📤 Départ de ${member.user.username}`)
             .setThumbnail(member.user.displayAvatarURL({ forceStatic: false }))
             .addFields({ name: 'Membre', value: userMention(member.user.id) })
 
-        if(oldMemberRoles && oldMemberRoles.roles.length > 0)
-            embed.addFields(
-                { name: 'Anciens rôles', value: oldMemberRoles.roles.map(role => roleMention(role.id)).join(', ') }
-            )
-        
+        if (oldMemberRoles && oldMemberRoles.roles.length > 0)
+            embed.addFields({
+                name: 'Anciens rôles',
+                value: oldMemberRoles.roles
+                    .map((role) => roleMention(role.id))
+                    .join(', ')
+            })
+
         await logsChannel.send({ embeds: [embed] })
 
-        Logger.log('Leave', 'INFO', `Le membre ${member.user.username} a quitté le serveur`)
+        Logger.log(
+            'Leave',
+            'INFO',
+            `Le membre ${member.user.username} a quitté le serveur`
+        )
     }
 
     /**
@@ -83,7 +109,12 @@ export default class guildMemberRemove {
             }
         })
 
-        if(del > 0) Logger.log('Birthday', 'INFO', `Le membre ${member.user.username} a quitté le serveur, sa date d'anniversaire a été supprimée de la base de données`)
+        if (del > 0)
+            Logger.log(
+                'Birthday',
+                'INFO',
+                `Le membre ${member.user.username} a quitté le serveur, sa date d'anniversaire a été supprimée de la base de données`
+            )
     }
 
     /**
@@ -92,13 +123,18 @@ export default class guildMemberRemove {
     private static async removeCity() {
         const member = this.member
 
-        const del = await CitieModel.destroy({
+        const del = await CityModel.destroy({
             where: {
                 memberId: member.user.id
             }
         })
 
-        if(del > 0) Logger.log('City', 'INFO', `Le membre ${member.user.username} a quitté le serveur, sa ville d'origine a été supprimée de la base de données`)
+        if (del > 0)
+            Logger.log(
+                'City',
+                'INFO',
+                `Le membre ${member.user.username} a quitté le serveur, sa ville d'origine a été supprimée de la base de données`
+            )
     }
 
     /**
@@ -114,7 +150,12 @@ export default class guildMemberRemove {
             }
         })
 
-        if(del > 0) Logger.log('Twitch', 'INFO', `Le membre ${member.user.username} a quitté le serveur, sa chaîne Twitch a été supprimée de la base de données`)
+        if (del > 0)
+            Logger.log(
+                'Twitch',
+                'INFO',
+                `Le membre ${member.user.username} a quitté le serveur, sa chaîne Twitch a été supprimée de la base de données`
+            )
     }
 
     /**
@@ -123,10 +164,15 @@ export default class guildMemberRemove {
     private static async updateThreads() {
         const member = this.member
 
-        const isInStaff = member.roles.cache.find(r => [ config.guild.roles['Admin'], config.guild.roles['Modérateur'] ].includes(r.id))
+        const isInStaff = member.roles.cache.find((r) =>
+            [
+                config.guild.roles['Admin'],
+                config.guild.roles['Modérateur']
+            ].includes(r.id)
+        )
 
         // Si le membre faisait partie du staff
-        if(isInStaff) {
+        if (isInStaff) {
             await threads.removeMember('dm', member)
         }
     }

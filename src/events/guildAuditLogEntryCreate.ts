@@ -24,16 +24,29 @@ export default class guildAuditLogEntryCreate {
         const auditLog = this.auditLog
         const guild = this.guild
 
-        if(auditLog.actionType === 'Update') {
-            const communicationDisabledUntilChange = auditLog.changes.find(a => a.key === 'communication_disabled_until')
-            if(communicationDisabledUntilChange && auditLog.executorId && auditLog.targetId) {
-                const executorMember = guild.members.cache.get(auditLog.executorId)
+        if (auditLog.actionType === 'Update') {
+            const communicationDisabledUntilChange = auditLog.changes.find(
+                (a) => a.key === 'communication_disabled_until'
+            )
+            if (
+                communicationDisabledUntilChange &&
+                auditLog.executorId &&
+                auditLog.targetId
+            ) {
+                const executorMember = guild.members.cache.get(
+                    auditLog.executorId
+                )
                 const targetMember = guild.members.cache.get(auditLog.targetId)
-                if(executorMember && targetMember) {
+                if (executorMember && targetMember) {
                     const unmuteDate = communicationDisabledUntilChange.new
-                    if(unmuteDate) {
+                    if (unmuteDate) {
                         const reason = auditLog.reason || ''
-                        await mute.mute(targetMember, executorMember, reason, new Date(<string>unmuteDate))
+                        await mute.mute(
+                            targetMember,
+                            executorMember,
+                            reason,
+                            new Date(unmuteDate)
+                        )
                     } else {
                         await mute.unmute(targetMember, executorMember)
                     }

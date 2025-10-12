@@ -4,21 +4,15 @@
         "node": true
     },
     "extends": "eslint:recommended",
-    "overrides": [
-    ],
+    "overrides": [],
     "parserOptions": {
         "ecmaVersion": "latest",
         "sourceType": "module"
     },
     "rules": {
+        "no-unused-vars": "off",
         "prefer-const": "error",
-        "quotes": [
-            "error",
-            "single"
-        ],
-        "semi": [
-            "error",
-            "never"
-        ]
+        "quotes": ["error", "single"],
+        "semi": ["error", "never"]
     }
 }

@@ -1,9 +1,11 @@
 import { Client, Guild, TextChannel, userMention } from 'discord.js'
-import { BirthdayModel, BirthdayMessageModel, BirthdayWishesModel } from './database.js'
-import { Sequelize, Op } from 'sequelize'
+import { Sequelize, Op } from '@sequelize/core'
+import { BirthdayModel } from '../models/birthday.model.js'
+import { BirthdayMessageModel } from '../models/birthdayMessage.model.js'
+import { BirthdayWishModel } from '../models/birthdayWish.model.js'
 import crypto from 'crypto'
 import Logger from '../utils/logger.js'
-import config from '../config.json' with { type: 'json' }
+import config from '../../config.json' with { type: 'json' }
 
 export default {
     /**
@@ -12,9 +14,11 @@ export default {
      * @param date date de naissance au format timestamp
      */
     async set(memberId: string, date: Date) {
-        const bd = await BirthdayModel.findOne({ where: { memberId: memberId } })
+        const bd = await BirthdayModel.findOne({
+            where: { memberId: memberId }
+        })
 
-        if(bd) await this.unset(memberId)
+        if (bd) await this.unset(memberId)
 
         await BirthdayModel.create({
             memberId: memberId,
@@ -37,10 +41,15 @@ export default {
      * @returns liste des anniversaires
      */
     async get() {
-        const date = ((new Date()).toLocaleDateString('fr-FR', { timeZone: 'Europe/Paris' })).substring(0, 5)
+        const date = new Date()
+            .toLocaleDateString('fr-FR', { timeZone: 'Europe/Paris' })
+            .substring(0, 5)
 
         const birthdays = await BirthdayModel.findAll({
-            where: Sequelize.where(Sequelize.fn('date_format', Sequelize.col('date'), '%d/%m'), date)
+            where: Sequelize.where(
+                Sequelize.fn('date_format', Sequelize.col('date'), '%d/%m'),
+                date
+            )
         })
 
         return birthdays
@@ -48,17 +57,17 @@ export default {
 
     /**
      * Récupère un message d'anniversaire au hasard
-     * 
+     *
      * @param history ne pas récupérer un message si celui-ci se trouve dans les x derniers messages envoyés
      */
     async getRandomBirthdayMessage(history: number = 5) {
-        const lastBirthdayWishes = (await BirthdayWishesModel.findAll({
-            order: [
-                [ 'id', 'desc' ]
-            ],
-            attributes: [ 'birthdayMessageId' ],
-            limit: history
-        })).map(bw => bw.birthdayMessageId)
+        const lastBirthdayWishes = (
+            await BirthdayWishModel.findAll({
+                order: [['id', 'desc']],
+                attributes: ['birthdayMessageId'],
+                limit: history
+            })
+        ).map((bw) => bw.birthdayMessageId)
 
         const bdMessages = await BirthdayMessageModel.findAll({
             where: {
@@ -69,12 +78,12 @@ export default {
             raw: true
         })
 
-        if(bdMessages.length === 0) return 'Joyeux anniversaire !'
+        if (bdMessages.length === 0) return 'Joyeux anniversaire !'
 
         const random = crypto.randomInt(bdMessages.length)
         const bdMessage = bdMessages[random]
 
-        await BirthdayWishesModel.create({
+        await BirthdayWishModel.create({
             birthdayMessageId: bdMessage.id
         })
 
@@ -88,23 +97,34 @@ export default {
     async wish(client: Client) {
         const birthdays = await this.get()
 
-        const guild = <Guild>client.guilds.cache.get(config.guild.id)
-        const happyBirthdayChannel = <TextChannel>guild.channels.cache.get(config.guild.channels['happy-birthday'])
+        const guild = client.guilds.cache.get(config.guild.id) as Guild
+        const happyBirthdayChannel = guild.channels.cache.get(
+            config.guild.channels['happy-birthday']
+        ) as TextChannel
 
-        for(const birthday of birthdays) {
+        for (const birthday of birthdays) {
             const member = guild.members.cache.get(birthday.memberId)
 
-            if(member) {
+            if (member) {
                 let mention = true
                 let bdMessage = await this.getRandomBirthdayMessage()
-                if(bdMessage.match(/!p/)) {
+                if (bdMessage.match(/!p/)) {
                     mention = false
-                    bdMessage = bdMessage.replace(/!p/g, userMention(member.user.id))
+                    bdMessage = bdMessage.replace(
+                        /!p/g,
+                        userMention(member.user.id)
+                    )
                 }
 
-                Logger.log('BirthdayWish', 'INFO', `Joyeux anniversaire ${member.user.username} !`)
+                Logger.log(
+                    'BirthdayWish',
+                    'INFO',
+                    `Joyeux anniversaire ${member.user.username} !`
+                )
 
-                await happyBirthdayChannel.send(`${bdMessage}${mention ? ` ${userMention(member.user.id)}` : ''}`)
+                await happyBirthdayChannel.send(
+                    `${bdMessage}${mention ? ` ${userMention(member.user.id)}` : ''}`
+                )
             }
         }
     }

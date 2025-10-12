@@ -1,5 +1,14 @@
 import Logger from './logger.js'
 
+class ConfigError extends Error {
+    constructor(message: string) {
+        super(message)
+        this.name = 'CONFIG_ERROR'
+        Error.captureStackTrace(this, this.constructor)
+        Logger.log('Config', 'ERROR', this.message)
+    }
+}
+
 class DatabaseError extends Error {
     constructor(message: string) {
         super(message)
@@ -13,7 +22,11 @@ class CommandError extends Error {
         super(message)
         this.name = 'COMMAND_ERROR'
         Error.captureStackTrace(this, this.constructor)
-        Logger.log('CommandManager', 'ERROR', `L'exécution de la commande "/${commandName}" a échoué : ${(message).replace(/:[^:]+:\s/g, '').replace('\n', ' ')}`)
+        Logger.log(
+            'CommandManager',
+            'ERROR',
+            `L'exécution de la commande "/${commandName}" a échoué : ${message.replace(/:[^:]+:\s/g, '').replace('\n', ' ')}`
+        )
     }
 }
 
@@ -30,7 +43,11 @@ class ModalError extends Error {
         super(message)
         this.name = 'MODAL_ERROR'
         Error.captureStackTrace(this, this.constructor)
-        Logger.log('ModalManager', 'ERROR', `La soumission de la modale "${modalName}" a échoué : ${(message).replace(/:[^:]+:\s/g, '').replace('\n', ' ')}`)
+        Logger.log(
+            'ModalManager',
+            'ERROR',
+            `La soumission de la modale "${modalName}" a échoué : ${message.replace(/:[^:]+:\s/g, '').replace('\n', ' ')}`
+        )
     }
 }
 
@@ -39,6 +56,19 @@ class ModalSubmissionError extends Error {
         super(message)
         this.name = 'MODAL_SUBMISSION_ERROR'
         Error.captureStackTrace(this, this.constructor)
+    }
+}
+
+class ButtonError extends Error {
+    constructor(message: string, buttonName: string) {
+        super(message)
+        this.name = 'BUTTON_ERROR'
+        Error.captureStackTrace(this, this.constructor)
+        Logger.log(
+            'ButtonManager',
+            'ERROR',
+            `La soumission du bouton "${buttonName}" a échoué : ${message.replace(/:[^:]+:\s/g, '').replace('\n', ' ')}`
+        )
     }
 }
 
@@ -107,11 +137,13 @@ class QuotaLimitError extends Error {
 }
 
 export {
+    ConfigError,
     DatabaseError,
     CommandError,
     CommandInteractionError,
     ModalError,
     ModalSubmissionError,
+    ButtonError,
     PageNotFoundError,
     BirthdayMessageEmptyError,
     MaliciousURLEmptyError,

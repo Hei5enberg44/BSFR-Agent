@@ -1,10 +1,17 @@
-import { SlashCommandBuilder, PermissionFlagsBits, ChatInputCommandInteraction, Message, userMention } from 'discord.js'
-import Embed from '../utils/embed.js'
+import {
+    SlashCommandBuilder,
+    InteractionContextType,
+    PermissionFlagsBits,
+    ChatInputCommandInteraction,
+    Message,
+    userMention,
+    EmbedBuilder
+} from 'discord.js'
 import { CommandError, CommandInteractionError } from '../utils/error.js'
 import birthdayMessage from '../controllers/birthdayMessage.js'
 import maliciousURL from '../controllers/maliciousURL.js'
 import Locales from '../utils/locales.js'
-import config from '../config.json' with { type: 'json' }
+import config from '../../config.json' with { type: 'json' }
 
 export default {
     data: new SlashCommandBuilder()
@@ -12,29 +19,41 @@ export default {
         .setNameLocalization('fr', 'supprimer')
         .setDescription('Misc deletions')
         .setDescriptionLocalization('fr', 'Suppressions diverses')
-        .addStringOption(option =>
-            option.setName('subject')
+        .addStringOption((option) =>
+            option
+                .setName('subject')
                 .setNameLocalization('fr', 'sujet')
                 .setDescription('Subject')
                 .setDescriptionLocalization('fr', 'Sujet')
                 .setChoices(
-                    { name: 'Birthday message', name_localizations: { fr: 'Message d\'anniversaire' }, value: 'birthday_message' },
-                    { name: 'Malicious URL', name_localizations: { fr: 'URL malveillant' }, value: 'malicious_url' }
+                    {
+                        name: 'Birthday message',
+                        name_localizations: { fr: "Message d'anniversaire" },
+                        value: 'birthday_message'
+                    },
+                    {
+                        name: 'Malicious URL',
+                        name_localizations: { fr: 'URL malveillant' },
+                        value: 'malicious_url'
+                    }
                 )
                 .setRequired(true)
         )
-        .addStringOption(option =>
-            option.setName('ids')
-                .setDescription('/!\\ If there are several IDs, please separate them with a semicolon /!\\')
-                .setDescriptionLocalization('fr', '/!\\ Si il y a plusieurs IDs, merci de les séparer par un point virgule /!\\')
+        .addStringOption((option) =>
+            option
+                .setName('ids')
+                .setDescription(
+                    '/!\\ If there are several IDs, please separate them with a semicolon /!\\'
+                )
+                .setDescriptionLocalization(
+                    'fr',
+                    '/!\\ Si il y a plusieurs IDs, merci de les séparer par un point virgule /!\\'
+                )
                 .setRequired(true)
         )
-        .setDMPermission(false)
-        .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles)
-    ,
-    allowedChannels: [
-        config.guild.channels['bot-setup']
-    ],
+        .setContexts(InteractionContextType.Guild)
+        .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
+    allowedChannels: [config.guild.channels['bot-setup']],
 
     /**
      * Exécution de la commande
@@ -50,25 +69,60 @@ export default {
                 await reply.react('❌')
             }
 
-            const embed = new Embed()
+            const embed = new EmbedBuilder()
                 .setColor('#9B59B6')
-                .setThumbnail(interaction.user.displayAvatarURL({ forceStatic: false }))
-                .addFields({ name: Locales.get(interaction.locale, 'member'), value: userMention(interaction.user.id) })
-            
-            switch(subject) {
+                .setThumbnail(
+                    interaction.user.displayAvatarURL({ forceStatic: false })
+                )
+                .addFields({
+                    name: Locales.get(interaction.locale, 'member'),
+                    value: userMention(interaction.user.id)
+                })
+
+            switch (subject) {
                 case 'birthday_message': {
                     const messagesList = await birthdayMessage.get(ids)
 
-                    if(messagesList.length === 0)
-                        throw new CommandInteractionError(Locales.get(interaction.locale, 'delete_birthday_messages_error'))
+                    if (messagesList.length === 0)
+                        throw new CommandInteractionError(
+                            Locales.get(
+                                interaction.locale,
+                                'delete_birthday_messages_error'
+                            )
+                        )
 
-                    embed.setTitle(Locales.get(interaction.locale, 'delete_birthday_messages_confirm'))
-                    embed.setDescription(Locales.get(interaction.locale, 'delete_birthday_messages_question'))
-                    embed.addFields({ name: Locales.get(interaction.locale, 'birthday_messages'), value: messagesList.map(message => message.message).join('\n') })
+                    embed.setTitle(
+                        Locales.get(
+                            interaction.locale,
+                            'delete_birthday_messages_confirm'
+                        )
+                    )
+                    embed.setDescription(
+                        Locales.get(
+                            interaction.locale,
+                            'delete_birthday_messages_question'
+                        )
+                    )
+                    embed.addFields({
+                        name: Locales.get(
+                            interaction.locale,
+                            'birthday_messages'
+                        ),
+                        value: messagesList
+                            .map((message) => message.message)
+                            .join('\n')
+                    })
 
-                    const reply = await interaction.reply({ embeds: [embed], fetchReply: true })
+                    const reply = await interaction.reply({
+                        embeds: [embed],
+                        fetchReply: true
+                    })
 
-                    await birthdayMessage.remove(messagesList, interaction, reply.id)
+                    await birthdayMessage.remove(
+                        messagesList,
+                        interaction,
+                        reply.id
+                    )
 
                     await react(reply)
 
@@ -77,14 +131,35 @@ export default {
                 case 'malicious_url': {
                     const urlsList = await maliciousURL.get(ids)
 
-                    if(urlsList.length === 0)
-                        throw new CommandInteractionError(Locales.get(interaction.locale, 'delete_malicious_urls_error'))
+                    if (urlsList.length === 0)
+                        throw new CommandInteractionError(
+                            Locales.get(
+                                interaction.locale,
+                                'delete_malicious_urls_error'
+                            )
+                        )
 
-                    embed.setTitle(Locales.get(interaction.locale, 'delete_malicious_urls_confirm'))
-                    embed.setDescription(Locales.get(interaction.locale, 'delete_malicious_urls_question'))
-                    embed.addFields({ name: Locales.get(interaction.locale, 'malicious_urls'), value: urlsList.map(url => url.url).join('\n') })
+                    embed.setTitle(
+                        Locales.get(
+                            interaction.locale,
+                            'delete_malicious_urls_confirm'
+                        )
+                    )
+                    embed.setDescription(
+                        Locales.get(
+                            interaction.locale,
+                            'delete_malicious_urls_question'
+                        )
+                    )
+                    embed.addFields({
+                        name: Locales.get(interaction.locale, 'malicious_urls'),
+                        value: urlsList.map((url) => url.url).join('\n')
+                    })
 
-                    const reply = await interaction.reply({ embeds: [embed], fetchReply: true })
+                    const reply = await interaction.reply({
+                        embeds: [embed],
+                        fetchReply: true
+                    })
 
                     await maliciousURL.remove(urlsList, interaction, reply.id)
 
@@ -93,8 +168,8 @@ export default {
                     break
                 }
             }
-        } catch(error) {
-            if(error.name === 'COMMAND_INTERACTION_ERROR') {
+        } catch (error) {
+            if (error.name === 'COMMAND_INTERACTION_ERROR') {
                 throw new CommandError(error.message, interaction.commandName)
             } else {
                 throw Error(error.message)
