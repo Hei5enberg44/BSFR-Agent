@@ -103,10 +103,11 @@ export default class Cooldowns {
         const memberId = member.id
         const memberCooldown = await this.get(memberId)
 
+        const isVoiceChannel = message.channel.isVoiceBased()
         const isAttachment =
             message.attachments.size > 0 && message.content === ''
 
-        if (memberCooldown && !isAttachment) {
+        if (memberCooldown && !isAttachment && !isVoiceChannel) {
             const date = new Date()
 
             const { timeThreshold, countThreshold, muteDuration, messageDate } =

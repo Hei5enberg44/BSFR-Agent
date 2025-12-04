@@ -86,7 +86,7 @@ export default {
                         line = line.replace(/\[\/?list\]/g, '')
                         line = line.replace(/\[\/\*\]/g, '')
                         line = line.replace(
-                            /\[previewyoutube=([a-zA-Z0-9-_]+)(?:;[a-z]+)?\]\[\/previewyoutube\]/g,
+                            /\[previewyoutube=\"?([a-zA-Z0-9-_]+)(?:;[a-z]+)?\"?\]\[\/previewyoutube\]/g,
                             'https://youtu.be/$1'
                         )
                         line = line.replace(/\[b\](.+)\[\/b\]/g, '**$1**')
